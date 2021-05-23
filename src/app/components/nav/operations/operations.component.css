@@ -1,0 +1,18 @@
+
+.example-button-row {
+    display: table-cell;
+    /* width: 490px; */
+  }
+  
+  .button-entity{
+    background-color: antiquewhite;
+  
+  }
+
+  .card-content{
+    padding: 2px;
+  }
+
+  .container{
+    width: 300px  ;
+  }

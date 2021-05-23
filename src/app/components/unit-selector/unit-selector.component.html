@@ -1,0 +1,40 @@
+<div id="modal-content-wrapper">
+    <!-- HEADER -->
+    <header id="modal-header">
+        <h1 id="modal-title">Selección de Unidades</h1>
+    </header>
+     <!-- SELECTOR -->
+    <mat-form-field appearance="fill">
+        <mat-label>Opciones</mat-label>
+        <mat-select  name="optionSelector" [(ngModel)] = "setFeaturesToSelect" >
+            <mat-option *ngFor="let option of listOfOptions | keyvalue:unsorted" [value]= "option.key"> 
+            {{option.value}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <!-- CUERPO WINDOW -->
+    <section id="modal-body">
+        <!-- RESULTADO ELECCIÓN-->
+        <mat-card class="unit-result">  
+            <!-- <mat-icon svgIcon = "{{unitResultIconName}}" class="icon-selector"></mat-icon> -->
+        <svg #svg
+            xmlns="http://www.w3.org/2000/svg"
+            width='200' height='200' version='1.1'>
+        </svg>
+        </mat-card>
+        <!-- OPCIONES -->
+        <mat-card>
+            <div   *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
+                <div  (click) = "addFeature(feature)" [class] = "feature.value.classCSS">
+                    <mat-icon svgIcon = "{{feature.key}}" class="icon-selector" ></mat-icon>
+                    <div class="text-selector">{{feature.value.selectorText}}</div>
+                </div>
+            </div>
+        </mat-card>  
+    </section>
+    <!-- BOTONES -->
+    <footer id="modal-footer">
+        <button mat-dialog-close mat-raised-button class= 'button-modal' id="modal-cancel-button" >Cancelar</button>
+        <button mat-dialog-close mat-raised-button class= 'button-modal' id="modal-action-button" (click)=saveUnit() >Crear</button>
+    </footer>
+</div>

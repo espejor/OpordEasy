@@ -1,0 +1,72 @@
+<div class="container">
+    <!-- <div class="row"> -->
+            <mat-card class="card col-md-12">  
+                <!-- <mat-card-header>
+                    <div mat-card-avatar class="example-header-image"></div>
+                    <mat-card-title>Shiba Inu</mat-card-title>
+                    <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+                </mat-card-header> -->
+                <mat-card-content class="card-content row">
+                    <!-- ------ Selector ------ -->
+                    <mat-form-field appearance="fill">
+                        <mat-label>Operaciones</mat-label>
+                        <mat-select [(ngModel)]="operationsService.selectedOperation" name="operationSelector">
+                          <mat-option *ngFor="let operation of operationsService.operations" [value]="operation">
+                            {{operation.name}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    <form #operationForm = "ngForm" >
+                        <div class="col-md-12">
+                      <!-- ---------- Input Operaciones --------- -->
+                            <div class="input-field">
+                                <mat-form-field >
+                                    <input matInput  type="text" name="name" #name = 'ngModel' 
+                                    [(ngModel)] = "operationsService.selectedOperation.name"
+                                    placeholder="Nombre de la Operación">
+                                </mat-form-field>
+                            </div>
+                            <!-- --------- Vista de Fase seleccionada ----------- -->
+                            <div class = "fase_view row" >
+                                <div class="col-md-2">
+                                    <button mat-icon-button aria-label="Fase anterior" (click) = "operationsService.previousPhase()">
+                                        <mat-icon>arrow_left</mat-icon>
+                                    </button>
+                                </div>
+                                <div class="col-md-7">
+                                    <mat-form-field >
+                                        <input matInput  type="text" name="phasesname" #name = 'ngModel' 
+
+                                        [(ngModel)] = "operationsService.selectedOperation.phases[operationsService.phaseOrder].name"
+                                        placeholder="Fase">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-2">
+                                    <button mat-icon-button aria-label="Fase siguiente" (click) = "operationsService.nextPhase()">
+                                        <mat-icon>arrow_right</mat-icon>
+                                    </button>
+                                </div>
+                                <div class="timeline-view">
+                                    <section>
+                                        <div *ngFor="let item of toggleOptions" class="example-button-row">
+                                        <button mat-raised-button class= "button-entity">
+                                            <mat-icon svgIcon = "{{item.icon}}"></mat-icon>
+                                        </button>
+                                        </div>
+                                        </section>
+                                    <div class="timeline-view"> Timeline -2</div>
+                                    <div class="timeline-view"> Timeline -3</div>
+                                </div>
+                            </div>
+                            <div class="card-action">
+                                <div class="input-field col s12">
+                                    <button mat-raised-button color='warn' (click) = "resetForm(operationForm)">Limpiar</button>
+                                    <button mat-raised-button right color='accent' (click) = 'addOperation(operationForm)'>Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+    <!-- </div> -->
+</div>
