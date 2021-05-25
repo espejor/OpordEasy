@@ -48,7 +48,6 @@ import { EntitiesDeployedService } from 'src/app/services/entities-deployed.serv
 import { element } from 'protractor';
 import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
 
-
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
 
@@ -107,8 +106,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   
   //-------------------------
 
-
-
   constructor(private elementRef: ElementRef, public entitiesDeployed: EntitiesDeployedService,
     private svgService:SVGUnitsIconsListService) {
     entitiesDeployed.setMapComponent(this);
@@ -150,7 +147,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     features: this.moveFeatures
   })
   
-
   ngOnInit(): void {
     for (var z = 0; z < 18; ++z) {
       // generate resolutions and matrixIds arrays for this WMTS
@@ -189,7 +185,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     //   // rainfall: 500
     // })
 
-
     var coordinates: Coordinate[] = new Array();
     coordinates.push(
       Proj.fromLonLat([-6,39]),
@@ -204,7 +199,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     this.entityLine = new EntityArrow(this,{
       geometry: new LineString(coordinates)
     })
-
 
 
     // this.drag = new Modify({
