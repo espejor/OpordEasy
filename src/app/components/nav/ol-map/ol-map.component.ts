@@ -299,8 +299,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       source: this.shapes
     });
 
-
-
     this.mapEl = this.elementRef.nativeElement.querySelector('#map');
     this.setSize();
     
