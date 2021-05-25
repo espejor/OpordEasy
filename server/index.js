@@ -23,7 +23,12 @@ app.use (cors({origin: 'https://opordeasy.herokuapp.com/',credentials:true}));
 
 // --------- Routes
 app.use('/api/operations',routes)
+// Serve only the static files form the dist directory
+app.use(express.static(__dirname + '/dist/opordeasy'));
 
+app.get('/*', function(req,res) {
+    res.sendFile(path.join(__dirname+'/dist/opordeasy/index.html'));
+});
 
 // Iniciamos el servidos REST API
 app.listen(app.get('port'), () => {
