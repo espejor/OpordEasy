@@ -17,7 +17,7 @@ app.use(morgan('dev'))
 // Para entender el código que viene en formato JSON desde el navegador
 app.use(express.json());
 // Para que el servidor de base de datos se comunique con el servidor de la página
-app.use (cors());
+app.use (cors({origin: 'https://opordeasy.herokuapp.com/'}));
 
 // --------- Routes
 app.use('/api/operations',routes)
