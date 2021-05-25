@@ -19,15 +19,15 @@ app.use(express.json());
 // Para que el servidor de base de datos se comunique con el servidor de la página
 
 // app.use (cors({origin: 'http://localhost:4200'}));
-app.use (cors({origin: 'https://opordeasy.herokuapp.com/',credentials:true}));
+// app.use (cors({origin: 'https://opordeasy.herokuapp.com/',credentials:true}));
 
 // --------- Routes
 app.use('/api/operations',routes)
 // Serve only the static files form the dist directory
-app.use(express.static(__dirname + '/dist/opordeasy'));
+app.use(express.static(__dirname + '/dist'));
 
 app.get('/*', function(req,res) {
-    res.sendFile(path.join(__dirname+'/dist/opordeasy/index.html'));
+    res.sendFile(path.join(__dirname+'/dist/index.html'));
 });
 
 // Iniciamos el servidos REST API
