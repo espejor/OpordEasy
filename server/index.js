@@ -37,7 +37,6 @@ const allowed = [
     '.png',
     '.jpg',
     '.svg',
-    '.html',
     '.ico'
   ];
   
@@ -46,9 +45,9 @@ const allowed = [
      if (allowed.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
         res.sendFile(path.join(__dirname, `../dist/${req.url}`));
      } 
-    //  else {
-    //     res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-    //  }
+     else {
+        res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+     }
   });
 
 
