@@ -20,7 +20,7 @@ app.use(express.json());
 // Para que el servidor de base de datos se comunique con el servidor de la página
 
 // app.use (cors({origin: 'http://localhost:4200'}));
-app.use (cors({origin: 'https://opordeasy.herokuapp.com/',credentials:true}));
+app.use (cors());
 
 // --------- Routes
 app.use('/api/operations',routes)
