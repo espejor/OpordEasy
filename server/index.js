@@ -31,13 +31,13 @@ app.get('*', function(req,res) {
     res.sendFile(path.join(__dirname ,'../dist', 'index.html'));
 });
 
-// const allowed = [
-//     '.js',
-//     '.css',
-//     '.png',
-//     '.jpg',
-//     '.svg'
-//   ];
+const allowed = [
+    '.js',
+    '.css',
+    '.png',
+    '.jpg',
+    '.svg'
+  ];
   
   // Catch all other routes and return the angular index file
   app.get('*', (req, res) => {
