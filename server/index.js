@@ -25,7 +25,7 @@ app.use(express.json());
 // --------- Routes
 app.use('/api/operations',routes)
 // Serve only the static files form the dist directory
-app.use(express.static(__dirname + '/OpordEasyApp/dist'));
+app.use(express.static(__dirname + '/dist/OpordEasyApp'));
 
 app.get('/*', function(req,res) {
     res.sendFile(path.join(__dirname+'/dist/OpordEasyApp/index.html'));
