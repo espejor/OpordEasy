@@ -36,16 +36,19 @@ const allowed = [
     '.css',
     '.png',
     '.jpg',
-    '.svg'
+    '.svg',
+    '.html',
+    '.ico'
   ];
   
   // Catch all other routes and return the angular index file
   app.get('*', (req, res) => {
      if (allowed.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
-        res.sendFile(path.resolve(__dirname, `../dist/${req.url}`));
-     } else {
-        res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-     }
+        res.sendFile(path.join(__dirname, `../dist/${req.url}`));
+     } 
+    //  else {
+    //     res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+    //  }
   });
 
 
