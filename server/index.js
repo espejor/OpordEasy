@@ -25,11 +25,29 @@ app.use(express.json());
 // --------- Routes
 app.use('/api/operations',routes)
 // Serve only the static files form the dist directory
-app.use(express.static(__dirname + '../dist'));
+// app.use(express.static(__dirname + '../dist'));
 
-app.get('/*', function(req,res) {
-    res.sendFile(path.join(__dirname ,'../dist', 'index.html'));
-});
+// app.get('/*', function(req,res) {
+//     res.sendFile(path.join(__dirname ,'../dist', 'index.html'));
+// });
+
+const allowed = [
+    '.js',
+    '.css',
+    '.png',
+    '.jpg',
+    '.svg'
+  ];
+  
+  // Catch all other routes and return the angular index file
+  app.get('*', (req, res) => {
+     if (allowed.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
+        res.sendFile(path.resolve(`../dist/${req.url}`));
+     } else {
+        res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+     }
+  });
+
 
 // Iniciamos el servidos REST API
 app.listen(app.get('port'), () => {
