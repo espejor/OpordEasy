@@ -39,14 +39,14 @@ app.get('*', function(req,res) {
 //     '.svg'
 //   ];
   
-//   // Catch all other routes and return the angular index file
-//   app.get('*', (req, res) => {
-//      if (allowed.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
-//         res.sendFile(path.resolve(`../dist/${req.url}`));
-//      } else {
-//         res.sendFile(path.join(__dirname, '../dist', 'index.html'));
-//      }
-//   });
+  // Catch all other routes and return the angular index file
+  app.get('*', (req, res) => {
+     if (allowed.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
+        res.sendFile(path.resolve(__dirname, `../dist/${req.url}`));
+     } else {
+        res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+     }
+  });
 
 
 // Iniciamos el servidos REST API
