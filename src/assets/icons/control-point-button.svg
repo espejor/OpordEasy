@@ -1,0 +1,6 @@
+<svg width="60" height="60" version='1.1' xmlns="http://www.w3.org/2000/svg">
+  <rect fill="transparent" stroke-width="2" stroke="#000" x="1" y="1" width="58" height="58" id="svg_2" rx="5"/>
+  
+  <path fill="transparent" stroke="black" stroke-width="2" d="m15,6 l30,0 l0,35 l-30,0 l0,-35 z m0,35 l15,15 l15,-15"/>
+  <text fill="#000000" stroke="black" stroke-width="0" x="20" y="34" id="TEXT" font-size="16" font-family="sans-serif" text-anchor="start" xml:space="preserve" font-weight="bold">PD</text>
+</svg>

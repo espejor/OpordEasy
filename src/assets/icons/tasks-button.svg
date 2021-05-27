@@ -1,0 +1,8 @@
+<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Layer 1</title>
+  <rect id="marco" fill="transparent" stroke-width="2" stroke="#000" x="1" y="1" width="58" height="58" rx="5"/>
+  <path id="svg_1" d="m6.66668,38.44696c13.18181,-3.18182 19.0909,-9.54544 27.27269,-21.93182l-4.31817,-2.87879l19.09091,-4.88633l-0.07577,18.21965l-4.16666,-2.0833c-2.17171,4.82323 -8.1313,14.00251 -9.84847,18.93938c-1.71717,4.93686 -2.52525,6.69191 -4.69697,11.51514" opacity="NaN" stroke-width="2" stroke="#000" fill="transparent"/>
+ </g>
+
+</svg>

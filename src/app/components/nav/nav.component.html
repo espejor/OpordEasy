@@ -1,5 +1,5 @@
 <mat-sidenav-container class="sidenav-container">
-  <!-- DRAWER IZQUIERDO -->
+  <!-- DRAWER IZQUIERDO
   <mat-sidenav #leftdrawer class="sidenav" fixedInViewport
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
@@ -8,7 +8,7 @@
     <mat-nav-list>
       <a *ngFor="let item of menuItemsLeft" mat-list-item [routerLink]="'/'+item"> {{item | titlecase}} </a>
     </mat-nav-list>
-  </mat-sidenav>
+  </mat-sidenav> -->
   <!-- DRAWER DERECHO -->
   <mat-sidenav #rightdrawer class="sidenav" fixedInViewport
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
@@ -27,14 +27,14 @@
   <mat-sidenav-content>
     <mat-toolbar color="primary">
       <mat-toolbar-row>
-        <button
+        <!-- <button
           type="button"
           aria-label="Toggle sidenav"
           mat-icon-button
           (click)="leftdrawer.toggle()"
           *ngIf="isHandset$ | async">
           <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-        </button>
+        </button> -->
         <span>OpordEasyApp</span>
         <span class="toolbar-spacer"></span>
         <button

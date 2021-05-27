@@ -1,0 +1,37 @@
+
+.example-button-row {
+    position: absolute;
+    top:150px;
+    left:50px;
+    /* width:300px;
+    height:12px; */
+    z-index: 200;
+    display: table-cell;
+    width: 490px;
+}
+
+.example-flex-container{
+    width: 70px;
+    height: 70px;
+}
+  
+  .example-button-row .mat-button-base {
+    margin: 8px 8px 8px 0;
+  }
+  
+  .example-flex-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .example-button-container {
+    display: flex;
+    justify-content: center;
+    width: 120px;
+  }
+
+  mat-icon{
+      width: 60px;
+      height: 60px;
+  }
