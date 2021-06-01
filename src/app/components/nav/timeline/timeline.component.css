@@ -1,0 +1,19 @@
+.frame{
+    position: absolute;
+    top:100px;
+    right:50px;
+    width:400px;
+    height:400px;
+    z-index: 200;
+    background-color: white;
+    display: table-cell;
+    border-width:1px;
+    border-style: solid;
+    border-color:black;
+    color: black;
+}
+
+.title{
+    padding: 5px;
+    text-align: center;
+}

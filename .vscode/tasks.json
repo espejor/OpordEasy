@@ -1,0 +1,43 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "server",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "Server",
+			"detail": "ng server --o"
+		},
+		{
+			"type": "npm",
+			"script": "e2e",
+			"problemMatcher": [],
+			"label": "npm: e2e",
+			"detail": "ng e2e"
+		},
+		{
+			"type": "npm",
+			"script": "dev",
+			"problemMatcher": [],
+			"label": "DEV",
+			"detail": "nodemon server/index.js"
+		},
+		{
+			"type": "npm",
+			"script": "build",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: build",
+			"detail": "ng build --prod"
+		},
+		{
+			"type": "npm",
+			"script": "build",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "mongoDB",
+			"detail": "mongod"
+		}
+	]
+}

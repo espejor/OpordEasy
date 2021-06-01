@@ -1,14 +1,7 @@
-<div class="container">
+<div class="container"> 
     <!-- <div class="row"> -->
-            <mat-card class="card col-md-12">  
-                <!-- <mat-card-header>
-                    <div mat-card-avatar class="example-header-image"></div>
-                    <mat-card-title>Shiba Inu</mat-card-title>
-                    <mat-card-subtitle>Dog Breed</mat-card-subtitle>
-                </mat-card-header> -->
-                <mat-card-content class="card-content row">
                     <!-- ------ Selector ------ -->
-                    <mat-form-field appearance="fill">
+                    <mat-form-field appearance="outline">
                         <mat-label>Operaciones</mat-label>
                         <mat-select [(ngModel)]="operationsService.selectedOperation" name="operationSelector">
                           <mat-option *ngFor="let operation of operationsService.operations" [value]="operation">
@@ -60,13 +53,11 @@
                             </div>
                             <div class="card-action">
                                 <div class="input-field col s12">
-                                    <button mat-raised-button color='warn' (click) = "resetForm(operationForm)">Limpiar</button>
+                                    <button mat-raised-button color='primary' (click) = "resetForm(operationForm)">Limpiar</button>
                                     <button mat-raised-button right color='accent' (click) = 'addOperation(operationForm)'>Guardar</button>
                                 </div>
                             </div>
                         </div>
                     </form>
-                </mat-card-content>
-            </mat-card>
     <!-- </div> -->
 </div>

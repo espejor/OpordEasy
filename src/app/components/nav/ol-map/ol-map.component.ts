@@ -1,4 +1,4 @@
-import { Component, OnInit,AfterViewInit,Input,ElementRef } from '@angular/core';
+import { Component, OnInit,AfterViewInit,Input,ElementRef, ViewChild } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
@@ -10,6 +10,9 @@ import {getTopLeft} from 'ol/extent'
 import { OSM, Vector} from 'ol/source';
 import { Tile} from 'ol/layer';
 import * as Proj from 'ol/proj';
+// import {register} from 'ol/proj/proj4';
+import * as proj4x from 'proj4';
+
 import { Coordinate, toStringHDMS } from 'ol/coordinate';
 import {
   defaults as defaultControls,
@@ -20,7 +23,7 @@ import {
 import Overlay from 'ol/Overlay'
 import {fromLonLat, get as getProjection} from 'ol/proj';
 import {getWidth} from 'ol/extent';
-import { Collection, Feature, MapBrowserEvent, MapBrowserEventHandler } from 'ol';
+import { Collection, Feature, Graticule, MapBrowserEvent, MapBrowserEventHandler } from 'ol';
 import Point from 'ol/geom/Point';
 import Style from 'ol/style/Style';
 import Icon from 'ol/style/Icon';
@@ -47,6 +50,9 @@ import { Entity } from 'src/app/entities/entity.class';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { element } from 'protractor';
 import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
+import { GraticuleUTM } from 'src/app/utilities/graticule';
+import { UtmService } from 'src/app/services/utm.service';
+import { FloatingMenuComponent } from '../floating-menu/floating-menu.component';
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -64,12 +70,14 @@ export const DEFAULT_LON = -6.895;
 export class OlMapComponent implements OnInit,AfterViewInit {
   @Input() lat: number = DEFAULT_LAT;
   @Input() lon: number = DEFAULT_LON;
-  @Input() zoom: number = 10;
+  @Input() zoom: number = 13;
   @Input() width: string | number = DEFAULT_WIDTH;
   @Input() height: string | number = DEFAULT_HEIGHT;
+  @ViewChild(FloatingMenuComponent)  mainMenu: FloatingMenuComponent;
 
   public map: Map;
   private mapEl: HTMLElement;
+  activatedOperations:boolean = false;
 
   resolutions = [];
   matrixIds = [];
@@ -107,7 +115,8 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   //-------------------------
 
   constructor(private elementRef: ElementRef, public entitiesDeployed: EntitiesDeployedService,
-    private svgService:SVGUnitsIconsListService) {
+    private svgService:SVGUnitsIconsListService,
+    private utmService:UtmService) {
     entitiesDeployed.setMapComponent(this);
     // this.svgService = _svgService;
   }
@@ -118,8 +127,24 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   tileGrid:WMTSTileGrid;
 
   ngAfterViewInit(): void {
-    this.setSize;
+    // this.setSize;
     this.map.setTarget(this.mapEl);
+    this.setCurrentLat(39);
+
+    // const graticule = new GraticuleUTM(this.map,this.utmService).graticule;
+    const graticule = new GraticuleUTM(this.map,this.utmService);
+    // const vectorLines = new VectorSource();
+    // vectorLines.addFeatures(graticule);
+    // const layerGraticule = new VectorLayer({ source:vectorLines})
+
+    // this.map.addLayer(layerGraticule);
+    this.map.addLayer(graticule.getGraticuleLayer());
+
+    // this.activatedOperations = this.mainMenu.activatedOperations
+  }
+
+  catchEvent(activatedOperations){
+    this.activatedOperations = activatedOperations == "activated"? true:false;
   }
 
   private setSize() {
@@ -135,7 +160,22 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   }
   
   public setCurrentLat(lat:Number){
-    this.currentLat = lat;
+    const proj4 = (proj4x as any).default;
+
+    const centerLatLon = this.getCentre()
+    var zone = 1 + Math.floor((centerLatLon[0]+180)/6);
+    proj4.defs("UTM",`+proj=utm +zone=${zone} +ellps=WGS84 +datum=WGS84 +units=m +no_defs `);
+    const converter = proj4(
+      this.proj4326.getCode(),
+      "UTM"
+    );
+    const centerUTM = converter.forward(centerLatLon);
+    // console.log("------------- SRC Projection: " + srcProj + "\n")
+    // register(src);
+    
+    // console.log("------------- coordenadas: " + center)
+    // this.currentLat = lat;
+
   }
 
   drag:Modify = new Modify({
@@ -291,7 +331,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.shapesFeatures.push(this.entityCircle);
     // this.shapesFeatures.push(this.entityTriangle);
     // this.shapesFeatures.push(this.entityFriendly);
-    // this.shapesFeatures.push(this.entityLine);
+    this.shapesFeatures.push(this.entityLine);
 
 
 
@@ -300,7 +340,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     });
 
     this.mapEl = this.elementRef.nativeElement.querySelector('#map');
-    this.setSize();
+    // this.setSize();
     
     this.map = new Map({
       target: 'map',

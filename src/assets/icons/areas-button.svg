@@ -3,6 +3,7 @@
   <title>Layer 1</title>
   <rect id="marco" fill="transparent" stroke-width="2" stroke="#000" x="1" y="1" width="58" height="58" rx="5"/>
   <path id="svg_1" d="m8,41.66667c5.77777,9.81482 13.55555,10.66667 26.88889,8.11111c13.33333,-2.55556 16.88888,-2.77779 19.11111,-8.77778c2.22222,-6 2.22221,-11.11111 -0.44445,-18.77778c-2.66666,-7.66667 -4.77777,-11.83334 -11.77777,-10.88889c-7,0.94445 -8.16666,5.75 -14.83333,5.30556c-6.66667,-0.44444 -9.72223,-3.02778 -12.94445,-0.86111c-6.44444,4.33333 -11.77777,16.07407 -6,25.88889z" stroke-width="2" stroke="#000" fill="none"/>
+  <text fill="#000000" stroke="black" stroke-width="0" x="18" y="35" id="TEXT" font-size="16" font-family="sans-serif" text-anchor="start" xml:space="preserve" font-weight="bold">AA</text>
  </g>
 
 </svg>

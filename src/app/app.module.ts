@@ -34,6 +34,8 @@ import { UnitSelectorDialogLoaderComponent } from './components/unit-selector-di
 import { PointSelectorDialogLoaderComponent } from './components/point-selector-dialog-loader/point-selector-dialog-loader.component';
 import { PointSelectorComponent } from './components/point-selector/point-selector.component';
 import { FloatingButtonsComponent } from './components/nav/floating-buttons/floating-buttons.component';
+import { TimelineComponent } from './components/nav/timeline/timeline.component';
+import { FloatingMenuComponent } from './components/nav/floating-menu/floating-menu.component';
 
 export function HttpLoaderFactory(http:HttpClient){
   return new TranslateHttpLoader(http);
@@ -52,7 +54,9 @@ export function HttpLoaderFactory(http:HttpClient){
     UnitSelectorDialogLoaderComponent,
     PointSelectorComponent,
     PointSelectorDialogLoaderComponent,
-    FloatingButtonsComponent
+    FloatingButtonsComponent,
+    TimelineComponent,
+    FloatingMenuComponent
   ],
   imports: [
     BrowserModule,

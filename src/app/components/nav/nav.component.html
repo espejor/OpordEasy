@@ -1,4 +1,4 @@
-<mat-sidenav-container class="sidenav-container">
+<!-- <mat-sidenav-container class="sidenav-container"> -->
   <!-- DRAWER IZQUIERDO
   <mat-sidenav #leftdrawer class="sidenav" fixedInViewport
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
@@ -10,7 +10,7 @@
     </mat-nav-list>
   </mat-sidenav> -->
   <!-- DRAWER DERECHO -->
-  <mat-sidenav #rightdrawer class="sidenav" fixedInViewport
+  <!-- <mat-sidenav #rightdrawer class="sidenav" fixedInViewport
       [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
       [mode]="(isHandset$ | async) ? 'over' : 'side'"
 
@@ -23,10 +23,10 @@
       <app-operations></app-operations>
     </div>
 
-  </mat-sidenav>
-  <mat-sidenav-content>
+  </mat-sidenav> -->
+  <!-- <mat-sidenav-content>
     <mat-toolbar color="primary">
-      <mat-toolbar-row>
+      <mat-toolbar-row> -->
         <!-- <button
           type="button"
           aria-label="Toggle sidenav"
@@ -35,7 +35,7 @@
           *ngIf="isHandset$ | async">
           <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
         </button> -->
-        <span>OpordEasyApp</span>
+        <!-- <span>OpordEasyApp</span>
         <span class="toolbar-spacer"></span>
         <button
           type="button"
@@ -43,7 +43,7 @@
           mat-icon-button
           (click)="rightdrawer.toggle()"
           >
-          <!-- *ngIf="isHandset$ | async" -->
+          *ngIf="isHandset$ | async"
           <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
         </button>
       </mat-toolbar-row>
@@ -73,10 +73,10 @@
           <button mat-menu-item>Item 2</button>
         </mat-menu>
       </mat-toolbar-row>
-    </mat-toolbar>
+    </mat-toolbar>-->
 
     <ol-map></ol-map>
     <router-outlet></router-outlet>
 
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  <!-- </mat-sidenav-content>
+</mat-sidenav-container>  -->

@@ -1,5 +1,18 @@
 .map{
     height: 100%;
+    width: 100%;
+}
+
+.title{
+    position: absolute;
+    top: 10px;
+    left: 125px;
+    font-style: italic;
+    font-weight: bold;
+    color: green;
+}
+.copyright{
+    font-size: small;
 }
 
 .ol-popup{

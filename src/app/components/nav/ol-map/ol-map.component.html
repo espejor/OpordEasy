@@ -8,3 +8,10 @@
 <!-- </div> -->
 
 <app-floating-buttons></app-floating-buttons>
+<app-floating-menu (emitter) = "catchEvent($event)"></app-floating-menu>
+
+<div *ngIf = "activatedOperations">
+    <app-timeline></app-timeline>
+</div>
+
+<h1 class="title">OpordEasy <span class="copyright">©JER</span></h1>
