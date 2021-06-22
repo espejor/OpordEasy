@@ -12,57 +12,83 @@ import { Entity, EntityOptions } from "./entity.class";
 import ImageStyle from "ol/style/Image";
 import { SVGUnitsIconsListService } from "../services/svg-units-icons-list.service";
 import { PointOptions } from "../components/point-selector/point-selector.component";
+import { Coordinate } from "ol/coordinate";
+import GeometryType from "ol/geom/GeometryType";
+import { entityType } from "./entitiesType";
 
 export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
-
   public image: ImageStyle;
   public lineColor: Color = [0,0,0];
   public lineWidth: number = 2;
+  location: Coordinate
 
+  // features of text
   public textLine: string = "";
   public textColor: Color = [255,255,255];
-  // features of text
   private placement = "point";
   public textAlign = "center";
   public textBaseline = "center";
   public scale = 1.5;
   public rotateWithView = false;
 
-    constructor(public mapComponent: OlMapComponent,entityOptions:EntityOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
-      super(mapComponent,opt_geometryOrProperties);
-      this.map = mapComponent.map;
-    }
+  constructor(svgService: SVGUnitsIconsListService,entityOptions:EntityOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
+    super(svgService,opt_geometryOrProperties,id);
+    this.entityType = entityType.point
 
-    
-    public getStyle(): Style{
-      this.style = new Style({
-        image: this.image,      
-        text: new Text({
-          text: this.textLine,
-          placement: this.placement,
-          textAlign: this.textAlign,
-          textBaseline: this.textBaseline,
-          rotateWithView: this.rotateWithView,
-          scale: this.scale,
-          stroke: new Stroke({
-            color: this.textColor
-          })
-        }),
+    this.location = this.getCoordinates();
+  }
+
+  getEntityGeometry():Point{
+      return <Point>super.getGeometry();
+  }
+
+  getCoordinates():Coordinate{
+    return this.getEntityGeometry().getCoordinates();
+  }
+
+  getLocation(): Coordinate{
+    return <Coordinate>this.location
+  }
+
+  setLocation(coordinates:Coordinate){
+    this.location = coordinates;
+  }
+  
+  public getStyle(): Style{
+    this.style = new Style({
+      image: this.image,      
+      text: new Text({
+        text: this.textLine,
+        placement: this.placement,
+        textAlign: this.textAlign,
+        textBaseline: this.textBaseline,
+        rotateWithView: this.rotateWithView,
+        scale: this.scale,
         stroke: new Stroke({
-          color: this.lineColor,
-          width: this.lineWidth
-        }),
-        fill: new Fill({
-          color: [255,0,0]
+          color: this.textColor
         })
-      });
-      return this.style;
-    }
-    
+      }),
+      stroke: new Stroke({
+        color: this.lineColor,
+        width: this.lineWidth
+      }),
+      fill: new Fill({
+        color: [255,0,0]
+      })
+    });
+    return this.style;
+  }
+  
+  // getCoordinate():Coordinate{
+  //   return this.coordinates[0];
+  // }
 
-    public getLocation(){
-      return Proj.toLonLat((<Point>this.getGeometry()).getCoordinates());
-    }    
-    // Métodos handle event no declarados en la Clase padre   
-    onMouseUp(ev:MouseEvent):void{};
+  // public getLocation(){
+  //   return Proj.toLonLat((<Point>this.getGeometry()).getCoordinates());
+  // }    
+  // Métodos handle event no declarados en la Clase padre   
+  onMouseUp(ev:MouseEvent):void{};
+
+
+  
 }

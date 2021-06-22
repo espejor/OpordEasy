@@ -1,0 +1,14 @@
+.favorites-container{
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+}
+
+#modal-footer{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button-modal{
+    margin: 5px;
+}

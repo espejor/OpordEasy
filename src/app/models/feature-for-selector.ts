@@ -1,23 +1,36 @@
+import { extend } from "ol/extent";
 
 export class FeatureForSelector {
   [x: string]: any;
   public selectorText:string;
-  public classCSS?:string = "selector"
-  public svg:{
-    type: string,
-    x: string,
-    y:string,
-    fill:string
-    stroke:string,
-    strokeWidth:string,
+  public classCSS?:string = "unSelected"
+  public svg:SVGPath;
+}
+
+class SVG{
+    type: string;
+    x: string;
+    y:string;
+    fill:string;
+    stroke:string;
+    strokeWidth:string;
+    text?:string;
+    font?:string;
+    font_Family?:string;
+}
+class SVGPath extends SVG{
     d?:{
-      friendly:string,
-      enemy?:string,
-      unknown?:string,
-      neutral?:string
+      friendly:string;
+      enemy?:string
+      unknown?:string;
+      neutral?:string;
     }
-    text?:string
-    font?:string,
-    font_Family?:string
-  }
+}
+class SVGText extends SVG{
+  text:string
+}
+
+export class TextFeatureForSelector extends FeatureForSelector{
+  value:string
+  public svg:SVGText
 }

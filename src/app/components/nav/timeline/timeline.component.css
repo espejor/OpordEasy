@@ -17,3 +17,13 @@
     padding: 5px;
     text-align: center;
 }
+
+.timeline-row {
+    display: inline-flex;
+    /* width: 490px; */
+  }
+  
+  .button-entity{
+    background-color: antiquewhite;
+
+  }

@@ -5,6 +5,7 @@ import Icon from "ol/style/Icon";
 import IconAnchorUnits from "ol/style/IconAnchorUnits";
 import Style from "ol/style/Style";
 import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
+import { entityType } from "./entitiesType";
 import { EntityComplex } from "./entity-complex.class";
 import { EntityPoint } from "./entity-point.class";
 
@@ -15,8 +16,9 @@ export class EntityControlPoint<GeomType extends Geometry = Geometry>  extends E
   private styleExited:Style;
 
   
-  constructor(public mapComponent: OlMapComponent,entityComplex:EntityComplex,opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
-    super(mapComponent,null,opt_geometryOrProperties);
+  constructor(entityComplex:EntityComplex,opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
+    super(null,null,opt_geometryOrProperties);
+    this.entityType = entityType.controlPoint
     this.entityComplex = entityComplex;
     this.createStyles();
     this.setStyle(this.styleExited);

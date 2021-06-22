@@ -3,38 +3,78 @@
     <header id="modal-header">
         <h1 id="modal-title">Selección de Unidades</h1>
     </header>
-     <!-- SELECTOR -->
-    <mat-form-field appearance="fill">
-        <mat-label>Opciones</mat-label>
-        <mat-select  name="optionSelector" [(ngModel)] = "setFeaturesToSelect" >
-            <mat-option *ngFor="let option of listOfOptions | keyvalue:unsorted" [value]= "option.key"> 
-            {{option.value}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+
+
     <!-- CUERPO WINDOW -->
     <section id="modal-body">
         <!-- RESULTADO ELECCIÓN-->
-        <mat-card class="unit-result">  
+        <div class="unit-result">  
             <!-- <mat-icon svgIcon = "{{unitResultIconName}}" class="icon-selector"></mat-icon> -->
-        <svg #svg
-            xmlns="http://www.w3.org/2000/svg"
-            width='200' height='200' version='1.1'>
-        </svg>
-        </mat-card>
-        <!-- OPCIONES -->
-        <mat-card>
-            <div   *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
-                <div  (click) = "addFeature(feature)" [class] = "feature.value.classCSS">
-                    <mat-icon svgIcon = "{{feature.key}}" class="icon-selector" ></mat-icon>
-                    <div class="text-selector">{{feature.value.selectorText}}</div>
-                </div>
+            <div id="svg">
+                <svg #svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width='100%' height='100%' version='1.1'>
+                </svg>
             </div>
-        </mat-card>  
+        </div>
+        <!-- OPCIONES -->    
+        <!-- -- SELECTOR DE UNIDADES GUARDADAS -->
+        <div  class="unit-selector">
+            <mat-tab-group class="tab-group">
+                <mat-tab class="tab-label" label="Nuevo">
+                    <!-- <div class="new-unit"> -->
+                        <!-- SELECTOR -->
+                        <mat-form-field class="select-combo">
+                            <mat-label>Opciones</mat-label>
+                            <mat-select  name="optionSelector" [(ngModel)] = "setFeaturesToSelect" >
+                                <mat-option *ngFor="let option of listOfOptions | keyvalue:unsorted" [value]= "option.key"> 
+                                    {{option.value}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                            <div *ngIf = "setFeaturesToSelect != 'sectionAdd'; else textOptions" class="features-container">
+                                <div  *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
+                                    <div  (click) = "addFeature(feature)" [class] = "feature.value.classCSS">
+                                        <mat-icon svgIcon = "{{feature.key}}" class="icon-selector" ></mat-icon>
+                                        <div class="text-selector">{{feature.value.selectorText}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ng-template #textOptions>
+                                <div class="features-container">
+                                    <form>
+                                        <div  *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
+                                            <mat-form-field  >
+                                                <mat-label>{{feature.value}}</mat-label>
+                                                <input matInput placeholder="Designación" (change) = "updateFeature($event)" value ="">
+                                            </mat-form-field>
+                                        </div>
+                                    </form>
+                                </div>
+                            </ng-template>
+                        <!-- BOTONES -->
+                        <footer id="modal-footer">         
+                            <div id="favorite">
+                                <mat-checkbox class="favorite"
+                                [(ngModel)]="favorite">
+                                    Agregar a Favorito
+                                </mat-checkbox>
+                            </div>               
+                            <button mat-raised-button class= 'button-modal' id="modal-action-button" (click)=saveUnit() >Crear</button>
+                        </footer> 
+                    <!-- </div> -->
+                </mat-tab>
+                <mat-tab label="Favoritos">
+                    <app-favorite-selector [createSVG] = "createSVGCall" [type] = "'fav'"></app-favorite-selector>
+                </mat-tab>
+                <mat-tab label="Recientes"> 
+                    <app-favorite-selector [createSVG] = "createSVGCall"  [type] = "'rec'"></app-favorite-selector>
+                </mat-tab>
+            </mat-tab-group>
+        </div> 
     </section>
-    <!-- BOTONES -->
-    <footer id="modal-footer">
-        <button mat-dialog-close mat-raised-button class= 'button-modal' id="modal-cancel-button" >Cancelar</button>
-        <button mat-dialog-close mat-raised-button class= 'button-modal' id="modal-action-button" (click)=saveUnit() >Crear</button>
-    </footer>
+
+    <footer id="modal-footer">               
+        <button mat-dialog-close mat-raised-button class= 'button-modal' id="modal-action-button" (click)=insertUnit() >Insertar</button>
+    </footer> 
 </div>

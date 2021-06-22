@@ -1,0 +1,7 @@
+<div class="favorites-container">
+    <div *ngFor="let entity of listOfEntities">
+        <div  (click) = "updateModel(entity)">
+            <app-entity-unit-selector-card [entity] = entity></app-entity-unit-selector-card>
+        </div>
+    </div>
+</div>

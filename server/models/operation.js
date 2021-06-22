@@ -12,16 +12,22 @@ const OperationSchema = new Schema ({
         name: { type: String, required :true},
         timelines:[{
             entities: [{
-                entity: { 
-                    entityType: String
-                 }
+                type: Schema.Types.ObjectId,
+                ref: "Entity"
             }]
         }],
         layout: [{
-            entityType: String,
-            coordinates: [[Number,Number]]
+            entity:{
+                type: Schema.Types.ObjectId,
+                ref: "Entity"
+            },
+            location:[]
         }]
     }],
+    comboEntities: [{
+        type: Schema.Types.ObjectId,
+        ref: "Entity"
+    }]
 
     // user: { 
     //     firstName: {type: String, required: true},

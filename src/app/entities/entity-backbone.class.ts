@@ -4,10 +4,10 @@ import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
 import { EntityLine } from "./entity-line.class";
 
 export class EntityBackBone<GeomType extends Geometry = Geometry> extends EntityLine{
-    public features:Feature[]
+    // public features:Feature[]
 
-    constructor(public mapComponent: OlMapComponent,features: Feature[],opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
-        super(mapComponent,opt_geometryOrProperties);
-        this.features = features;
+    constructor(features: Feature[],opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
+        super(opt_geometryOrProperties);
+        // this.features = features;
       }
 }

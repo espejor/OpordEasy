@@ -8,6 +8,7 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { FormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -23,11 +24,10 @@ import { HeaderComponent } from './components/header/header.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
-import { routing } from './app.routing';
 import { TranslationComponent } from './components/translation/translation.component';
 import { OperationsComponent } from './components/nav/operations/operations.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule }  from '@angular/material/select';
 import { UnitSelectorComponent } from './components/unit-selector/unit-selector.component';
 import { UnitSelectorDialogLoaderComponent } from './components/unit-selector-dialog-loader/unit-selector-dialog-loader.component';
@@ -36,6 +36,14 @@ import { PointSelectorComponent } from './components/point-selector/point-select
 import { FloatingButtonsComponent } from './components/nav/floating-buttons/floating-buttons.component';
 import { TimelineComponent } from './components/nav/timeline/timeline.component';
 import { FloatingMenuComponent } from './components/nav/floating-menu/floating-menu.component';
+import { GhostElementComponent } from './components/nav/ghost-element/ghost-element.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { EntityInTimelineComponent } from './components/nav/entity-in-timeline/entity-in-timeline.component';
+import { FavoriteSelectorComponent } from './components/nav/favorite-selector/favorite-selector.component';
+import { EntityUnitSelectorCardComponent } from './components/nav/entity-unit-selector-card/entity-unit-selector-card.component';
+import { RecentSelectorComponent } from './components/nav/recent-selector/recent-selector.component';
+import { PhaseComponent } from './components/nav/phase/phase.component';
+
 
 export function HttpLoaderFactory(http:HttpClient){
   return new TranslateHttpLoader(http);
@@ -56,7 +64,13 @@ export function HttpLoaderFactory(http:HttpClient){
     PointSelectorDialogLoaderComponent,
     FloatingButtonsComponent,
     TimelineComponent,
-    FloatingMenuComponent
+    FloatingMenuComponent,
+    GhostElementComponent,
+    EntityInTimelineComponent,
+    FavoriteSelectorComponent,
+    EntityUnitSelectorCardComponent,
+    RecentSelectorComponent,
+    PhaseComponent
   ],
   imports: [
     BrowserModule,
@@ -68,6 +82,7 @@ export function HttpLoaderFactory(http:HttpClient){
     MatToolbarModule,
     MatButtonModule,
     MatButtonToggleModule,
+    MatCheckboxModule,
     MatDialogModule,
     MatInputModule,
     MatSidenavModule,
@@ -77,7 +92,9 @@ export function HttpLoaderFactory(http:HttpClient){
     MatCardModule,
     MatSnackBarModule,
     MatSelectModule,
+    MatTabsModule,
     HttpClientModule,
+    DragDropModule,
     // routing,
     // RouterModule.forRoot(routing),
     TranslateModule.forRoot({

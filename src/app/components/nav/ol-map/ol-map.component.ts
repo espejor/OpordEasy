@@ -1,4 +1,4 @@
-import { Component, OnInit,AfterViewInit,Input,ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit,AfterViewInit,Input,ElementRef, ViewChild, Renderer2 } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
@@ -35,7 +35,7 @@ import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
 import Modify from 'ol/interaction/Modify';
-import Translate from 'ol/interaction/Translate';
+import Translate, { TranslateEvent } from 'ol/interaction/Translate';
 import Geometry from 'ol/geom/Geometry';
 import BaseEvent from 'ol/events/Event';
 import { EventsKey, Listener, ListenerFunction } from 'ol/events';
@@ -53,6 +53,13 @@ import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.
 import { GraticuleUTM } from 'src/app/utilities/graticule';
 import { UtmService } from 'src/app/services/utm.service';
 import { FloatingMenuComponent } from '../floating-menu/floating-menu.component';
+import { on } from 'node:events';
+import { Console } from 'node:console';
+import { GhostElementComponent } from '../ghost-element/ghost-element.component';
+import { OperationsService } from 'src/app/services/operations.service';
+import { features } from 'node:process';
+import { EntitiesService } from 'src/app/services/entities.service';
+import { OperationsComponent } from '../operations/operations.component';
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -74,10 +81,11 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   @Input() width: string | number = DEFAULT_WIDTH;
   @Input() height: string | number = DEFAULT_HEIGHT;
   @ViewChild(FloatingMenuComponent)  mainMenu: FloatingMenuComponent;
+  // @ViewChild("ghostElement") ghostFeature: ElementRef
+  @ViewChild(OperationsComponent) operationComponent: OperationsComponent;
 
   public map: Map;
   private mapEl: HTMLElement;
-  activatedOperations:boolean = false;
 
   resolutions = [];
   matrixIds = [];
@@ -110,26 +118,33 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   shapesFeatures: Collection<Feature<Geometry>> = new Collection<Feature<Geometry>>();
   public shapes: Vector<Geometry> = new VectorSource({features: this.shapesFeatures});
   friendly: Style;
+  featureDragging: Overlay;
+  isMovingCopyFeature: boolean;
+  tileGrid:WMTSTileGrid;
   // svgService: SVGIconsListService;
   
   //-------------------------
 
-  constructor(private elementRef: ElementRef, public entitiesDeployed: EntitiesDeployedService,
+  constructor(private elementRef: ElementRef, 
+    public entitiesDeployedService: EntitiesDeployedService,
     private svgService:SVGUnitsIconsListService,
-    private utmService:UtmService) {
-    entitiesDeployed.setMapComponent(this);
+    private utmService:UtmService,
+    private renderer: Renderer2,
+    public operationsService:OperationsService,
+    private entitiesService:EntitiesService) {
+    entitiesDeployedService.setMapComponent(this);
     // this.svgService = _svgService;
   }
   // attribution = new Attribution({
   //   html: 'Teselas de PNOA cedido por © Instituto Geográfico Nacional de España'
   // });
 
-  tileGrid:WMTSTileGrid;
 
   ngAfterViewInit(): void {
     // this.setSize;
     this.map.setTarget(this.mapEl);
     this.setCurrentLat(39);
+    // this.isMovingCopyFeature = this.ghostElement.isMovingCopyFeature;
 
     // const graticule = new GraticuleUTM(this.map,this.utmService).graticule;
     const graticule = new GraticuleUTM(this.map,this.utmService);
@@ -144,7 +159,13 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   }
 
   catchEvent(activatedOperations){
-    this.activatedOperations = activatedOperations == "activated"? true:false;
+    this.operationsService.activatedOperations = activatedOperations == "activated";
+    if(this.operationsService.activatedOperations){
+      // deactivate drag
+      this.map.removeInteraction(this.drag);
+    }else{
+      this.map.addInteraction(this.drag);
+    }
   }
 
   private setSize() {
@@ -186,6 +207,12 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   move:Translate = new Translate({
     features: this.moveFeatures
   })
+
+    
+  // modify:Modify = new Modify({
+  //   features: this.moveFeatures
+  // })
+
   
   ngOnInit(): void {
     for (var z = 0; z < 18; ++z) {
@@ -236,7 +263,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       Proj.fromLonLat([-6.5,39]));
   
 
-    this.entityLine = new EntityArrow(this,{
+    this.entityLine = new EntityArrow({
       geometry: new LineString(coordinates)
     })
 
@@ -331,7 +358,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.shapesFeatures.push(this.entityCircle);
     // this.shapesFeatures.push(this.entityTriangle);
     // this.shapesFeatures.push(this.entityFriendly);
-    this.shapesFeatures.push(this.entityLine);
+    // this.shapesFeatures.push(this.entityLine);
 
 
 
@@ -388,7 +415,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     });
 
     
-    this.entityAxe = new EntityAxe(this,coordinatesShape);
+    this.entityAxe = new EntityAxe(coordinatesShape);
 
 
     // this.entityCircle.setStyle(this.circle);
@@ -396,8 +423,26 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.entityFriendly.setStyle(this.friendly);
     // this.entityLine.setStyle([this.lineStyle]);
 
+
+    this.move.on("moveend",evt => {
+    })
+
     this.map.addInteraction(this.drag);
     this.map.addInteraction(this.move);
+    // this.map.addInteraction(this.modify);
+
+    this.drag.on("modifyend",(evt:TranslateEvent) => {
+      evt.features.forEach(feature => {
+        // Guardar las nuevas coordenadas en la BD
+        this.entitiesService.updateCoordinates(<EntityPoint>feature).subscribe(
+          data => {
+            console.log(data);
+          }
+        );
+        this.operationsService.updateEntityPositionInOperation(this.operationsService.selectedOperation,<EntityPoint>feature)
+        // (<EntityPoint>feature).setCoordinates(this.entitiesService,(<EntityPoint>feature).getCoordinates())
+      })
+    }) 
     // this.map.addInteraction(this.mouseup);
 
     // this.entityTriangle
@@ -454,41 +499,67 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     var container = document.getElementById ("popup");
     var content = document.getElementById ("popup-content");
     var closer = document.getElementById ("popup-closer");
-    const featureDragging = new Overlay({
+    self.featureDragging = new Overlay({
       element:content,
       autoPan:true,
       autoPanAnimation:{duration:250}
     })
 
-    this.map.addOverlay(featureDragging);
+    this.map.addOverlay(this.featureDragging);
 
-    var click = this.map.on("singleclick",function (evt:MapBrowserEvent){
+    // this.map.on("pointermove",(evt:MapBrowserEvent) => {
+      
+    //   if (this.isMovingCopyFeature){
+    //     featureDragging.setPosition(evt.coordinate);
+    //   }
+    // })
+
+    this.map.addEventListener("mousedown",(ev:Event):boolean => {
+      return false
+    });
+
+
+    this.map.on("mousedown",(evt:MapBrowserEvent)=> {
+      console.log("PINCHANDOOOOOOOOOOOOOOOOOOO");
+
+    });
+
+    this.map.on("singleclick", (evt:MapBrowserEvent) =>{
       var entity:Entity;
-      var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
+      var hit = this.map.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
         // feature.onMouseOver(evt);
         entity = feature;
         return true;
       }); 
       if (hit) {
-        if(entity.entityOptions){
-          var coordinate = evt.coordinate;
-          var hdms = toStringHDMS(Proj.toLonLat(coordinate));
-          console.log("Pinchando en :" + hdms + entity)
-          // var svgService = this.svgService;
-          content.innerHTML = "<p>" + self.svgService.createSVG(entity.entityOptions,0.50) + "</p>";
-          featureDragging.setPosition(coordinate);
-          evt.stopPropagation()
-        }
+        // if(!this.isMovingCopyFeature){
+          // this.isMovingCopyFeature = true;
+          if(entity.entityOptions){
+            // var coordinate = evt.pixel;
+            // var hdms = toStringHDMS(Proj.toLonLat(coordinate));
+            // console.log("Pinchando en :" + hdms + entity)
+            // var svgService = this.svgService;
+            // this.ghostElement.update(evt.pixel,entity)
+            this.operationsService.addEntityToTimeline(entity);
+            // this.ghostFeature.nativeElement.left = evt.pixel[0];
+            // this.ghostFeature.nativeElement.top = evt.pixel[1];
+            // this.featureDragging.setPosition(coordinate);
+            evt.stopPropagation()
+          }
+        // }else{
+          // this.isMovingCopyFeature = false;
+        // }
         // return true;
       } else {
-        featureDragging.setPosition(undefined);
+        this.featureDragging.setPosition(undefined);
+          this.isMovingCopyFeature = false;
         // closer.blur();
         // return false;    
       }
       
     })
 
-    var dblclick = this.map.on("dblclick",function (evt:MapBrowserEvent){
+    this.map.on("dblclick",function (evt:MapBrowserEvent){
         var coordinate = evt.coordinate;
         var hdms = toStringHDMS(Proj.toLonLat(coordinate));
         console.log("doble click en :" + hdms)
@@ -512,6 +583,12 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // })
 
   } // NgOnInit
+
+
+  on(type: 'mousedown', listener: (evt: BaseEvent) => void): void{
+
+  }
+
 } // class OlMapComponent
 
   const cssUnitsPattern = /([A-Za-z%]+)$/;
@@ -523,6 +600,4 @@ function coerceCssPixelValue(value: any): string {
 
   return cssUnitsPattern.test(value) ? value : `${value}px`;
 }
-
-
 

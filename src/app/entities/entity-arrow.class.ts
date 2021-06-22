@@ -5,11 +5,13 @@ import Icon from "ol/style/Icon";
 import IconAnchorUnits from "ol/style/IconAnchorUnits";
 import Style from "ol/style/Style";
 import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
+import { entityType } from "./entitiesType";
 import { EntityLine } from "./entity-line.class";
 
 export class EntityArrow<GeomType extends Geometry = Geometry> extends EntityLine{
-    constructor(public mapComponent: OlMapComponent,opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
-        super(mapComponent,opt_geometryOrProperties);
+    constructor(opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
+        super(opt_geometryOrProperties);
+        this.entityType = entityType.arrow
     }
     
     public rotationOfTip(): Number{

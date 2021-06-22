@@ -1,17 +1,27 @@
-<div id="map" class="map"></div>
+<div id="layerInteraction" ><div id="map" class="map"></div>
+</div>
+
+<h1 class="title">OpordEasy <span class="copyright">©JER</span></h1>
+<div *ngIf = "operationsService.selectedOperation.name; else operationEmpty">
+    <h1 class="operation-selected">Operación: {{ operationsService.selectedOperation.name }}</h1>
+</div>
+<ng-template #operationEmpty>
+    <h1 class="operation-selected">Sin operación seleccionada</h1>
+</ng-template>
+
 <p> {{currentLong}} {{currentLat}}</p>  
 <!-- <p> {{entityFriendly.getEnd | json}} </p> -->
 
 <!-- <div class="ol-popup" id="popup">
     <a href="#" class="ol-popup-closer" id="popup-closer">    </a> -->
-<div id="popup-content"></div>
 <!-- </div> -->
 
 <app-floating-buttons></app-floating-buttons>
 <app-floating-menu (emitter) = "catchEvent($event)"></app-floating-menu>
 
-<div *ngIf = "activatedOperations">
-    <app-timeline></app-timeline>
+<div *ngIf = "operationsService.activatedOperations">
+    <app-operations></app-operations>
 </div>
 
-<h1 class="title">OpordEasy <span class="copyright">©JER</span></h1>
+<app-ghost-element></app-ghost-element>
+

@@ -1,23 +1,86 @@
+mat-dialog-container{
+    padding: 10px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .mat-tab-body-content{
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
 #modal-content-wrapper{
     display: flex;
     flex-direction: column;
+    height: 90%;
+    overflow: hidden;
 }    
 
 #modal-body{
     display: flex;
+    overflow: hidden;
+    /* overflow: auto; */
+}
+.features-container{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    /* flex: 4; */
+    justify-content: flex-start;
+    height: 100%;
+    overflow: auto;
+}
+/* 
+#svg{
+    height: 90%;
+} */
+
+#favorite{
+    height: 37px;
+    border-width: 1px;
+    border-color: black;
+    border-radius: 5px;
+    border-style: solid;
+    padding: 6px;
+    background: white;
+    margin-right: 5px;
 }
 
 mat-card{
     background-color: silver;
-    flex: 1;
-    display: flex;
+    /* flex: 1; */
+    /* display: flex; */
     flex-wrap: wrap;
-    width: "300px";
+    width: "50%";
+    padding: 5px;
 }
 .unit-result{
-    background-color: darkgray;
+    background-color: darkseagreen;
     height: "300px";
+    width: 40%;
+    display: flex;
+    align-content: space-between;
 }
+
+.unit-selector{
+    height: "300px";
+    width: 60%;
+    
+}
+
+.mat-tab-label{
+    padding: 0px;
+    min-width: 33%;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+/* 
+.new-unit{
+    display: inline-grid;
+} */
 
 .selector, .selectorSelected{
     color: black;
@@ -30,9 +93,18 @@ mat-card{
     padding-bottom: 0px;
     /* flex: 1; */
     display: flexbox;
+    margin: 2px;
+    border-radius: 5px;
 }
 .selectorSelected{
     background-color: darkkhaki;
+}
+
+.tab-group{
+    background-color: darkgray;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
 }
 
 .icon-selector{
@@ -59,7 +131,18 @@ footer{
     flex: 1;
 }
 
+.select-combo{
+    /* height: 100%; */
+    width: 100%;
+}
+
 mat-icon{
     align-items: center;
     width: 80px;
+}
+
+app-favorite-selector{
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }

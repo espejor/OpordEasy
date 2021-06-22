@@ -12,7 +12,7 @@ export class UnitSelectorDialogLoaderComponent implements OnInit {
     public dialog: MatDialog,
     private openModalService:OpenModalService) {
       
-    this.openModalService.openDialog(UnitSelectorComponent,"600px"); 
+    this.openModalService.openDialog(UnitSelectorComponent,"60%","75%"); 
   }
   
   ngOnInit(): void {

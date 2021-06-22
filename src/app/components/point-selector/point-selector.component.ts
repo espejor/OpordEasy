@@ -1,9 +1,11 @@
 import { KeyValue } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { Coordinate } from 'ol/coordinate';
 import Point from 'ol/geom/Point';
 import { EntityPoint } from 'src/app/entities/entity-point.class';
 import { EntityOptions } from 'src/app/entities/entity.class';
 import { FeatureForSelector } from 'src/app/models/feature-for-selector';
+import { EntityLocated } from 'src/app/models/operation';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { SvgGeneralIconsListService } from 'src/app/services/svg-general-icons-list.service';
 import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
@@ -37,9 +39,10 @@ export class PointSelectorComponent implements OnInit {
   
   savePoint(){
     const mapComponent = this.entitiesDeployed.getMapComponent(); 
-    const coordinates = mapComponent.map.getView().getCenter();
-    const point = new EntityPoint(mapComponent, this.pointOptions,{geometry: new Point(coordinates)});
-    this.entitiesDeployed.addNewEntity(point);
+    const coordinates:Coordinate[] = [];
+    coordinates[0] = mapComponent.map.getView().getCenter();
+    const point = new EntityPoint(null, this.pointOptions,{geometry: new Point(coordinates[0])});
+    this.entitiesDeployed.addNewEntity(new EntityLocated(point),coordinates);
   }
 }
 

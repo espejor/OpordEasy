@@ -7,16 +7,17 @@
     height:12px; */
     z-index: 200;
     display: table-cell;
+    width: 8%;
     /* width: 490px; */
 }
 
 .example-flex-container{
-    width: 70px;
-    height: 70px;
+    width: 100%;
+    /* height: 100%; */
 }
   
   .example-button-row .mat-button-base {
-    margin: 8px 8px 8px 0;
+    /* margin: 8px 8px 8px 0; */
   }
   
   .example-flex-container {
@@ -31,7 +32,12 @@
     width: 120px;
   }
 
+  .mat-icon-button{
+    width: 100%;
+    height: 100%;
+  }
+
   mat-icon{
-      width: 60px;
-      height: 60px;
+      width: 100%;
+      height: 100%;
   }

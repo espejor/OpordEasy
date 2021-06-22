@@ -8,6 +8,7 @@ import { Color } from "ol/color";
 import Stroke from "ol/style/Stroke";
 import LineString from "ol/geom/LineString";
 import { Entity } from "./entity.class";
+import { entityType } from "./entitiesType";
 
 export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     // private style: Style;
@@ -25,8 +26,9 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     private lineJoin:CanvasLineJoin = "round";
     public rotateWithView = false;
 
-    constructor(mapComponent: OlMapComponent,opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
-      super(mapComponent,opt_geometryOrProperties);
+    constructor(opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
+      super(null,opt_geometryOrProperties,id);
+      this.entityType = entityType.line
     }
 
     public getStyle(): Style{
@@ -51,10 +53,15 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
       return this.style;
     }
 
-    public getCoordinates():Coordinate[]{
-      var coordinates:Coordinate[] = (<LineString>this.getGeometry()).getCoordinates();
-      return coordinates;
+    
+  getCoordinates():Coordinate[]{
+    return this.getEntityGeometry().getCoordinates();
+  }
+
+    getEntityGeometry():LineString{
+      return <LineString>super.getGeometry();
     }
+
 
     public getCoordinate(index:number):Coordinate{
       var coordinates:Coordinate[] = (<LineString>this.getGeometry()).getCoordinates();

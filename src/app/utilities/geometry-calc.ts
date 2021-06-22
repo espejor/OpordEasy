@@ -17,7 +17,7 @@ export function getParallelLineWithEndOffset(coordinates: Coordinate[],distance:
     return parallCoord;
 }
 
-export function getParallelLine(coordinates: Coordinate[],distance:number,side:number): Coordinate[] {
+export function getParallelLine(coordinates: Coordinate[],distance:number,side:number): Coordinate[]{
     var angle: number;
     var parallCoord: Array<Coordinate> = [];
     

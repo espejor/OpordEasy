@@ -1,6 +1,6 @@
-<div class="frame">
-  <div class="title">
-    <h3>Operaciones</h3>
-    <app-operations></app-operations>
+<section>
+  <!-- Vista de un Timeline -->
+  <div *ngFor = "let entity of timeline.entities" class="timeline-row">
+    <app-entity-in-timeline [entity] = entity></app-entity-in-timeline>
   </div>
-</div>
+</section>

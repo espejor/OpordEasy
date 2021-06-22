@@ -5,7 +5,8 @@ const cors = require ('cors')
 const { mongoose } = require('./database');
 const path = require('path');
 
-const routes = require('./routes/operations.routes');
+const operationsRoutes = require('./routes/operations.routes');
+const entitiesRoutes = require('./routes/entities.routes');
 
 // --------- Settings
 // Setting PORTs
@@ -23,7 +24,9 @@ app.use(express.json());
 app.use (cors());
 
 // --------- Routes
-app.use('/api/operations',routes)
+app.use('/api/operations',operationsRoutes)
+app.use('/api/entities',entitiesRoutes)
+
 // Serve only the static files form the dist directory
 app.use(express.static(__dirname + '../dist'));
 

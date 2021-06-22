@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { OperationsService } from 'src/app/services/operations.service';
 
 @Component({
   selector: 'app-floating-menu',
@@ -7,18 +8,18 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 })
 export class FloatingMenuComponent implements OnInit {
   @Output() emitter = new EventEmitter();
-  activatedOperations = false;
-  constructor() { }
+  // activatedOperations = false;
+  constructor(private operationsService:OperationsService) { }
 
   ngOnInit() {
   }
 
 
 changeView(){
-  this.activatedOperations = !this.activatedOperations
-  const data = this.activatedOperations?"activated":"deactivated"
+  this.operationsService.activatedOperations = !this.operationsService.activatedOperations
+  const data = this.operationsService.activatedOperations?"activated":"deactivated"
   this.emitter.emit(data);
-  console.log("-------------PINCHANDO" , this.activatedOperations)
+  console.log("-------------PINCHANDO" , this.operationsService.activatedOperations)
 }
 
 }

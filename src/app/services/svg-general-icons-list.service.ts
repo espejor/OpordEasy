@@ -17,7 +17,7 @@ export class SvgGeneralIconsListService {
   public features:{[key: string]:{ [key: string]:{[key: string]: FeatureForSelector}}} = {
     points:{
       command:{
-        control_point: {classCSS : "selector", selectorText : "Punto de Control", svg:{type:"path", x:this.x, y:this.y, fill:"#88E0FF", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m0,0 h80v60h-80z"}}},
+        control_point: {classCSS : "unSelected", selectorText : "Punto de Control", svg:{type:"path", x:this.x, y:this.y, fill:"#88E0FF", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m0,0 h80v60h-80z"}}},
       }
     },
     areas:{

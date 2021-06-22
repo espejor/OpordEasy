@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { stringToGlsl } from 'ol/style/expressions';
-import { FeatureForSelector } from '../models/feature-for-selector';
+import { EntityOptions } from '../entities/entity.class';
+import { FeatureForSelector, TextFeatureForSelector } from '../models/feature-for-selector';
 
 @Injectable({
   providedIn: 'root'
@@ -16,30 +17,32 @@ export class SVGUnitsIconsListService {
   private generalStrokeColor = "black"
   private generalStrokeWidth = "2"
   
-  public features:{[key: string]: {[key: string]: FeatureForSelector}} = {
+  public features:{[key: string]: {[key: string]: FeatureForSelector | TextFeatureForSelector}} = {
     frame: {  
-      friendly: {classCSS : "selector", selectorText : "Aliados", svg:{type:"path", x:this.x, y:this.y, fill:"#88E0FF", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m0,0 h80v60h-80z"}}},
-      enemy: {classCSS : "selector", selectorText : "Enemigo",  svg:{type:"path", x:this.x, y:this.y, fill:"#ff8888", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m40,0 l30,30 l-30,30 l-30,-30 z"}}},      
-      neutral: {classCSS : "selector", selectorText : "Neutral",  svg:{type:"path", x:this.x, y:this.y, fill:"#AAFFAA", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m10,0 h60v60h-60z"}}},
-      unknown: {classCSS : "selector", selectorText : "Desconocido",  svg:{type:"path", x:this.x, y:this.y, fill:"#ffffe0", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m25,15 a15,15 0 0 1 30,0a15,15 0 0 1 0,30a15,15 0 0 1 -30,0a15,15 0 0 1 0,-30"}}},
+      friendly: {classCSS : "unSelected", selectorText : "Aliados", svg:{type:"path", x:this.x, y:this.y, fill:"#88E0FF", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m0,0 h80v60h-80z"}}},
+      enemy: {classCSS : "unSelected", selectorText : "Enemigo",  svg:{type:"path", x:this.x, y:this.y, fill:"#ff8888", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m40,0 l30,30 l-30,30 l-30,-30 z"}}},      
+      neutral: {classCSS : "unSelected", selectorText : "Neutral",  svg:{type:"path", x:this.x, y:this.y, fill:"#AAFFAA", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m10,0 h60v60h-60z"}}},
+      unknown: {classCSS : "unSelected", selectorText : "Desconocido",  svg:{type:"path", x:this.x, y:this.y, fill:"#ffffe0", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m25,15 a15,15 0 0 1 30,0a15,15 0 0 1 0,30a15,15 0 0 1 -30,0a15,15 0 0 1 0,-30"}}},
     },
     main: {
-      infantry: {classCSS : "selector", selectorText: "Infantería",  svg:{type:"path", x:this.x, y:this.y, fill:"", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m0,0l80,60m0,-60l-80,60",enemy:"m25,15l30,30m0,-30l-30,30",neutral:"m10,0l60,60m0,-60l-60,60",unknown:"m25,15l30,30m0,-30l-30,30"}}},
-      artillery: {classCSS : "selector", selectorText: "Artillería",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m35,30 a5,5 0 1 0 0,-1z"}}},
-      cavalry: {classCSS : "selector", selectorText: "Caballería",  svg:{type:"path", x:this.x, y:this.y, fill:"", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m80,0l-80,60",enemy:"m55,15l-30,30",neutral:"m70,0l-60,60",unknown:"m55,15l-30,30"}}},
-      armoured: {classCSS : "selector", selectorText: "Ac/Mz",  svg:{type:"path", x:this.x, y:this.y, fill:"transparent", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m25,20 h30 a10,10 0 0 1 0,20 h-30 a10,10 0 0 1 0,-20",enemy:"m30,20 h20 a10,10 0 0 1 0,20 h-20 a10,10 0 0 1 0,-20",neutral:"m30,20 h20 a10,10 0 0 1 0,20 h-20 a10,10 0 0 1 0,-20",unknown:"m30,20 h20 a10,10 0 0 1 0,20 h-20 a10,10 0 0 1 0,-20"}}}
+      infantry: {classCSS : "unSelected", selectorText: "Infantería",  svg:{type:"path", x:this.x, y:this.y, fill:"", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m0,0l80,60m0,-60l-80,60",enemy:"m25,15l30,30m0,-30l-30,30",neutral:"m10,0l60,60m0,-60l-60,60",unknown:"m25,15l30,30m0,-30l-30,30"}}},
+      artillery: {classCSS : "unSelected", selectorText: "Artillería",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m35,30 a5,5 0 1 0 0,-1z"}}},
+      cavalry: {classCSS : "unSelected", selectorText: "Caballería",  svg:{type:"path", x:this.x, y:this.y, fill:"", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m80,0l-80,60",enemy:"m55,15l-30,30",neutral:"m70,0l-60,60",unknown:"m55,15l-30,30"}}},
+      armoured: {classCSS : "unSelected", selectorText: "Ac/Mz",  svg:{type:"path", x:this.x, y:this.y, fill:"transparent", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m25,20 h30 a10,10 0 0 1 0,20 h-30 a10,10 0 0 1 0,-20",enemy:"m30,20 h20 a10,10 0 0 1 0,20 h-20 a10,10 0 0 1 0,-20",neutral:"m30,20 h20 a10,10 0 0 1 0,20 h-20 a10,10 0 0 1 0,-20",unknown:"m30,20 h20 a10,10 0 0 1 0,20 h-20 a10,10 0 0 1 0,-20"}}}
     },
     level: {
-      squad: {classCSS : "selector", selectorText: "Escuadra",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m37,-10a3,3 0 1 0 0,-1z"}}},
-      section: {classCSS : "selector", selectorText: "Pelotón",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m31,-10a3,3 0 1 0 0,-1z m12,0a3,3 0 1 0 0,-1z"}}},
-      platoon: {classCSS : "selector", selectorText: "Sección",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m25,-10a3,3 0 1 0 0,-1z m12,0a3,3 0 1 0 0,-1z m12,0a3,3 0 1 0 0,-1z"}}},
-      company: {classCSS : "selector", selectorText: "Compañía",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m40,-0 v-10"}}},
+      squad: {classCSS : "unSelected", selectorText: "Escuadra",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m37,-10a3,3 0 1 0 0,-1z"}}},
+      section: {classCSS : "unSelected", selectorText: "Pelotón",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m31,-10a3,3 0 1 0 0,-1z m12,0a3,3 0 1 0 0,-1z"}}},
+      platoon: {classCSS : "unSelected", selectorText: "Sección",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m25,-10a3,3 0 1 0 0,-1z m12,0a3,3 0 1 0 0,-1z m12,0a3,3 0 1 0 0,-1z"}}},
+      company: {classCSS : "unSelected", selectorText: "Compañía",  svg:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m40,-0 v-10"}}},
     },
     
     //-----------------------
     // FALTAN FEATURES DE UNIDADES
     // ----------------------
-
+    sectionAdd: {
+      designation:{selectorText: "Designación",value:"León",svg:{type:"text", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth}}
+    }
   }
 
 
@@ -52,10 +55,15 @@ export class SVGUnitsIconsListService {
     } 
   }
 
+  public createSVGForCard(entityOptions: EntityOptions,scale:number = 1): string {
+    return this.createSVG(entityOptions,scale);
+  }
+
+  
   public createSVG(collection,scale:number = 1):string{
-    const x = 160 / scale;
-    const y = 120 / scale;
-    var svg = "<svg   viewBox='0 0 " + x + " " + y + "' width='160' height='120' version='1.1' xmlns='http://www.w3.org/2000/svg'>";
+    const x = 160 * scale;
+    const y = 120 * scale;
+    var svg = "<svg   viewBox='0 0 160 120' width= '"+ x + "' height= '" + y + "' version='1.1' xmlns='http://www.w3.org/2000/svg'>";
     svg += this.compoundSVG(collection,collection.frame);
     return svg += "</svg>";
   }

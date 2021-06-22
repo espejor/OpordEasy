@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const EntityTimeline = require('./entity-timeline');
 const { Schema } = mongoose;
 
 

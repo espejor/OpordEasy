@@ -13,9 +13,10 @@ export class OpenModalService {
     private route: ActivatedRoute) {
   }
 
-  public openDialog(component,width:string): void{
+  public openDialog(component,width:string,height?:string): void{
     this.dialogRef = this.dialog.open(component, {
-      width: width
+      width: width,
+      height: height
     });
 
     this.dialogRef.afterClosed().subscribe(result => {

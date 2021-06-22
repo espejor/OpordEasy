@@ -1,0 +1,26 @@
+<div class = "fase_view row" >
+    <div class="col-md-2">
+        <button mat-icon-button aria-label="Fase anterior" (click) = "operationsService.previousPhase()">
+            <mat-icon>arrow_left</mat-icon>
+        </button>
+    </div>
+    <div class="col-md-7">
+        <mat-form-field >
+            <input matInput  type="text" name="phasesname" #name = 'ngModel' 
+            (ngModelChange) = "loadLayout()"
+            [(ngModel)] = "operationsService.selectedOperation.phases[operationsService.phaseOrder].name"
+            placeholder="Fase">
+        </mat-form-field>
+    </div>
+    <div class="col-md-2">
+        <button mat-icon-button aria-label="Fase siguiente" (click) = "operationsService.nextPhase()">
+            <mat-icon>arrow_right</mat-icon>
+        </button>
+    </div>
+    <!-- Vista de la Lista de Timelines----------- -->
+    <div class="timeline-list-view" *ngFor = "let timeline of operationsService.selectedOperation.phases[operationsService.phaseOrder].timelines">
+        <!-- <div class="timeline"> -->
+            <app-timeline [timeline] = "timeline"></app-timeline>
+        <!-- </div> -->
+    </div>
+</div>

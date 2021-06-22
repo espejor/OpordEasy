@@ -8,6 +8,7 @@ import Point from "ol/geom/Point";
 import { TranslateEvent } from "ol/interaction/Translate";
 import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
 import { getOrientation, getParallelLine, getParallelLineWithEndOffset, getPointToVector, LEFT, middlePoint, RIGHT } from "../utilities/geometry-calc";
+import { entityType } from "./entitiesType";
 import { EntityBackBone } from "./entity-backbone.class";
 import { EntityComplex } from "./entity-complex.class";
 import { EntityControlPoint } from "./entity-control-point";
@@ -28,14 +29,17 @@ export class EntityAxe<GeomType extends Geometry = Geometry>  extends EntityComp
     DIVISOR: number = 4;
 
 
-    constructor(mapComponent:OlMapComponent,coordinates: Coordinate[]){
-        super(mapComponent,coordinates);
+    constructor(coordinates: Coordinate[]){
+        super(coordinates);
+        this.entityType = entityType.axe
 
         // Create backbone
-        this.backbone = new EntityBackBone(mapComponent,[this.rightLine,this.leftLine],{
+        this.backbone = new EntityBackBone([this.rightLine,this.leftLine],{
             geometry: new LineString(coordinates)
         })
 
+        this.location = coordinates;
+        
         this.backbone.lineColor = [255,0,0,0];
         this.backbone.lineWidth = 20;
         this.backbone.textLine = "";
@@ -43,51 +47,51 @@ export class EntityAxe<GeomType extends Geometry = Geometry>  extends EntityComp
         this.backbone.textBaseline = "middle";
         this.backbone.activateStyle();
 
-        mapComponent.dragFeatures.push(this.backbone);
-        mapComponent.shapes.addFeature(this.backbone);
+        // mapComponent.dragFeatures.push(this.backbone);
+        // mapComponent.shapes.addFeature(this.backbone);
 
         // Create both lateral lines
-        this.rightLine = new EntityLine(mapComponent,{
+        this.rightLine = new EntityLine({
             geometry: new LineString(getParallelLineWithEndOffset(coordinates,this.WIDTH/2,RIGHT,this.WIDTH))
         })
 
         this.rightLine.setStyle(this.rightLine.getStyle());
-        mapComponent.shapes.addFeature(this.rightLine);
+        // mapComponent.shapes.addFeature(this.rightLine);
 
-        this.leftLine = new EntityLine(mapComponent,{
+        this.leftLine = new EntityLine({
             geometry: new LineString(getParallelLineWithEndOffset(coordinates,this.WIDTH/2,LEFT,this.WIDTH))
         })
 
         this.leftLine.setStyle(this.leftLine.getStyle());
-        mapComponent.shapes.addFeature(this.leftLine);
+        // mapComponent.shapes.addFeature(this.leftLine);
 
-        this.tipLine = new EntityLine(mapComponent,{
+        this.tipLine = new EntityLine({
             geometry: new LineString(this.getTipLine())
         })
 
         this.tipLine.activateStyle();
-        mapComponent.shapes.addFeature(this.tipLine);
+        // mapComponent.shapes.addFeature(this.tipLine);
 
         // create point of label
 
-        this.pointOfLabel = new EntityPointOfLabel(mapComponent,{
-            geometry: new Point(this.coordinates[0])
+        this.pointOfLabel = new EntityPointOfLabel({
+            geometry: new Point(this.location[0])
         })
 
         this.pointOfLabel.textLine = "Eje";
         this.pointOfLabel.activateStyle();
-        mapComponent.shapes.addFeature(this.pointOfLabel);
+        // mapComponent.shapes.addFeature(this.pointOfLabel);
         
         // create point of Lateral Control
 
-        this.controlWidthPoint = new EntityControlPoint(mapComponent,this,{
+        this.controlWidthPoint = new EntityControlPoint(this,{
             geometry: new Point(this.tipLine.getCoordinate(1))
         })
         
-        mapComponent.moveFeatures.push(this.controlWidthPoint);
+        // mapComponent.moveFeatures.push(this.controlWidthPoint);
 
         // this.pointOfLabel.activateStyle();
-        mapComponent.shapes.addFeature(this.controlWidthPoint);
+        // mapComponent.shapes.addFeature(this.controlWidthPoint);
 
         
         var self = this;
@@ -97,7 +101,7 @@ export class EntityAxe<GeomType extends Geometry = Geometry>  extends EntityComp
             self.updateShape(newCoordinates);
         })
 
-        this.olMap.move.on("translating",(evt) => this.onDrag(evt));
+        // this.olMap.move.on("translating",(evt) => this.onDrag(evt));
 
 
         // this.controlWidthPoint.on("change",
@@ -122,15 +126,21 @@ export class EntityAxe<GeomType extends Geometry = Geometry>  extends EntityComp
 
 
     private updateShape(newCoordinates:Coordinate[] = this.getCoordinates()):void{
-        (<LineString>this.rightLine.getGeometry()).setCoordinates(getParallelLineWithEndOffset(newCoordinates,this.WIDTH/2,RIGHT,this.WIDTH));
-        (<LineString>this.leftLine.getGeometry()).setCoordinates(getParallelLineWithEndOffset(newCoordinates,this.WIDTH/2,LEFT,this.WIDTH));
-        (<LineString>this.tipLine.getGeometry()).setCoordinates(this.getTipLine());
-        (<Point>this.pointOfLabel.getGeometry()).setCoordinates(newCoordinates[0]);
-        (<Point>this.controlWidthPoint.getGeometry()).setCoordinates(this.tipLine.getCoordinate(1));
+        this.rightLine.setCoordinates(getParallelLineWithEndOffset(newCoordinates,this.WIDTH/2,RIGHT,this.WIDTH));
+        this.leftLine.setCoordinates(getParallelLineWithEndOffset(newCoordinates,this.WIDTH/2,LEFT,this.WIDTH));
+        this.tipLine.setCoordinates(this.getTipLine());
+        this.pointOfLabel.setCoordinates(newCoordinates[0]);
+        this.controlWidthPoint.setCoordinates(this.tipLine.getCoordinate(1));
     }
 
-    getCoordinates(): Coordinate[] {
-        return (<LineString>this.backbone.getGeometry()).getCoordinates();
+    getEntityGeometry() {
+        return this.backbone.getGeometry();
+    }
+
+    getCoordinates(): Coordinate[]{
+        if (this.backbone)
+            return this.backbone.getCoordinates();
+        return null
     }
 
     private getTipLine(): Coordinate[] {
