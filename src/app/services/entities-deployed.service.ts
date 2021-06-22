@@ -19,7 +19,7 @@ export class EntitiesDeployedService {
 
   constructor(private http:HttpClient) {
     const URL_BASE = environment.baseUrl;
-    this.URL_API = URL_BASE + '/api/operations'; 
+    this.URL_API = URL_BASE + '/api/entities'; 
   }
 
   setMapComponent(olMapComponent: OlMapComponent) {
