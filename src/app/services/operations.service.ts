@@ -30,7 +30,7 @@ export class OperationsService {
     private  entitiesDeployed:EntitiesDeployedService,
     private svgService: SVGUnitsIconsListService) {    
     const URL_BASE = environment.baseUrl;
-    this.URL_API = URL_BASE + '/api/operations'; 
+    this.URL_API = URL_BASE + 'api/operations'; 
   }
 
   isOperationLoaded():boolean {
