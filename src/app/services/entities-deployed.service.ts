@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
+import { environment } from '../../environments/environment';
 import Geometry from 'ol/geom/Geometry';
 import Point from 'ol/geom/Point';
 import { OlMapComponent } from '../components/nav/ol-map/ol-map.component';
@@ -12,11 +13,14 @@ import { EntityLocated } from '../models/operation';
   providedIn: 'root'
 })
 export class EntitiesDeployedService {
-  readonly URL_API = 'http://localhost:3000/api/entities';
   olMapComponent:OlMapComponent;
   entities: EntityLocated[] = []
+  URL_API: string;
 
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient) {
+    const URL_BASE = environment.baseUrl;
+    this.URL_API = URL_BASE + '/api/operations'; 
+  }
 
   setMapComponent(olMapComponent: OlMapComponent) {
     this.olMapComponent = olMapComponent;
