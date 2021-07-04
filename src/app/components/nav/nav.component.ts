@@ -12,7 +12,7 @@ export class NavComponent {
   menuItemsLeft = ['Unidades', 'Puntos', 'Líneas', 'Áreas', 'Otros'];
   menuItemsRight = ['Operations', 'Templates'];
 
-  activatedOperations = false;
+  activatedOperationsFormOpened = false;
 
   isHandset$: Observable<boolean> = 
     this.breakpointObserver.observe(Breakpoints.Handset)

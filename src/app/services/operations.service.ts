@@ -8,6 +8,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { EntitiesDeployedService } from './entities-deployed.service';
 import { SVGUnitsIconsListService } from './svg-units-icons-list.service';
 import { EntitySelector } from '../entities/factory-entity-selector';
+import { Coordinate } from 'ol/coordinate';
+import { MatDialog } from '@angular/material/dialog';
+import { NewPhaseDialogComponent } from '../components/nav/ol-map/new-phase-dialog/new-phase-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +19,7 @@ export class OperationsService {
   readonly PREVIOUS = 0;
   readonly NEXT = 1;
   
-  activatedOperations:boolean = false;
+  activatedOperationsFormOpened:boolean = false;
   selectedOperation: Operation = new Operation();
   operations: Operation[]
   phaseOrder: number = 0;
@@ -28,6 +31,7 @@ export class OperationsService {
   constructor(private http:HttpClient, 
     private _snackBar: MatSnackBar, 
     private  entitiesDeployed:EntitiesDeployedService,
+    public dialog: MatDialog,
     private svgService: SVGUnitsIconsListService) {    
     const URL_BASE = environment.baseUrl;
     this.URL_API = URL_BASE + 'api/operations'; 
@@ -37,9 +41,9 @@ export class OperationsService {
     return this.selectedOperation._id != undefined;
   }
 
-  loadUnit(unit: Entity<Geometry>):boolean {
+  loadUnit(unit: Entity<Geometry>,coordinates:Coordinate):boolean {
     if(this.isOperationLoaded()){
-      this.addEntityToLayout(unit);
+      this.addEntityToLayout(unit,coordinates);
       return true;
     }else{
       const snackRef = this._snackBar.open(
@@ -50,16 +54,17 @@ export class OperationsService {
         panelClass: ['style-error']
       });
       snackRef.onAction().subscribe(() => {
-        this.activatedOperations = true;   
+        this.activatedOperationsFormOpened = true;   
       })
       return false;     
     }
   }
 
   addEntityToTimeline(entity: Entity<Geometry>) {
-    // const id = entity._id;
+    // Si no hay timelines se agrega uno
     if(this.selectedOperation.phases[this.phaseOrder].timelines.length == 0)
       this.selectedOperation.phases[this.phaseOrder].timelines.push(new Timeline())
+    // Agregamos la entidad al timeline
     this.selectedOperation.phases[this.phaseOrder].timelines[this.timelineActive].entities.push(entity);
     // const entities = this.selectedOperation.phases[this.phaseOrder].timelines[this.timelineActive].entities;
     this.http.put(this.URL_API + `/${this.selectedOperation._id}`,
@@ -78,7 +83,7 @@ export class OperationsService {
 
   
 
-  addEntityToLayout(entity: Entity<Geometry>) {
+  addEntityToLayout(entity: Entity<Geometry>,coordinates:Coordinate) {
     // Solo se incluye si no está incluido ya
     // const coordinates = entity.getCoordinates();
     const id = entity._id;
@@ -87,15 +92,15 @@ export class OperationsService {
     })) == undefined){
       const entityLocated:EntityLocated = new EntityLocated()
       entityLocated.entity = entity;
-      entityLocated.location = entity.getCoordinates();
+      entityLocated.location = coordinates;
         this.selectedOperation.phases[this.phaseOrder].layout.push(entityLocated);
       this.http.put(this.URL_API + `/${this.selectedOperation._id}`,
       {
         // "entities" : this.selectedOperation.phases[this.phaseOrder].timelines[this.timelineActive].entities,
         "action": "updateLayout",
         "entity":entity,
-        "phase":this.phaseOrder,
-        "location": entityLocated.location
+        "location": entityLocated.location,
+        "phase":this.phaseOrder
       }
       ).subscribe((data) => {
         console.log(data);
@@ -125,34 +130,131 @@ export class OperationsService {
     // this.entitiesDeployed.entities = this.selectedOperation.phases[this.phaseOrder].layout
   }
 
+  prepareOperationForDDBB():any{
+    var operationForDDBB:any = new Operation();
+    operationForDDBB._id = this.selectedOperation._id;
+    operationForDDBB.name = this.selectedOperation.name;
+    operationForDDBB.updated = this.selectedOperation.updated;
+    operationForDDBB.comboEntities = this.preparelistOfEntities(this.selectedOperation.comboEntities);
+    operationForDDBB.phases = this.preparePhases(this.selectedOperation.phases);
+    return operationForDDBB;
+  }
+
+  preparePhases(phases: Phase[]): Phase[] {
+    const phasesForDB:Phase[] = [];
+    phases.forEach(phase => {
+      var phaseForDB:Phase = new Phase();
+      // phaseForDB._id = phase._id
+      phaseForDB.name = phase.name;
+      phaseForDB.layout = this.prepareListOfDeployedEntities(phase.layout);
+      phaseForDB.timelines = this.prepareTimelinesForDB(phase.timelines);
+      phasesForDB.push(phaseForDB);
+    });
+    return phasesForDB;
+  }
+
+  prepareTimelinesForDB(timelines: Timeline[]): Timeline[] {
+    const timelinesForDB:Timeline[] = [];
+    timelines.forEach(timeline => {
+      var timelineForDB:Timeline = new Timeline();
+      timelineForDB.entities = this.preparelistOfEntities(timeline.entities);
+      timelinesForDB.push(timelineForDB);
+    });
+    return timelinesForDB;
+  }
+
+  prepareListOfDeployedEntities(layout: EntityLocated[]): EntityLocated[] {
+    const entities:EntityLocated[] = [];
+    layout.forEach(entityDeployed => {
+      var entityDeployedForDB:EntityLocated = new EntityLocated();
+      var entityForDB:any = new Object(); 
+      entityForDB._id = entityDeployed.entity._id;
+      entityDeployedForDB.entity = entityForDB;
+      entityDeployedForDB.location = entityDeployed.location;
+      entities.push(entityDeployedForDB);
+    });
+    return entities;
+  }
+
+  preparelistOfEntities(comboEntities: Entity[]): Entity[] {
+    const entities:Entity[] = [];
+    comboEntities.forEach(entity => {
+      const entityForDB:any = new Object();
+      entityForDB._id = entity._id
+      entities.push(entityForDB);
+    });
+    return entities;
+  }
+
   previousPhase(){
-    if (this.selectedOperation.phases[this.phaseOrder].name != '')
-      if (this.phaseOrder == 0)
-        this.addNewEmptyPhase(this.phaseOrder,this.PREVIOUS);
-      else
-        this.phaseOrder--;
-    this.updateLayout();
+    if (this.isOperationLoaded()){
+      if (this.selectedOperation.phases[this.phaseOrder].name != '')
+        if (this.phaseOrder == 0)
+          this.addNewEmptyPhase(this.phaseOrder,this.PREVIOUS);
+        else
+          this.phaseOrder--;
+      this.updateLayout();
+    }  
   }
 
   nextPhase(){
-    if (this.selectedOperation.phases[this.phaseOrder].name != ''){  // ya existe la fase
-      if (this.phaseOrder == this.selectedOperation.phases.length - 1)  // es la última
-        this.addNewEmptyPhase(this.phaseOrder,this.NEXT);   // agregar una nueva fase vacía
-      this.phaseOrder++;
+    if (this.isOperationLoaded()){
+      if (this.selectedOperation.phases[this.phaseOrder].name != '')  // ya existe la fase
+        if (this.phaseOrder == this.selectedOperation.phases.length - 1)  // es la última
+          this.addNewEmptyPhase(this.phaseOrder,this.NEXT);   // agregar una nueva fase vacía
+        else
+          this.phaseOrder++;
       this.updateLayout();  
     }
   }
 
 
   public addNewEmptyPhase(index:number,direction:number){
-    if (index == 0 && direction == this.PREVIOUS) 
-        this.selectedOperation.phases.unshift(new Phase())
-      else
-        this.selectedOperation.phases.push(new Phase())
+    // Solicitar mantener el Layout
+    const dialogRef = this.dialog.open(NewPhaseDialogComponent);
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+
+    if (result.action == "newPhase"){
+        const phase = new Phase();
+        phase.name = result.name;
+        if (result.keepLayout){
+          phase.setLayout(this.selectedOperation.phases[this.phaseOrder].layout)
+        }
+
+        if (index == 0 && direction == this.PREVIOUS) {
+          this.selectedOperation.phases.unshift(phase)
+        }else{
+          this.selectedOperation.phases.push(phase)
+          this.phaseOrder++;
+        }
+        this.updateOperation(this.selectedOperation).subscribe(result =>{
+          this._snackBar.open(`Se ha creado la fase: ${phase.name}`,"",{duration:3000})
+        })
+        
+        this.updateLayout();  
+      }
+    });
   }
 
-  updateEntityPositionInOperation(operation: Operation, entity: Entity) {
-    return this.http.put(this.URL_API + `/${operation._id}`,operation);
+  updateEntityPositionInOperation(entity: Entity) {
+    const operation = this.selectedOperation
+    const location = entity.getCoordinates();
+    const entityFound = this.selectedOperation.phases[this.phaseOrder].layout.find((item) =>{
+      return item.entity._id === entity._id
+    })
+    entityFound.location = location
+
+    const object = {
+      "action" : "updatePosition",
+      "location" : location, 
+      "phase": this.phaseOrder,
+      "entity": entity
+    }
+    return this.http.put(this.URL_API + `/${operation._id}`,object)
+    .subscribe(data => {
+      console.log(data);
+    });
   }
 
   getOperations(){
@@ -166,7 +268,11 @@ export class OperationsService {
   }
 
   updateOperation(operation: Operation){
-    return this.http.put(this.URL_API + `/${operation._id}`,operation);
+    return this.http.put(this.URL_API + `/${operation._id}`,
+    {
+      "action":"updateOperation",
+      "operation": this.prepareOperationForDDBB()
+    });
   }
 
   deleteOperation(_id: string){

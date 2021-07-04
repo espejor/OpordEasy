@@ -18,6 +18,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio';
 import { NavComponent } from './components/nav/nav.component';
 import { OlMapComponent } from './components/nav/ol-map/ol-map.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -43,6 +44,8 @@ import { FavoriteSelectorComponent } from './components/nav/favorite-selector/fa
 import { EntityUnitSelectorCardComponent } from './components/nav/entity-unit-selector-card/entity-unit-selector-card.component';
 import { RecentSelectorComponent } from './components/nav/recent-selector/recent-selector.component';
 import { PhaseComponent } from './components/nav/phase/phase.component';
+import { GlobalsService } from './services/globals.service';
+import { NewPhaseDialogComponent } from './components/nav/ol-map/new-phase-dialog/new-phase-dialog.component';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -70,7 +73,8 @@ export function HttpLoaderFactory(http:HttpClient){
     FavoriteSelectorComponent,
     EntityUnitSelectorCardComponent,
     RecentSelectorComponent,
-    PhaseComponent
+    PhaseComponent,
+    NewPhaseDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -90,6 +94,7 @@ export function HttpLoaderFactory(http:HttpClient){
     MatListModule,
     MatSliderModule,
     MatCardModule,
+    MatRadioModule,
     MatSnackBarModule,
     MatSelectModule,
     MatTabsModule,
@@ -120,6 +125,7 @@ export function HttpLoaderFactory(http:HttpClient){
     MatSliderModule
   ],
   providers: [
+    GlobalsService
   //   {
   //   provide: MatSnackBar,
   //   useValue: {}

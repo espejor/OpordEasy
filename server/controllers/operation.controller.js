@@ -28,16 +28,18 @@ operationCtrl.getOperation = async (req,res) => {
 }
 
 operationCtrl.updateOperation = async (req,res) => {
-    // console.log("id para actualizar " + req.params.id);
-    // console.log("Operacion " + req.body.name);
-    // console.log("body  %O" , req.body);
+    console.log("id para actualizar " + req.params.id);
+    console.log("Operacion " + req.body.name);
+    console.log("body  %O" , req.body);
     const operationToDDBB = (req.body);
     var response;
     // const operation = await OperationModel.findById(req.params.id);
     // console.log("-----------TIPO " + typeof req.params.id)
     if (req.params.id !== "undefined"){
         const phase = req.body.phase;
-        const entityId = ObjectId(req.body.entity._id);
+        const entity = req.body.entity;
+        if(entity)
+            var entityId = ObjectId(req.body.entity._id);
         var query;
         switch (req.body.action) {
             case "updateTimeline":
@@ -48,6 +50,7 @@ operationCtrl.updateOperation = async (req,res) => {
                 })
                 console.log(response);
                 break;
+
             case "updateLayout":
                 const location = req.body.location;
                 const object = {"entity":entityId,"location":location}
@@ -56,8 +59,20 @@ operationCtrl.updateOperation = async (req,res) => {
                     $push : query
                 })
                 console.log(response);
-                
                 break;        
+
+            case "updatePosition":
+                const locationE = req.body.location;
+                console.log("updatePosition");
+                query = {[`phases.${phase}.layout.$[ett].location`]: locationE}
+                response = await OperationModel.updateOne({_id : req.params.id},{
+                    $set : query
+                },
+                    {arrayFilters: [{"ett.entity" : entityId}]
+                })
+                console.log(response);
+                break;
+
             case "updateCombo":
                 query = {
                     [`comboEntities`]: entityId,
@@ -66,23 +81,20 @@ operationCtrl.updateOperation = async (req,res) => {
                     $push : query
                 })
                 console.log(response);
-                
-                break;        
+                break;
+
+            case "updateOperation":
+
             default:
-                response = await OperationModel.updateOne({_id : req.params.id},operationToDDBB).exec((error,result) => {
-                    if(error){
-                        console.log(error)
-                    }
-                    if(result){
-                        console.log("Success")
-                    }
-                });
+                response = await OperationModel.updateOne({_id : req.params.id},req.body.operation)
+                console.log(response);
+                
                 break;
         }
         // if (req.body.action == "updateTimeline"){
         //     const phase = req.body.phase;
         //     const timeline = req.body.timeline;
-        //     const entityId = ObjectId(req.body.entity._id);
+        //     const entityId = ObjectId(req.body.entityId);
         //     const query = {[`phases.${phase}.timelines.${timeline}.entities`]: entityId}
         //     response = await OperationModel.updateOne({_id : req.params.id},{
         //         $push : query
@@ -100,7 +112,7 @@ operationCtrl.updateOperation = async (req,res) => {
         // }
     }else{
         console.log("--------------------SAVE")
-        response = await new OperationModel(operationToDDBB).save();
+        response = await new OperationModel(operationToDDBB.operation).save();
         console.log(response);
     }
 //    await OperationModel.findOneAndUpdate({_id : req.params.id},{$set: req.body},{new : true, upsert: true}).exec();

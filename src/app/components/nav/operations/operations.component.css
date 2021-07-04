@@ -3,7 +3,7 @@
   top:100px;
   right:50px;
   width:400px;
-  height:400px;
+  /* height:400px; */
   z-index: 200;
   background-color: white;
   display: table;
@@ -39,6 +39,13 @@
 
   .card-content{
     padding: 2px;
+  }
+
+  .input-field{
+    display: flex;
+    margin-bottom: 5px;
+    justify-content: space-between;
+    margin-top: 5px;
   }
 
   /* mat-form-field{

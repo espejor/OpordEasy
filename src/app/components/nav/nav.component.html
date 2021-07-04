@@ -17,9 +17,9 @@
       position="end" >
     <mat-toolbar>Gestión de Operaciones</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item (click)="activatedOperations = ! activatedOperations" > Operaciones </a>
+      <a mat-list-item (click)="activatedOperationsFormOpened = ! activatedOperationsFormOpened" > Operaciones </a>
     </mat-nav-list>
-    <div *ngIf = "activatedOperations">
+    <div *ngIf = "activatedOperationsFormOpened">
       <app-operations></app-operations>
     </div>
 

@@ -1,0 +1,44 @@
+.fase_view{
+    overflow: hidden;   
+}
+
+.timeline-list-view{
+    width: 100%;
+    display: flex;
+}
+
+
+.app-timeline{
+    display: flex;
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 5px;
+    overflow: auto;
+    width: 100%;
+}
+
+.radio-group{
+    overflow: hidden;
+}
+.phase-selector{
+    display: flex;
+}
+
+mat-radio-button{
+    display: flex;
+}
+
+.icon-button{
+    height: auto;
+}
+.delete-button{
+    display: flex;
+}
+
+
+.new-timeline-button{
+    display: flex;
+    justify-content: space-around;
+    margin: 5px;
+}

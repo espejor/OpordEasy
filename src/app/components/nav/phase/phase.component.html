@@ -1,26 +1,40 @@
-<div class = "fase_view row" >
-    <div class="col-md-2">
-        <button mat-icon-button aria-label="Fase anterior" (click) = "operationsService.previousPhase()">
-            <mat-icon>arrow_left</mat-icon>
-        </button>
-    </div>
-    <div class="col-md-7">
-        <mat-form-field >
-            <input matInput  type="text" name="phasesname" #name = 'ngModel' 
-            (ngModelChange) = "loadLayout()"
-            [(ngModel)] = "operationsService.selectedOperation.phases[operationsService.phaseOrder].name"
-            placeholder="Fase">
-        </mat-form-field>
-    </div>
-    <div class="col-md-2">
-        <button mat-icon-button aria-label="Fase siguiente" (click) = "operationsService.nextPhase()">
-            <mat-icon>arrow_right</mat-icon>
-        </button>
+<div class = "fase_view" >
+    <div class="phase-selector">
+        <div class="col-md-2">
+            <button mat-icon-button aria-label="Fase anterior" (click) = "operationsService.previousPhase()">
+                <mat-icon>arrow_left</mat-icon>
+            </button>
+        </div>
+        <div class="col-md-7">
+            <mat-form-field >
+                <input matInput  type="text" name="phasesname" #name = 'ngModel' 
+                (ngModelChange) = "loadLayout()"
+                [(ngModel)] = "operationsService.selectedOperation.phases[operationsService.phaseOrder].name"
+                placeholder="Fase">
+            </mat-form-field>
+        </div>
+        <div class="col-md-2">
+            <button mat-icon-button aria-label="Fase siguiente" (click) = "operationsService.nextPhase()">
+                <mat-icon>arrow_right</mat-icon>
+            </button>
+        </div>
     </div>
     <!-- Vista de la Lista de Timelines----------- -->
-    <div class="timeline-list-view" *ngFor = "let timeline of operationsService.selectedOperation.phases[operationsService.phaseOrder].timelines">
-        <!-- <div class="timeline"> -->
-            <app-timeline [timeline] = "timeline"></app-timeline>
-        <!-- </div> -->
+    <div class="timelines-list">
+        <mat-radio-group class="radio-group">
+            <div class="timeline-list-view" *ngFor = "let timeline of operationsService.selectedOperation.phases[operationsService.phaseOrder].timelines">
+                
+                <mat-radio-button value="1"></mat-radio-button>
+                <app-timeline [timeline] = "timeline" class= "app-timeline"></app-timeline>
+                <div class="delete-button">
+                    <button mat-icon-button class="icon-button">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-radio-group>
+    </div>
+    <div class="new-timeline-button">        
+        <button mat-raised-button color='warn' (click) = "newTimeline()">Nueva Línea de Tiempo</button>
     </div>
 </div>

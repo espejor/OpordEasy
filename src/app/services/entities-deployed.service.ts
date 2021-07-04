@@ -33,7 +33,7 @@ export class EntitiesDeployedService {
     if (coordinates)
       entityLocated.location = coordinates;
 
-    entityLocated.entity.setFlatCoordinatesfromLocation(coordinates);
+    entityLocated.entity.setFlatCoordinatesfromLocation(entityLocated.location );
     this.olMapComponent.shapesFeatures.push(entityLocated.entity);
     this.olMapComponent.dragFeatures.push(entityLocated.entity);
   }

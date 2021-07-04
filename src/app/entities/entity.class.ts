@@ -1,9 +1,7 @@
 import { Feature, Map, MapBrowserEvent } from "ol";
 import { Coordinate } from "ol/coordinate";
 import Geometry from "ol/geom/Geometry";
-import SimpleGeometry from "ol/geom/SimpleGeometry";
 import Style from "ol/style/Style";
-import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
 import { EntitiesService } from "../services/entities.service";
 import { SVGUnitsIconsListService } from "../services/svg-units-icons-list.service";
 import { entityType } from "./entitiesType";
@@ -20,7 +18,7 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
   // protected olMap:OlMapComponent
   public entityOptions:EntityOptions;
 
-  constructor(public svgService: SVGUnitsIconsListService,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
+  constructor(public svgService?: SVGUnitsIconsListService,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
       super(opt_geometryOrProperties);
       this.updated = Date.now();
       this.location = this.getCoordinates();

@@ -8,7 +8,7 @@ import { OperationsService } from 'src/app/services/operations.service';
 })
 export class FloatingMenuComponent implements OnInit {
   @Output() emitter = new EventEmitter();
-  // activatedOperations = false;
+  // activatedOperationsFormOpened = false;
   constructor(private operationsService:OperationsService) { }
 
   ngOnInit() {
@@ -16,10 +16,10 @@ export class FloatingMenuComponent implements OnInit {
 
 
 changeView(){
-  this.operationsService.activatedOperations = !this.operationsService.activatedOperations
-  const data = this.operationsService.activatedOperations?"activated":"deactivated"
+  this.operationsService.activatedOperationsFormOpened = !this.operationsService.activatedOperationsFormOpened
+  const data = this.operationsService.activatedOperationsFormOpened?"activated":"deactivated"
   this.emitter.emit(data);
-  console.log("-------------PINCHANDO" , this.operationsService.activatedOperations)
+  console.log("-------------PINCHANDO" , this.operationsService.activatedOperationsFormOpened)
 }
 
 }

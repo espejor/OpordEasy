@@ -19,7 +19,7 @@
 <app-floating-buttons></app-floating-buttons>
 <app-floating-menu (emitter) = "catchEvent($event)"></app-floating-menu>
 
-<div *ngIf = "operationsService.activatedOperations">
+<div *ngIf = "operationsService.activatedOperationsFormOpened">
     <app-operations></app-operations>
 </div>
 

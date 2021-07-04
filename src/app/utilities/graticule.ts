@@ -59,7 +59,6 @@ export class GraticuleUTM{
                 default:
                     separacion = 1;
             }
-            // const center = map.getView().getCenter();
             const firstVerticalLineCoords = [[this.extendsUTM[0],this.extendsUTM[1]],[this.extendsUTM[0],this.extendsUTM[3]]];
             const lastVerticalLineCoords = [[this.extendsUTM[2],this.extendsUTM[1]],[this.extendsUTM[2],this.extendsUTM[3]]];
             const firstHorizontalLineCoords = [[this.extendsUTM[0],this.extendsUTM[1]],[this.extendsUTM[2],this.extendsUTM[1]]];

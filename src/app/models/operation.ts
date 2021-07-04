@@ -57,10 +57,10 @@ export class Phase {
     name : string ;
     timelines:Timeline[];
     layout: EntityLocated[];
-  private _id: any;
+   _id: any;
 
     constructor(private svgService?:SVGUnitsIconsListService, jsonRecovered?){
-        this.name = '<Nueva Fase>' ;
+        this.name = '' ;
         this.timelines = [];
         this.timelines.push(new Timeline())
         this.layout = [];
@@ -70,6 +70,14 @@ export class Phase {
             this.timelines = this.recoverTimelines(jsonRecovered.timelines);
             this.layout = this.recoverLayout(jsonRecovered.layout);
         }
+    }
+
+    setLayout(layout: EntityLocated[]) {
+        layout.forEach(entityLocated => {
+            const entityL:EntityLocated = new EntityLocated(entityLocated.entity);
+            entityL.location = entityLocated.location
+            this.layout.push(entityL)
+        });
     }
 
     recoverTimelines(jsonTimelines: any): Timeline[] {

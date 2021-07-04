@@ -20,4 +20,8 @@ export class PhaseComponent implements OnInit {
       this.operationsService.selectedOperation.phases[this.operationsService.phaseOrder].layout;
   }
 
+  newTimeline(){
+    
+  }
+
 }

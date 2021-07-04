@@ -18,12 +18,13 @@
     text-align: center;
 }
 
-.timeline-row {
-    display: inline-flex;
-    /* width: 490px; */
-  }
-  
-  .button-entity{
-    background-color: antiquewhite;
+.entities-list{
+  overflow: auto;
+  display: flex;
+}
 
-  }
+  
+.button-entity{
+  background-color: antiquewhite;
+
+}

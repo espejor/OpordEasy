@@ -19,6 +19,7 @@ import { entityType } from 'src/app/entities/entitiesType';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
 import { UnitSelectorService } from 'src/app/services/unit-selector.service';
 import { EntityLocated } from 'src/app/models/operation';
+import { Pixel } from 'ol/pixel';
 
 @Component({
   selector: 'app-unit-selector',
@@ -79,10 +80,13 @@ export class UnitSelectorComponent implements OnInit,AfterViewInit {
     return this.createSVG.bind(this);
   }
   
-  insertUnit(){
-    if(this.unitSelectorService.entitySelected == undefined) // So n se ha grabado
+  insertUnit(event){
+    const mapComponent = this.entitiesDeployed.getMapComponent();
+    const pixel:Pixel = [event.x,event.y];
+    const coordinates:Coordinate = mapComponent.map.getCoordinateFromPixel(pixel);
+    if(this.unitSelectorService.entitySelected == undefined){ // So n se ha grabado
       this.saveUnit(true)
-    else if(this.operationsService.loadUnit(this.unitSelectorService.entitySelected)){
+    }else if(this.operationsService.loadUnit(this.unitSelectorService.entitySelected,coordinates)){
       const entityLocated:EntityLocated = new EntityLocated()
       entityLocated.entity = this.unitSelectorService.entitySelected
       entityLocated.location = this.unitSelectorService.entitySelected.getCoordinates();
@@ -94,7 +98,7 @@ export class UnitSelectorComponent implements OnInit,AfterViewInit {
 
   saveUnit(andInsert = false){
     // ---todo Intentar referenciar con viewChild o Output/Input 
-  
+    
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // const coordinates:Coordinate = []; 
     const coordinates = mapComponent.map.getView().getCenter();
@@ -112,7 +116,7 @@ export class UnitSelectorComponent implements OnInit,AfterViewInit {
       unit._id = (<Entity>data)._id;
       this.unitSelectorService.entitySelected = unit;
       if (andInsert)
-        this.insertUnit();
+        this.insertUnit(null);
     });
   }
 

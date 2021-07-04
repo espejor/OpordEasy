@@ -155,12 +155,12 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.map.addLayer(layerGraticule);
     this.map.addLayer(graticule.getGraticuleLayer());
 
-    // this.activatedOperations = this.mainMenu.activatedOperations
+    // this.activatedOperationsFormOpened = this.mainMenu.activatedOperationsFormOpened
   }
 
-  catchEvent(activatedOperations){
-    this.operationsService.activatedOperations = activatedOperations == "activated";
-    if(this.operationsService.activatedOperations){
+  catchEvent(activatedOperationsFormOpened){
+    this.operationsService.activatedOperationsFormOpened = activatedOperationsFormOpened == "activated";
+    if(this.operationsService.activatedOperationsFormOpened){
       // deactivate drag
       this.map.removeInteraction(this.drag);
     }else{
@@ -176,14 +176,14 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     }
   }
 
-  public getCentre():Coordinate{
+  public getLatLonCenter():Coordinate{
     return Proj.toLonLat(this.map.getView().getCenter());
   }
   
   public setCurrentLat(lat:Number){
     const proj4 = (proj4x as any).default;
 
-    const centerLatLon = this.getCentre()
+    const centerLatLon = this.getLatLonCenter()
     var zone = 1 + Math.floor((centerLatLon[0]+180)/6);
     proj4.defs("UTM",`+proj=utm +zone=${zone} +ellps=WGS84 +datum=WGS84 +units=m +no_defs `);
     const converter = proj4(
@@ -433,13 +433,13 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
     this.drag.on("modifyend",(evt:TranslateEvent) => {
       evt.features.forEach(feature => {
-        // Guardar las nuevas coordenadas en la BD
-        this.entitiesService.updateCoordinates(<EntityPoint>feature).subscribe(
-          data => {
-            console.log(data);
-          }
-        );
-        this.operationsService.updateEntityPositionInOperation(this.operationsService.selectedOperation,<EntityPoint>feature)
+        // // Guardar las nuevas coordenadas en la BD
+        // this.entitiesService.updateCoordinates(<EntityPoint>feature).subscribe(
+        //   data => {
+        //     console.log(data);
+        //   }
+        // );
+        this.operationsService.updateEntityPositionInOperation(<Entity>feature)
         // (<EntityPoint>feature).setCoordinates(this.entitiesService,(<EntityPoint>feature).getCoordinates())
       })
     }) 
@@ -473,28 +473,31 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
     var self = this;
     this.map.on("pointermove", function (evt:MapBrowserEvent) {
-      
-      var entity:Entity;
-      var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
-        // feature.onMouseOver(evt);
-        entity = feature;
-        return true;
-      }); 
-      if (hit) {
-        this.getTargetElement().style.cursor = 'pointer';
-        try{
-          entity.onMouseOver(evt);
-        }catch{
-          console.log("Feature predefinida");
+      if(this.locatingEntity){
+
+      }else{
+        var entity:Entity;
+        var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
+          // feature.onMouseOver(evt);
+          entity = feature;
+          return true;
+        }); 
+        if (hit) {
+          this.getTargetElement().style.cursor = 'pointer';
+          try{
+            entity.onMouseOver(evt);
+          }catch{
+            console.log("Feature predefinida");
+          }
+        } else {
+          this.getTargetElement().style.cursor = '';
+          // self.onMouseExit(evt);
+          self.shapes.getFeatures().forEach((feature) => {
+            (<Entity>feature).onMouseExit(evt);
+          })        
         }
-      } else {
-        this.getTargetElement().style.cursor = '';
-        // self.onMouseExit(evt);
-        self.shapes.getFeatures().forEach((feature) => {
-          (<Entity>feature).onMouseExit(evt);
-        })        
       }
-    });
+    }); // Fin pointermove
 
     var container = document.getElementById ("popup");
     var content = document.getElementById ("popup-content");
@@ -521,8 +524,11 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
     this.map.on("mousedown",(evt:MapBrowserEvent)=> {
       console.log("PINCHANDOOOOOOOOOOOOOOOOOOO");
-
     });
+
+    // this.map.addEventListener("pointermove",(ev:Event):boolean => {
+    //   return false
+    // });
 
     this.map.on("singleclick", (evt:MapBrowserEvent) =>{
       var entity:Entity;
@@ -534,7 +540,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       if (hit) {
         // if(!this.isMovingCopyFeature){
           // this.isMovingCopyFeature = true;
-          if(entity.entityOptions){
+          if(this.operationsService.activatedOperationsFormOpened){
             // var coordinate = evt.pixel;
             // var hdms = toStringHDMS(Proj.toLonLat(coordinate));
             // console.log("Pinchando en :" + hdms + entity)
@@ -570,7 +576,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     })
 
 
-    // this.map.on("pointerdrag",function(evt:MapBrowserEvent){
+    // this.map.on("change",function(evt:MapBrowserEvent){
     //   var entity:Entity;
     //   var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
     //     // feature.onMouseOver(evt);

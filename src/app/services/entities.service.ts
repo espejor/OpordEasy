@@ -15,7 +15,7 @@ export class EntitiesService {
 
   constructor(private http:HttpClient) {
     const URL_BASE = environment.baseUrl;
-    this.URL_API = URL_BASE + '/api/entities'; 
+    this.URL_API = URL_BASE + 'api/entities'; 
   }
 
   getEntities(){

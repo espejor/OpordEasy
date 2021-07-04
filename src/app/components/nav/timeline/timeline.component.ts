@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, Input, OnInit } from '@angular/core';
 import { Entity } from 'src/app/entities/entity.class';
 import { Phase, Timeline } from 'src/app/models/operation';
@@ -19,6 +20,10 @@ getSVGTimelineItem(entity:Entity):string{
   constructor(public operationsService: OperationsService) { }
 
   ngOnInit() {
+  }
+
+  drop(event: CdkDragDrop<Entity[]>) {
+    moveItemInArray(this.timeline.entities, event.previousIndex, event.currentIndex);
   }
 
 }

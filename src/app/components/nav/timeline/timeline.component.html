@@ -1,6 +1,7 @@
-<section>
+
   <!-- Vista de un Timeline -->
-  <div *ngFor = "let entity of timeline.entities" class="timeline-row">
-    <app-entity-in-timeline [entity] = entity></app-entity-in-timeline>
+  <div class="entities-list" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="drop($event)">
+    <div *ngFor = "let entity of timeline.entities">
+      <app-entity-in-timeline [entity] = entity></app-entity-in-timeline>
+    </div>
   </div>
-</section>
