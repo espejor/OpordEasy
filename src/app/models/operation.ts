@@ -1,6 +1,7 @@
 import { Coordinate } from "ol/coordinate";
 import { Entity } from "../entities/entity.class";
 import { EntitySelector } from "../entities/factory-entity-selector";
+import { SvgIconsListService } from "../services/svg-icons-list.service";
 import { SVGUnitsIconsListService } from "../services/svg-units-icons-list.service";
 
 export class Operation {
@@ -44,10 +45,14 @@ export class Operation {
         return combo;
     }
 
+    deletePhase(i: number) {
+        this.phases.splice(i,1);
+    }
+
 }
 
 
-function recoverEntity(svgService:SVGUnitsIconsListService,jsonEntity): Entity{
+function recoverEntity(svgService:SvgIconsListService,jsonEntity): Entity{
     return EntitySelector.getFactory(jsonEntity.entityType).
     createEntity(svgService,jsonEntity.entityOptions,jsonEntity.location,jsonEntity._id);
 }
@@ -62,7 +67,6 @@ export class Phase {
     constructor(private svgService?:SVGUnitsIconsListService, jsonRecovered?){
         this.name = '' ;
         this.timelines = [];
-        this.timelines.push(new Timeline())
         this.layout = [];
 
         if (jsonRecovered){
@@ -88,6 +92,10 @@ export class Phase {
         return timelines;
     }
 
+    isEmpty() {
+        return (this.timelines.length == 0 && this.layout.length == 0);
+    }
+    
     recoverLayout(jsonLayout: any): EntityLocated[] {
         const entitiesLocated: EntityLocated[] = [];
         for (let i = 0; i < jsonLayout.length; i++){
@@ -98,9 +106,17 @@ export class Phase {
         }
         return entitiesLocated;
     }
+
+    newTimeline(){
+        this.timelines.push(new Timeline())
+    }
+
+    deleteTimeline(i: number) {
+        this.timelines.splice(i,1);
+    }
 }
 
-export class Timeline { 
+export class Timeline {
     entities: Entity[] = [];
     constructor(private svgService?:SVGUnitsIconsListService, jsonTimeline?: any){
         if(jsonTimeline){
@@ -112,6 +128,9 @@ export class Timeline {
             this.entities.push(recoverEntity(this.svgService,jsonEntities[i])); 
         }
     }
+    isEmpty():boolean {
+      return this.entities.length == 0;
+    } 
 }
 
 export class EntityLocated{

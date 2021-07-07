@@ -8,6 +8,7 @@ import { OlMapComponent } from '../components/nav/ol-map/ol-map.component';
 import { EntityUnit } from '../entities/entity-unit';
 import { Entity } from '../entities/entity.class';
 import { EntityLocated } from '../models/operation';
+import { entityType } from '../entities/entitiesType';
 
 @Injectable({
   providedIn: 'root'
@@ -47,10 +48,9 @@ export class EntitiesDeployedService {
   }
 
 
-  saveEntity(entity: Entity){
+  saveEntity(entityType:entityType){
     // -------- provisional
     // operation.user = "Pepe"
-    return this.http.post(this.URL_API,entity);
   }
 
 }

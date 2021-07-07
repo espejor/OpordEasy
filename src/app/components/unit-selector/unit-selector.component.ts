@@ -10,23 +10,24 @@ import { Entity, EntityOptions } from 'src/app/entities/entity.class';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
 import { FeatureForSelector, TextFeatureForSelector } from 'src/app/models/feature-for-selector';
-import { EntitiesService } from 'src/app/services/entities.service';
+import { HTTPEntitiesService } from 'src/app/services/entities.service';
 import { Coordinate } from 'ol/coordinate';
 import { OperationsService } from 'src/app/services/operations.service';
 import { FavoriteSelectorComponent } from '../nav/favorite-selector/favorite-selector.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { entityType } from 'src/app/entities/entitiesType';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
-import { UnitSelectorService } from 'src/app/services/unit-selector.service';
+import { EntitySelectorService } from 'src/app/services/entity-selector.service';
 import { EntityLocated } from 'src/app/models/operation';
 import { Pixel } from 'ol/pixel';
+import { Selector } from '../selector-base';
 
 @Component({
   selector: 'app-unit-selector',
   templateUrl: './unit-selector.component.html',
   styleUrls: ['./unit-selector.component.css']
 })
-export class UnitSelectorComponent implements OnInit,AfterViewInit {
+export class UnitSelectorComponent extends Selector implements OnInit,AfterViewInit {
   @ViewChild('svg') svg: ElementRef;
   // @ViewChild(FavoriteSelectorComponent) favoriteSelectorComponent:FavoriteSelectorComponent;
 
@@ -46,21 +47,22 @@ export class UnitSelectorComponent implements OnInit,AfterViewInit {
   public setFeaturesToSelect = "frame";
   public unitResultIconName = "unit_result"
 
-  public listOfUnitsCreated: UnitOptions[] = [];
+  // public listOfUnitsCreated: UnitOptions[] = [];
   listOfFavorites: EntityUnit[];
 
 
   constructor(public svgListOfIconsService: SVGUnitsIconsListService, 
       private  entitiesDeployed:EntitiesDeployedService,
       private renderer: Renderer2,
-      private entitiesService:EntitiesService,
+      private httpEntitiesService:HTTPEntitiesService,
       private operationsService: OperationsService,
-      private svgService: SVGUnitsIconsListService, 
+      // private svgService: SVGUnitsIconsListService, 
       private _snackBar: MatSnackBar,
-      private unitSelectorService: UnitSelectorService)
+      private entitySelectorService: EntitySelectorService)
       {
-      this.svgListOfIcons = svgListOfIconsService;
-      this.unitOptions = new UnitOptions();
+        super();
+        this.svgListOfIcons = svgListOfIconsService;
+        this.unitOptions = new UnitOptions();
     }
 
   ngOnInit(): void {
@@ -80,33 +82,35 @@ export class UnitSelectorComponent implements OnInit,AfterViewInit {
     return this.createSVG.bind(this);
   }
   
-  insertUnit(event){
+  insertUnit(event,coordinates?){
     const mapComponent = this.entitiesDeployed.getMapComponent();
     const pixel:Pixel = [event.x,event.y];
-    const coordinates:Coordinate = mapComponent.map.getCoordinateFromPixel(pixel);
-    if(this.unitSelectorService.entitySelected == undefined){ // So n se ha grabado
-      this.saveUnit(true)
-    }else if(this.operationsService.loadUnit(this.unitSelectorService.entitySelected,coordinates)){
+    if (!coordinates)
+      coordinates = mapComponent.map.getCoordinateFromPixel(pixel);
+    if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
+      this.saveUnit(true,event)
+    }else if(this.operationsService.loadUnit(this.entitySelectorService.entitySelected,coordinates)){
       const entityLocated:EntityLocated = new EntityLocated()
-      entityLocated.entity = this.unitSelectorService.entitySelected
-      entityLocated.location = this.unitSelectorService.entitySelected.getCoordinates();
+      entityLocated.entity = this.entitySelectorService.entitySelected
+      entityLocated.location = this.entitySelectorService.entitySelected.getCoordinates();
       this.entitiesDeployed.addNewEntity(entityLocated);
-      this.unitSelectorService.entitySelected = undefined;
+      this.entitySelectorService.entitySelected = undefined;
     }
   }
 
 
-  saveUnit(andInsert = false){
+  saveUnit(andInsert = false,event?){
+    // this.entitiesDeployed.saveEntity(entityType.unit);
     // ---todo Intentar referenciar con viewChild o Output/Input 
     
     const mapComponent = this.entitiesDeployed.getMapComponent();
-    // const coordinates:Coordinate = []; 
+    // // const coordinates:Coordinate = []; 
     const coordinates = mapComponent.map.getView().getCenter();
-    this.listOfUnitsCreated.push(this.unitOptions);
+    // this.listOfUnitsCreated.push(this.unitOptions);
     const unit = EntitySelector.getFactory(entityType.unit).createEntity(this.svgListOfIconsService, this.unitOptions,coordinates);
     unit.favorite = this.favorite;
     // La guardamos en la BD
-    this.entitiesService.addEntity(unit).subscribe(
+    this.httpEntitiesService.addEntity(unit).subscribe(
       data => {
       this._snackBar.open(
         "Se ha guardado la nueva Unidad en la Base de datos",
@@ -114,9 +118,9 @@ export class UnitSelectorComponent implements OnInit,AfterViewInit {
         {duration : 3000}
       )
       unit._id = (<Entity>data)._id;
-      this.unitSelectorService.entitySelected = unit;
+      this.entitySelectorService.entitySelected = unit;
       if (andInsert)
-        this.insertUnit(null);
+        this.insertUnit(event);
     });
   }
 
