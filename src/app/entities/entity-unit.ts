@@ -12,33 +12,12 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
     // entityOptions: UnitOptions
 
   constructor(svgService: SVGUnitsIconsListService,entityOptions:UnitOptions,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
-      super(svgService,entityOptions,opt_geometryOrProperties,id);
+      super(<SVGUnitsIconsListService>svgService,entityOptions,opt_geometryOrProperties,id);
       this.entityType = entityType.unit
-      // this.map = mapComponent.map;
-      this.entityOptions = entityOptions;
-
-      const svgRogh = svgService.createSVG(entityOptions);
-      var svg = encodeURIComponent(svgRogh);
-      // const svg = (svgService.createSVG(entityOptions));
-
-      const icon = new Icon({
-        anchor: [0.5,0.5],
-        anchorXUnits: IconAnchorUnits.FRACTION,
-        anchorYUnits: IconAnchorUnits.FRACTION,
-        opacity: 1,
-        scale: 0.5,
-        // size: [24,24],
-        // color: 'black',
-        src: "data:image/svg+xml;charset=utf-8," + svg
-      })
-
-      // this.setStyle(null)
-      this.style = new Style({image:icon});
-      this.setStyle(this.getCustomStyle());
   }
   
   copy(): EntityUnit{
-    var copyEntity = new EntityUnit(this.svgService,<UnitOptions>this.entityOptions,this.opt_geometryOrProperties)
+    var copyEntity = new EntityUnit(<SVGUnitsIconsListService>this.svgService,<UnitOptions>this.entityOptions,this.opt_geometryOrProperties)
     copyEntity._id = this._id;
     return copyEntity;
   }

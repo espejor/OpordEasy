@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class EntitiesService {
+export class HTTPEntitiesService {
   // entities: Entity[];
   URL_API: string;
 

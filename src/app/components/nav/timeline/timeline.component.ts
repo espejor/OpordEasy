@@ -10,12 +10,12 @@ import { OperationsService } from 'src/app/services/operations.service';
   styleUrls: ['./timeline.component.css']
 })
 export class TimelineComponent implements OnInit {
-@Input() timeline:Timeline
+  @Input() timeline:Timeline
 
 
-getSVGTimelineItem(entity:Entity):string{
-  return entity.getSVGTimelineItem();
-}
+  // getSVGTimelineItem(entity:Entity):string{
+  //   return entity.getSVGTimelineItem();
+  // }
 
   constructor(public operationsService: OperationsService) { }
 

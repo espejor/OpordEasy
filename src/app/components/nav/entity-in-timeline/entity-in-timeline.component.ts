@@ -1,6 +1,8 @@
 import { Component, ElementRef, Input, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Entity } from 'src/app/entities/entity.class';
-import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
+import { EntityFactory } from 'src/app/entities/factory-entity';
+import { EntitySelector } from 'src/app/entities/factory-entity-selector';
+import { SvgIconsListService } from 'src/app/services/svg-icons-list.service';
 
 @Component({
   selector: 'app-entity-in-timeline',
@@ -18,12 +20,13 @@ export class EntityInTimelineComponent implements OnInit, AfterViewInit {
 
   }
 
-  constructor(public svgService:SVGUnitsIconsListService) {  }
+  constructor(public svgService:SvgIconsListService) {  }
 
   ngOnInit() {
   }
 
   ngAfterViewInit():void{
+    this.svgService = EntitySelector.getFactory(this.entity.entityType).getSVGService();
     this.entityCard.nativeElement.innerHTML = this.svgService.createSVGForCard(this.entity.entityOptions,this.size); 
   }
 

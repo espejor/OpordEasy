@@ -2,7 +2,6 @@ import { Coordinate } from "ol/coordinate";
 import { Entity } from "../entities/entity.class";
 import { EntitySelector } from "../entities/factory-entity-selector";
 import { SvgIconsListService } from "../services/svg-icons-list.service";
-import { SVGUnitsIconsListService } from "../services/svg-units-icons-list.service";
 
 export class Operation {
     _id: string;
@@ -12,7 +11,7 @@ export class Operation {
     phases: Phase[]
     // user: string// _id del User
 
-    constructor(private svgService?:SVGUnitsIconsListService, jsonRecovered?){
+    constructor(private svgService?:SvgIconsListService, jsonRecovered?){
         // this._id ="";
         this.name = "";
         this.updated = Date.now();
@@ -54,7 +53,7 @@ export class Operation {
 
 function recoverEntity(svgService:SvgIconsListService,jsonEntity): Entity{
     return EntitySelector.getFactory(jsonEntity.entityType).
-    createEntity(svgService,jsonEntity.entityOptions,jsonEntity.location,jsonEntity._id);
+    createEntity(jsonEntity.entityOptions,jsonEntity.location,jsonEntity._id);
 }
 
 
@@ -64,7 +63,7 @@ export class Phase {
     layout: EntityLocated[];
    _id: any;
 
-    constructor(private svgService?:SVGUnitsIconsListService, jsonRecovered?){
+    constructor(private svgService?:SvgIconsListService, jsonRecovered?){
         this.name = '' ;
         this.timelines = [];
         this.layout = [];
@@ -95,13 +94,13 @@ export class Phase {
     isEmpty() {
         return (this.timelines.length == 0 && this.layout.length == 0);
     }
-    
+
     recoverLayout(jsonLayout: any): EntityLocated[] {
         const entitiesLocated: EntityLocated[] = [];
         for (let i = 0; i < jsonLayout.length; i++){
-            const entityLocated:EntityLocated = new EntityLocated()
-            entityLocated.entity = recoverEntity(this.svgService,jsonLayout[i].entity); 
-            entityLocated.location = <Coordinate[]>jsonLayout[i].location; 
+            const entityLocated:EntityLocated = new EntityLocated(recoverEntity(this.svgService,jsonLayout[i].entity),<Coordinate[]>jsonLayout[i].location)
+            // entityLocated.entity = recoverEntity(this.svgService,jsonLayout[i].entity); 
+            // entityLocated.location = <Coordinate[]>jsonLayout[i].location; 
             entitiesLocated.push(entityLocated);
         }
         return entitiesLocated;
@@ -118,7 +117,7 @@ export class Phase {
 
 export class Timeline {
     entities: Entity[] = [];
-    constructor(private svgService?:SVGUnitsIconsListService, jsonTimeline?: any){
+    constructor(private svgService?:SvgIconsListService, jsonTimeline?: any){
         if(jsonTimeline){
             this.recoverEntities(jsonTimeline.entities)
         }
@@ -137,11 +136,13 @@ export class EntityLocated{
     entity:Entity;
     location:Coordinate[] | Coordinate
 
-    constructor(entity?:Entity){
+    constructor(entity?:Entity,coordinate?:Coordinate | Coordinate[]){
         if (entity){
             this.entity = entity;
             this.location = entity.getCoordinates();
         }
+        if (coordinate)
+            this.location = coordinate;
     }
 }
 

@@ -51,6 +51,15 @@ operationCtrl.updateOperation = async (req,res) => {
                 console.log(response);
                 break;
 
+            // case "newTimeline":
+            //     const timeline = req.body.timeline;
+            //     query = {[`phases.${phase}.timelines.${timeline}`]: entityId}
+            //     response = await OperationModel.updateOne({_id : req.params.id},{
+            //         $push : query
+            //     })
+            //     console.log(response);
+            //     break;
+
             case "updateLayout":
                 const location = req.body.location;
                 const object = {"entity":entityId,"location":location}

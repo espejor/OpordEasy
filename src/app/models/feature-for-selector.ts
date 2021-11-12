@@ -4,10 +4,14 @@ export class FeatureForSelector {
   [x: string]: any;
   public selectorText:string;
   public classCSS?:string = "unSelected"
-  public svg:SVGPath;
+  public svg?:SVGPath;
+  public svg_composed?:SVGPath[];
 }
 
-class SVG{
+export class FeatureComposed extends FeatureForSelector{
+}
+
+export class SVG{
     type: string;
     x: string;
     y:string;
@@ -18,7 +22,7 @@ class SVG{
     font?:string;
     font_Family?:string;
 }
-class SVGPath extends SVG{
+export class SVGPath extends SVG{
     d?:{
       friendly:string;
       enemy?:string
@@ -26,7 +30,8 @@ class SVGPath extends SVG{
       neutral?:string;
     }
 }
-class SVGText extends SVG{
+
+export class SVGText extends SVG{
   text:string
 }
 

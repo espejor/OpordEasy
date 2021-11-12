@@ -6,8 +6,6 @@ import { Entity, EntityOptions } from '../entities/entity.class';
 import { environment } from '../../environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EntitiesDeployedService } from './entities-deployed.service';
-import { SVGUnitsIconsListService } from './svg-units-icons-list.service';
-import { EntitySelector } from '../entities/factory-entity-selector';
 import { Coordinate } from 'ol/coordinate';
 import { MatDialog } from '@angular/material/dialog';
 import { NewPhaseDialogComponent } from '../components/nav/ol-map/new-phase-dialog/new-phase-dialog.component';
@@ -31,8 +29,7 @@ export class OperationsService {
   constructor(private http:HttpClient, 
     private _snackBar: MatSnackBar, 
     private  entitiesDeployed:EntitiesDeployedService,
-    public dialog: MatDialog,
-    private svgService: SVGUnitsIconsListService) {    
+    public dialog: MatDialog) {    
     const URL_BASE = environment.baseUrl;
     this.URL_API = URL_BASE + 'api/operations'; 
   }
@@ -41,7 +38,7 @@ export class OperationsService {
     return this.selectedOperation._id != undefined;
   }
 
-  loadUnit(unit: Entity<Geometry>,coordinates:Coordinate):boolean {
+  loadEntity(unit: Entity<Geometry>,coordinates:Coordinate):boolean {
     if(this.isOperationLoaded()){
       this.addEntityToLayout(unit,coordinates);
       return true;
@@ -82,6 +79,106 @@ export class OperationsService {
   }
 
   
+  newTimeline() {
+    const phase = this.selectedOperation.phases[this.phaseOrder];
+    if(phase.timelines.length > 0){
+      if (!phase.timelines[this.timelineActive].isEmpty()){
+        phase.newTimeline();
+        this.updateOperation(this.selectedOperation).subscribe(result =>{
+          this._snackBar.open(`Se ha creado una nueva Linea de Tiempo`,"",{duration:3000})
+        })
+        this.updateTimelineActive();
+      }else{
+        this._snackBar.open(
+          "No es posible abrir una nueva Linea de Tiempo si la actual está vacía",
+          "",
+          {
+            duration:3000
+          })
+      }
+    }else{
+        phase.newTimeline();
+        this.updateOperation(this.selectedOperation).subscribe(result =>{
+          this._snackBar.open(`Se ha creado una nueva Linea de Tiempo`,"",{duration:3000})
+        })
+        this.updateTimelineActive();
+    }
+  }
+
+  deleteTimeline(i: number) {
+    const phase = this.selectedOperation.phases[this.phaseOrder];
+    if(phase.timelines.length > 0){
+      if (!phase.timelines[i].isEmpty()){
+        const snackRef = this._snackBar.open(
+          "¿Está seguro que quiere eliminar la Línea de Tiempo?",
+          "Eliminar",
+          {
+            duration:5000,
+            panelClass: ['mat-toolbar', 'mat-warn']
+          });
+        snackRef.onAction().subscribe(() =>{
+            phase.deleteTimeline(i);
+            this.updateOperation(this.selectedOperation).subscribe(result =>{
+              this._snackBar.open(`Se ha eliminado una Linea de Tiempo`,"",{duration:3000})
+            })
+            this.updateTimelineActive(i);
+        })
+      }else{
+        phase.deleteTimeline(i);
+        this.updateOperation(this.selectedOperation).subscribe(result =>{
+          this._snackBar.open(`Se ha eliminado una Linea de Tiempo`,"",{duration:3000})
+        })
+        this.updateTimelineActive(i);
+      }
+    }
+  }
+
+  deletePhase(i: number) {
+    const operation = this.selectedOperation;
+    if(operation){
+      const phases = operation.phases;
+      const name = phases[i].name
+      if(phases.length > 0){    // Si hay más de una fase
+        if (!phases[i].isEmpty()){
+          const snackRef = this._snackBar.open(
+            `¿Está seguro de que quiere eliminar la Fase: ${name}?`,
+            "Eliminar Fase",
+            {
+              duration:5000,
+              panelClass: ['mat-toolbar', 'mat-warn']
+            });
+          snackRef.onAction().subscribe(() =>{
+            operation.deletePhase(i);
+            this.updateOperation(this.selectedOperation).subscribe(result =>{
+              this._snackBar.open(`Se ha eliminado la Fase ${name}`,"",{duration:3000})
+            })
+            this.updatePhaseActive();
+          })
+        }else{
+          operation.deletePhase(i);
+          this.updateOperation(this.selectedOperation).subscribe(result =>{
+            this._snackBar.open(`Se ha eliminado la Fase ${name}`,"",{duration:3000})
+          })
+          this.updatePhaseActive();
+        }
+      }
+    }
+  }
+
+  updateTimelineActive(i?:number){
+    if(i != undefined){
+      if(i <= this.timelineActive)
+        this.timelineActive --;
+
+    }else{  // lo ponemos al último
+      this.timelineActive = this.selectedOperation.phases[this.phaseOrder].timelines.length - 1;
+    }
+  }
+
+  updatePhaseActive(){
+    if(this.phaseOrder > 0)
+      this.goPreviousPhase();
+  }
 
   addEntityToLayout(entity: Entity<Geometry>,coordinates:Coordinate) {
     // Solo se incluye si no está incluido ya
@@ -90,10 +187,10 @@ export class OperationsService {
     if ((this.selectedOperation.phases[this.phaseOrder].layout.find((item) =>{
       return item.entity._id === id
     })) == undefined){
-      const entityLocated:EntityLocated = new EntityLocated()
-      entityLocated.entity = entity;
-      entityLocated.location = coordinates;
-        this.selectedOperation.phases[this.phaseOrder].layout.push(entityLocated);
+      const entityLocated:EntityLocated = new EntityLocated(entity,coordinates);
+      // entityLocated.entity = entity;
+      // entityLocated.location = coordinates;
+      this.selectedOperation.phases[this.phaseOrder].layout.push(entityLocated);
       this.http.put(this.URL_API + `/${this.selectedOperation._id}`,
       {
         // "entities" : this.selectedOperation.phases[this.phaseOrder].timelines[this.timelineActive].entities,
@@ -166,11 +263,11 @@ export class OperationsService {
   prepareListOfDeployedEntities(layout: EntityLocated[]): EntityLocated[] {
     const entities:EntityLocated[] = [];
     layout.forEach(entityDeployed => {
-      var entityDeployedForDB:EntityLocated = new EntityLocated();
       var entityForDB:any = new Object(); 
       entityForDB._id = entityDeployed.entity._id;
-      entityDeployedForDB.entity = entityForDB;
-      entityDeployedForDB.location = entityDeployed.location;
+      var entityDeployedForDB:EntityLocated = new EntityLocated(entityForDB,entityDeployed.location);
+      // entityDeployedForDB.entity = entityForDB;
+      // entityDeployedForDB.location = entityDeployed.location;
       entities.push(entityDeployedForDB);
     });
     return entities;
@@ -188,22 +285,33 @@ export class OperationsService {
 
   previousPhase(){
     if (this.isOperationLoaded()){
-      if (this.selectedOperation.phases[this.phaseOrder].name != '')
+      if (this.selectedOperation.phases[this.phaseOrder].name != ''){
         if (this.phaseOrder == 0)
           this.addNewEmptyPhase(this.phaseOrder,this.PREVIOUS);
-        else
+        else{
           this.phaseOrder--;
+        }
+        this.timelineActive = 0;
+      }
       this.updateLayout();
     }  
   }
 
+  goPreviousPhase(){
+    this.phaseOrder--;
+    this.updateLayout();
+  }
+
   nextPhase(){
     if (this.isOperationLoaded()){
-      if (this.selectedOperation.phases[this.phaseOrder].name != '')  // ya existe la fase
+      if (this.selectedOperation.phases[this.phaseOrder].name != ''){  // ya existe la fase
         if (this.phaseOrder == this.selectedOperation.phases.length - 1)  // es la última
           this.addNewEmptyPhase(this.phaseOrder,this.NEXT);   // agregar una nueva fase vacía
-        else
+        else{
           this.phaseOrder++;
+        }
+        this.timelineActive = 0;
+      }
       this.updateLayout();  
     }
   }

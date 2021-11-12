@@ -89,10 +89,10 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
       coordinates = mapComponent.map.getCoordinateFromPixel(pixel);
     if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
       this.saveUnit(true,event)
-    }else if(this.operationsService.loadUnit(this.entitySelectorService.entitySelected,coordinates)){
-      const entityLocated:EntityLocated = new EntityLocated()
-      entityLocated.entity = this.entitySelectorService.entitySelected
-      entityLocated.location = this.entitySelectorService.entitySelected.getCoordinates();
+    }else if(this.operationsService.loadEntity(this.entitySelectorService.entitySelected,coordinates)){
+      const entityLocated:EntityLocated = new EntityLocated(this.entitySelectorService.entitySelected,this.entitySelectorService.entitySelected.getCoordinates())
+      // entityLocated.entity = this.entitySelectorService.entitySelected
+      // entityLocated.location = this.entitySelectorService.entitySelected.getCoordinates();
       this.entitiesDeployed.addNewEntity(entityLocated);
       this.entitySelectorService.entitySelected = undefined;
     }
@@ -107,7 +107,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     // // const coordinates:Coordinate = []; 
     const coordinates = mapComponent.map.getView().getCenter();
     // this.listOfUnitsCreated.push(this.unitOptions);
-    const unit = EntitySelector.getFactory(entityType.unit).createEntity(this.svgListOfIconsService, this.unitOptions,coordinates);
+    const unit = EntitySelector.getFactory(entityType.unit).createEntity(this.unitOptions,coordinates);
     unit.favorite = this.favorite;
     // La guardamos en la BD
     this.httpEntitiesService.addEntity(unit).subscribe(

@@ -17,11 +17,11 @@ import { SvgGeneralIconsListService } from 'src/app/services/svg-general-icons-l
 import { Selector } from '../selector-base';
 
 @Component({
-  selector: 'app-point-selector',
-  templateUrl: './point-selector.component.html',
-  styleUrls: ['./point-selector.component.css']
+  selector: 'app-line-selector',
+  templateUrl: './line-selector.component.html',
+  styleUrls: ['./line-selector.component.css']
 })
-export class PointSelectorComponent extends Selector implements OnInit {
+export class LineSelectorComponent extends Selector implements OnInit {
   
   public setFeaturesToSelect ;
   public listOfOptions = [];
@@ -42,50 +42,52 @@ export class PointSelectorComponent extends Selector implements OnInit {
 
   fillArrayOfOptions(): any[] {
     const options:any[] = []
-    for(const property in this.svgListOfIcons.features.points) {
-      options[property] = this.svgListOfIcons.features.points[property].text;
+    for(const property in this.svgListOfIcons.features.lines) {
+      options[property] = this.svgListOfIcons.features.lines[property].text;
     };
     return options;
   }
+
 
   loadExtraData(feature:KeyValue<string,FeatureForSelector>){
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // const coordinates:Coordinate = []; 
     const coordinates = mapComponent.map.getView().getCenter();
     feature.value.classCSS = feature.value.classCSS == "selectorSelected"? "unSelected" : "selectorSelected";
-    // this.pointOptions = feature.value
-    const point = EntitySelector.getFactory(entityType.point).createEntity(feature.value,coordinates);
+    // this.lineOptions = feature.value
+    const line = EntitySelector.getFactory(entityType.line).createEntity(feature.value,coordinates);
     
-    this.entitySelectorService.entitySelected = point
+    this.entitySelectorService.entitySelected = line
 
   }
   
-  savePoint(point:Entity<Geometry>):Observable<Object>{    // point.favorite = this.favorite;
+  saveLine(line:Entity<Geometry>):Observable<Object>{    // line.favorite = this.favorite;
     // La guardamos en la BD
-    return this.httpEntitiesService.addEntity(point);
+    return this.httpEntitiesService.addEntity(line);
   }
 
-
-  insertPoint(event) {
-    // this.entitiesDeployed.saveEntity(entityType.point);
+  
+    
+  insertLine(event) {
+    // this.entitiesDeployed.saveEntity(entityType.line);
     // ---todo Intentar referenciar con viewChild o Output/Input 
     
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // // const coordinates:Coordinate = []; 
     const pixel:Pixel = [event.x,event.y];
     const coordinates = mapComponent.map.getCoordinateFromPixel(pixel);
-    // this.listOfUnitsCreated.push(this.pointOptions);
-    const point = EntitySelector.getFactory(entityType.point).createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
+    // this.listOfUnitsCreated.push(this.lineOptions);
+    const line = EntitySelector.getFactory(entityType.line).createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
 
-    this.savePoint(point).subscribe(
+    this.saveLine(line).subscribe(
       data => {
       this._snackBar.open(
-        "Se ha guardado el Punto en la Base de datos",
+        "Se ha guardado la Línea en la Base de datos",
         "Cerrar",
         {duration : 3000}
       )
-      point._id = (<Entity>data)._id;
-      this.entitySelectorService.entitySelected = point;
+      line._id = (<Entity>data)._id;
+      this.entitySelectorService.entitySelected = line;
     // if (!coordinates)
     // if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
     // }else 
@@ -102,7 +104,7 @@ export class PointSelectorComponent extends Selector implements OnInit {
 }
 
 
-export class PointOptions extends EntityOptions{
+export class LineOptions extends EntityOptions{
   icon:FeatureForSelector;
   name:string
 

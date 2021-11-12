@@ -1,20 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OpenModalService } from 'src/app/services/open-modal.service';
-import { PointSelectorComponent } from '../point-selector/point-selector.component';
+import { LineSelectorComponent } from '../line-selector/line-selector.component';
 
 @Component({
   template: ''
 })
-export class PointSelectorDialogLoaderComponent implements OnInit {
+export class LineSelectorDialogLoaderComponent implements OnInit {
   dialogRef;
 
   constructor(
     public dialog: MatDialog,
     private openModalService:OpenModalService
-  ){
-    this.openModalService.openDialog(PointSelectorComponent,"60%","75%"); 
-   }
+    ) {
+    this.openModalService.openDialog(LineSelectorComponent,"60%","75%");  
+  }
 
   ngOnInit(): void {
   }

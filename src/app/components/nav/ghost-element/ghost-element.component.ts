@@ -2,8 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import Geometry from 'ol/geom/Geometry';
 import { Pixel } from 'ol/pixel';
 import { Entity } from 'src/app/entities/entity.class';
-import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
-import {DragDropModule} from '@angular/cdk/drag-drop';
+import { SvgIconsListService } from 'src/app/services/svg-icons-list.service';
 
 
 @Component({
@@ -19,7 +18,7 @@ export class GhostElementComponent implements OnInit {
     top : "100px"
   }
   isMovingCopyFeature: boolean;
-  constructor(public svgService:SVGUnitsIconsListService) { 
+  constructor(public svgService:SvgIconsListService) { 
 
   }
 

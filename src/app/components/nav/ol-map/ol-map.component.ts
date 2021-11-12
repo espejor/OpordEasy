@@ -4,11 +4,9 @@ import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import XYZ from 'ol/source/XYZ';
-import WMTS from 'ol/source/WMTS'
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import {getTopLeft} from 'ol/extent'
-import { OSM, Vector} from 'ol/source';
-import { Tile} from 'ol/layer';
+import { Vector} from 'ol/source';
 import * as Proj from 'ol/proj';
 // import {register} from 'ol/proj/proj4';
 import * as proj4x from 'proj4';
@@ -16,50 +14,37 @@ import * as proj4x from 'proj4';
 import { Coordinate, toStringHDMS } from 'ol/coordinate';
 import {
   defaults as defaultControls,
-  Control,
   ScaleLine,
   ZoomSlider
 } from 'ol/control';
 import Overlay from 'ol/Overlay'
 import {fromLonLat, get as getProjection} from 'ol/proj';
 import {getWidth} from 'ol/extent';
-import { Collection, Feature, Graticule, MapBrowserEvent, MapBrowserEventHandler } from 'ol';
-import Point from 'ol/geom/Point';
+import { Collection, Feature, MapBrowserEvent, MapEvent } from 'ol';
 import Style from 'ol/style/Style';
 import Icon from 'ol/style/Icon';
 import VectorSource from 'ol/source/Vector';
 import IconAnchorUnits from 'ol/style/IconAnchorUnits';
 import Circle from 'ol/style/Circle';
-import Polygon from 'ol/geom/Polygon';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
-import Text from 'ol/style/Text';
-import Modify from 'ol/interaction/Modify';
+import Modify, { ModifyEvent } from 'ol/interaction/Modify';
 import Translate, { TranslateEvent } from 'ol/interaction/Translate';
 import Geometry from 'ol/geom/Geometry';
 import BaseEvent from 'ol/events/Event';
-import { EventsKey, Listener, ListenerFunction } from 'ol/events';
 import { EntityPoint } from 'src/app/entities/entity-point.class';
 import LineString from 'ol/geom/LineString';
-import { EntityLine } from 'src/app/entities/entity-line.class';
 import { EntityArrow } from 'src/app/entities/entity-arrow.class';
 import RegularShape from 'ol/style/RegularShape';
-import { EntityAxe } from 'src/app/entities/entity-axe.class';
-import { EntityControlPoint } from 'src/app/entities/entity-control-point';
+import { EntityAxis } from 'src/app/entities/entity-axis.class';
 import { Entity } from 'src/app/entities/entity.class';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
-import { element } from 'protractor';
-import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
 import { GraticuleUTM } from 'src/app/utilities/graticule';
 import { UtmService } from 'src/app/services/utm.service';
 import { FloatingMenuComponent } from '../floating-menu/floating-menu.component';
-import { on } from 'node:events';
-import { Console } from 'node:console';
-import { GhostElementComponent } from '../ghost-element/ghost-element.component';
 import { OperationsService } from 'src/app/services/operations.service';
-import { features } from 'node:process';
-import { EntitiesService } from 'src/app/services/entities.service';
 import { OperationsComponent } from '../operations/operations.component';
+import { Listener } from 'ol/events';
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -98,7 +83,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   entityTriangle: EntityPoint;
   entityFriendly: EntityPoint;
   entityLine: EntityArrow;
-  entityAxe: EntityAxe;
+  entityAxis: EntityAxis;
   
   vertix: Style;
   triangle: Style;
@@ -127,11 +112,9 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
   constructor(private elementRef: ElementRef, 
     public entitiesDeployedService: EntitiesDeployedService,
-    private svgService:SVGUnitsIconsListService,
     private utmService:UtmService,
     private renderer: Renderer2,
-    public operationsService:OperationsService,
-    private entitiesService:EntitiesService) {
+    public operationsService:OperationsService) {
     entitiesDeployedService.setMapComponent(this);
     // this.svgService = _svgService;
   }
@@ -156,6 +139,10 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     this.map.addLayer(graticule.getGraticuleLayer());
 
     // this.activatedOperationsFormOpened = this.mainMenu.activatedOperationsFormOpened
+  }
+
+  onPointerMove():void {
+    console.log("Moviendo")
   }
 
   catchEvent(activatedOperationsFormOpened){
@@ -276,11 +263,11 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.dragFeatures.push(this.entityCircle);
     // this.dragFeatures.push(this.entityTriangle);
     // this.dragFeatures.push(this.entityFriendly);
-    // this.dragFeatures.push(this.entityLine);
+    this.dragFeatures.push(this.entityLine);
     
-    // this.drag = new Modify({
-    //   features:this.dragFeatures
-    // });
+    this.drag = new Modify({
+      features:this.dragFeatures
+    });
 
 
     // this.lineStyle = new Style({
@@ -358,7 +345,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.shapesFeatures.push(this.entityCircle);
     // this.shapesFeatures.push(this.entityTriangle);
     // this.shapesFeatures.push(this.entityFriendly);
-    // this.shapesFeatures.push(this.entityLine);
+    this.shapesFeatures.push(this.entityLine);
 
 
 
@@ -415,7 +402,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     });
 
     
-    this.entityAxe = new EntityAxe(coordinatesShape);
+    // this.entityAxis = new EntityAxis(coordinatesShape);
 
 
     // this.entityCircle.setStyle(this.circle);
@@ -423,24 +410,48 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.entityFriendly.setStyle(this.friendly);
     // this.entityLine.setStyle([this.lineStyle]);
 
+    this.map.on("change", (evt:MapEvent) => {
+      // evt..forEach(feature => {
+      //   // // Guardar las nuevas coordenadas en la BD
+      //   // this.httpEntitiesService.updateCoordinates(<EntityPoint>feature).subscribe(
+      //   //   data => {
+      //   //     console.log(data);
+      //   //   }
+      //   // );
+      //   this.operationsService.updateEntityPositionInOperation(<Entity>feature)
+      //   // (<EntityPoint>feature).setCoordinates(this.httpEntitiesService,(<EntityPoint>feature).getCoordinates())
+      // })
 
-    this.move.on("moveend",evt => {
+            console.log("moviendo");
+    })
+
+    this.move.on("translateend",(evt:TranslateEvent)=> {
+      evt.features.forEach(feature => {
+        // // Guardar las nuevas coordenadas en la BD
+        // this.httpEntitiesService.updateCoordinates(<EntityPoint>feature).subscribe(
+        //   data => {
+        //     console.log(data);
+        //   }
+        // );
+        this.operationsService.updateEntityPositionInOperation(<Entity>feature)
+        // (<EntityPoint>feature).setCoordinates(this.httpEntitiesService,(<EntityPoint>feature).getCoordinates())
+      })
     })
 
     this.map.addInteraction(this.drag);
     this.map.addInteraction(this.move);
     // this.map.addInteraction(this.modify);
 
-    this.drag.on("modifyend",(evt:TranslateEvent) => {
+    this.drag.on("modifyend",(evt:ModifyEvent) => {
       evt.features.forEach(feature => {
         // // Guardar las nuevas coordenadas en la BD
-        // this.entitiesService.updateCoordinates(<EntityPoint>feature).subscribe(
+        // this.httpEntitiesService.updateCoordinates(<EntityPoint>feature).subscribe(
         //   data => {
         //     console.log(data);
         //   }
         // );
         this.operationsService.updateEntityPositionInOperation(<Entity>feature)
-        // (<EntityPoint>feature).setCoordinates(this.entitiesService,(<EntityPoint>feature).getCoordinates())
+        // (<EntityPoint>feature).setCoordinates(this.httpEntitiesService,(<EntityPoint>feature).getCoordinates())
       })
     }) 
     // this.map.addInteraction(this.mouseup);
@@ -591,9 +602,9 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   } // NgOnInit
 
 
-  on(type: 'mousedown', listener: (evt: BaseEvent) => void): void{
+  // on(type: 'mousedown', listener: (evt: BaseEvent) => void): void{
 
-  }
+  // }
 
 } // class OlMapComponent
 

@@ -5,8 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Operation } from 'src/app/models/operation';
 import { OperationsService } from 'src/app/services/operations.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import { SvgGeneralIconsListService } from 'src/app/services/svg-general-icons-list.service';
-import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
+import { SvgIconsListService } from 'src/app/services/svg-icons-list.service';
 
 @Component({
   selector: 'app-operations',
@@ -22,7 +21,7 @@ export class OperationsComponent implements OnInit,AfterViewInit {
     private iconRegistry: MatIconRegistry,
 		private sanitizer: DomSanitizer, 
     private _snackBar: MatSnackBar,
-    private svgService: SVGUnitsIconsListService) {
+    private svgService: SvgIconsListService) {
       iconRegistry.addSvgIcon('circle', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/circle24.svg'));
   }
  

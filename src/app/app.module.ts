@@ -46,6 +46,8 @@ import { RecentSelectorComponent } from './components/nav/recent-selector/recent
 import { PhaseComponent } from './components/nav/phase/phase.component';
 import { GlobalsService } from './services/globals.service';
 import { NewPhaseDialogComponent } from './components/nav/ol-map/new-phase-dialog/new-phase-dialog.component';
+import { LineSelectorDialogLoaderComponent } from './components/line-selector-dialog-loader/line-selector-dialog-loader.component';
+import { LineSelectorComponent } from './components/line-selector/line-selector.component';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -74,7 +76,9 @@ export function HttpLoaderFactory(http:HttpClient){
     EntityUnitSelectorCardComponent,
     RecentSelectorComponent,
     PhaseComponent,
-    NewPhaseDialogComponent
+    NewPhaseDialogComponent,
+    LineSelectorDialogLoaderComponent,
+    LineSelectorComponent
   ],
   imports: [
     BrowserModule,

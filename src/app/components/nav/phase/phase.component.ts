@@ -21,7 +21,15 @@ export class PhaseComponent implements OnInit {
   }
 
   newTimeline(){
-    
+    this.operationsService.newTimeline()
+  }
+
+  deleteTimeline(i:number){
+    this.operationsService.deleteTimeline(i);
+  }
+
+  deletePhase(i:number){
+    this.operationsService.deletePhase(i);
   }
 
 }

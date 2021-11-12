@@ -4,8 +4,8 @@ html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 
-
-.style-error .mat-simple-snackbar-action {
-    color: white;
-    background-color: green;
-  }
+/* 
+.snackbar-button {
+  color: white !important;
+  background-color: green !important;
+} */

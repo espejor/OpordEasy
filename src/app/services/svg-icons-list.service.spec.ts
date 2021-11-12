@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { UnitSelectorService } from './unit-selector.service';
+import { SvgIconsListService } from './svg-icons-list.service';
 
-describe('UnitSelectorService', () => {
-  let service: UnitSelectorService;
+describe('SvgIconsListService', () => {
+  let service: SvgIconsListService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(UnitSelectorService);
+    service = TestBed.inject(SvgIconsListService);
   });
 
   it('should be created', () => {

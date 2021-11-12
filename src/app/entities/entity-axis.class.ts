@@ -16,7 +16,7 @@ import { EntityLine } from "./entity-line.class";
 import { EntityPointOfLabel } from "./entity-point-of-label.class";
 import { EntityPoint } from "./entity-point.class";
 
-export class EntityAxe<GeomType extends Geometry = Geometry>  extends EntityComplex{
+export class EntityAxis<GeomType extends Geometry = Geometry>  extends EntityComplex{
     // Entities components
     private backbone:EntityBackBone;
     private rightLine:EntityLine;
@@ -31,7 +31,7 @@ export class EntityAxe<GeomType extends Geometry = Geometry>  extends EntityComp
 
     constructor(coordinates: Coordinate[]){
         super(coordinates);
-        this.entityType = entityType.axe
+        this.entityType = entityType.axis
 
         // Create backbone
         this.backbone = new EntityBackBone([this.rightLine,this.leftLine],{
@@ -106,18 +106,18 @@ export class EntityAxe<GeomType extends Geometry = Geometry>  extends EntityComp
 
         // this.controlWidthPoint.on("change",
         // function (ev) {
-        //     var angleOfAxe = getOrientation(self.backbone.getPenultimate(),self.backbone.getEnd()) + Math.PI/2;
+        //     var angleOfAxis = getOrientation(self.backbone.getPenultimate(),self.backbone.getEnd()) + Math.PI/2;
         //     var initMovePoint = self.tipLine.getPenultimate();
         //     var newPosition = (<Point>this.getGeometry()).getCoordinates();
-        //     var angleOfPoint = getOrientation(initMovePoint,newPosition) - angleOfAxe;
+        //     var angleOfPoint = getOrientation(initMovePoint,newPosition) - angleOfAxis;
         //     var newWidth = Math.cos(angleOfPoint) * distance(initMovePoint,newPosition);
-        //     var finalPosition = getPointToVector(initMovePoint,angleOfAxe,newWidth);
+        //     var finalPosition = getPointToVector(initMovePoint,angleOfAxis,newWidth);
 
         //     (<Point>self.controlWidthPoint.getGeometry()).setCoordinates(finalPosition);
 
         //     self.WIDTH = newWidth * 4 / 3;
 
-        //     console.log(angleOfAxe + " " + initMovePoint + " " + newPosition);
+        //     console.log(angleOfAxis + " " + initMovePoint + " " + newPosition);
             
         //     // self.WIDTH =10000;
         //     // self.updateShape();
@@ -156,11 +156,11 @@ export class EntityAxe<GeomType extends Geometry = Geometry>  extends EntityComp
     }
 
     public onDrag(evt:TranslateEvent){
-        var centreOfAxe = middlePoint(this.tipLine.getStart(),this.tipLine.getEnd());
-        var angleOfAxe = getOrientation(this.backbone.getPenultimate(),this.backbone.getEnd()) + Math.PI/2;
+        var centreOfAxis = middlePoint(this.tipLine.getStart(),this.tipLine.getEnd());
+        var angleOfAxis = getOrientation(this.backbone.getPenultimate(),this.backbone.getEnd()) + Math.PI/2;
         var newPosition = evt.coordinate;
-        var angleOfPoint = getOrientation(centreOfAxe,newPosition) - angleOfAxe;
-        var newDistanceToCentre = distance(centreOfAxe,newPosition);
+        var angleOfPoint = getOrientation(centreOfAxis,newPosition) - angleOfAxis;
+        var newDistanceToCentre = distance(centreOfAxis,newPosition);
         var newPerpendicullarDistanceToCentre = Math.cos(angleOfPoint) * newDistanceToCentre;
 
         if(newPerpendicullarDistanceToCentre >= this.WIDTH / 2)

@@ -4,6 +4,6 @@ export enum entityType {
     pointOfLabel,
     controlPoint,
     line,
-    axe,
+    axis,
     arrow
 }

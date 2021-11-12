@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { EntityUnit } from 'src/app/entities/entity-unit';
 import { Entity } from 'src/app/entities/entity.class';
-import { EntitiesService } from 'src/app/services/entities.service';
+import { HTTPEntitiesService } from 'src/app/services/entities.service';
 import { OperationsService } from 'src/app/services/operations.service';
 
 @Component({
@@ -15,12 +15,12 @@ export class RecentSelectorComponent implements OnInit {
   @Input() createSVG: Function;
 
 
-  constructor(private entitiesService:EntitiesService,
+  constructor(private httpEntitiesService:HTTPEntitiesService,
     private operationsService:OperationsService) { }
 
   ngOnInit(): void {
     this.listOfRecents = [];
-    this.entitiesService.getEntities().subscribe(res => {
+    this.httpEntitiesService.getEntities().subscribe(res => {
       console.log(res);
       const list = <EntityUnit[]>res;
       this.listOfRecents = list.
@@ -35,6 +35,6 @@ export class RecentSelectorComponent implements OnInit {
 
   updateModel(unit:Entity){
     this.createSVG(unit);
-    // this.operationsService.loadUnit(unit);
+    // this.operationsService.loadEntity(unit);
   }
 }

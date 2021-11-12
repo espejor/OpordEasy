@@ -4,7 +4,7 @@ import { Entity } from '../entities/entity.class';
 @Injectable({
   providedIn: 'root'
 })
-export class UnitSelectorService {
+export class EntitySelectorService {
   entitySelected: Entity;
 
   constructor() { }

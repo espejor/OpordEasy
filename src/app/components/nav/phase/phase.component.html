@@ -1,33 +1,40 @@
 <div class = "fase_view" >
-    <div class="phase-selector">
-        <div class="col-md-2">
+    <div class="phase_manager">
+        <div class="phase-selector">
             <button mat-icon-button aria-label="Fase anterior" (click) = "operationsService.previousPhase()">
                 <mat-icon>arrow_left</mat-icon>
             </button>
-        </div>
-        <div class="col-md-7">
             <mat-form-field >
                 <input matInput  type="text" name="phasesname" #name = 'ngModel' 
                 (ngModelChange) = "loadLayout()"
                 [(ngModel)] = "operationsService.selectedOperation.phases[operationsService.phaseOrder].name"
                 placeholder="Fase">
             </mat-form-field>
-        </div>
-        <div class="col-md-2">
             <button mat-icon-button aria-label="Fase siguiente" (click) = "operationsService.nextPhase()">
                 <mat-icon>arrow_right</mat-icon>
             </button>
         </div>
+        <div class="delete-button">
+            <button mat-icon-button color="red" class="icon-button" (click) = "deletePhase(operationsService.phaseOrder)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>    
     </div>
     <!-- Vista de la Lista de Timelines----------- -->
     <div class="timelines-list">
-        <mat-radio-group class="radio-group">
-            <div class="timeline-list-view" *ngFor = "let timeline of operationsService.selectedOperation.phases[operationsService.phaseOrder].timelines">
+        <mat-radio-group class="radio-group" [(ngModel)]="operationsService.timelineActive" >
+            <div class="timeline-list-view"
+                    *ngFor = "let timeline of operationsService.selectedOperation.phases[operationsService.phaseOrder].timelines;
+                    let i=index;"
+                    [ngClass] = "{selected:operationsService.timelineActive == i}" 
+                    >
                 
-                <mat-radio-button value="1"></mat-radio-button>
-                <app-timeline [timeline] = "timeline" class= "app-timeline"></app-timeline>
+                <mat-radio-button [value] = i></mat-radio-button>
+
+                <app-timeline [timeline] = "timeline" class= "app-timeline" ></app-timeline>
+
                 <div class="delete-button">
-                    <button mat-icon-button class="icon-button">
+                    <button mat-icon-button class="icon-button" (click) = "deleteTimeline(i)">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </div>

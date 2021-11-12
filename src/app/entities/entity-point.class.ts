@@ -1,7 +1,4 @@
-import { Feature, Map } from "ol";
 import Geometry from "ol/geom/Geometry";
-import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
-import * as Proj from 'ol/proj';
 import Style from "ol/style/Style";
 import Text from "ol/style/Text";
 import { Color } from "ol/color";
@@ -10,11 +7,11 @@ import Stroke from "ol/style/Stroke";
 import Fill from "ol/style/Fill";
 import { Entity, EntityOptions } from "./entity.class";
 import ImageStyle from "ol/style/Image";
-import { SVGUnitsIconsListService } from "../services/svg-units-icons-list.service";
-import { PointOptions } from "../components/point-selector/point-selector.component";
 import { Coordinate } from "ol/coordinate";
-import GeometryType from "ol/geom/GeometryType";
 import { entityType } from "./entitiesType";
+import { SvgIconsListService } from "../services/svg-icons-list.service";
+import IconAnchorUnits from "ol/style/IconAnchorUnits";
+import Icon from "ol/style/Icon";
 
 export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
   public image: ImageStyle;
@@ -31,11 +28,30 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
   public scale = 1.5;
   public rotateWithView = false;
 
-  constructor(svgService: SVGUnitsIconsListService,entityOptions:EntityOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
+  constructor(svgService: SvgIconsListService,entityOptions:EntityOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
     super(svgService,opt_geometryOrProperties,id);
     this.entityType = entityType.point
+    // this.map = mapComponent.map;
+    this.entityOptions = entityOptions;
 
-    this.location = this.getCoordinates();
+    const svgRogh = svgService.createSVG(entityOptions);
+    var svg = encodeURIComponent(svgRogh);
+    // const svg = (svgService.createSVG(entityOptions));
+
+    const icon = new Icon({
+      anchor: [0.5,0.5],
+      anchorXUnits: IconAnchorUnits.FRACTION,
+      anchorYUnits: IconAnchorUnits.FRACTION,
+      opacity: 1,
+      scale: 0.5,
+      // size: [24,24],
+      // color: 'black',
+      src: "data:image/svg+xml;charset=utf-8," + svg
+    })
+
+    // this.setStyle(null)
+    this.style = new Style({image:icon});
+    this.setStyle(this.getCustomStyle());
   }
 
   getEntityGeometry():Point{

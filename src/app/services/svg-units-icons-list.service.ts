@@ -1,21 +1,14 @@
 import { Injectable } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { stringToGlsl } from 'ol/style/expressions';
-import { EntityOptions } from '../entities/entity.class';
-import { FeatureForSelector, TextFeatureForSelector } from '../models/feature-for-selector';
+import { FeatureForSelector, SVGPath, TextFeatureForSelector } from '../models/feature-for-selector';
+import { SvgIconsListService } from './svg-icons-list.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SVGUnitsIconsListService {
+export class SVGUnitsIconsListService extends SvgIconsListService{
   // public UNIT_RESULT = "<svg width='80' height='60' version='1.1' xmlns='http://www.w3.org/2000/svg'>";
-  private x = "80";
-  private y = "70";
-  private iconX = "40";
-  private iconY = "35";
-  private generalStrokeColor = "black"
-  private generalStrokeWidth = "2"
   
   public features:{[key: string]: {[key: string]: FeatureForSelector | TextFeatureForSelector}} = {
     frame: {  
@@ -46,45 +39,38 @@ export class SVGUnitsIconsListService {
   }
 
 
-  constructor(private iconRegistry: MatIconRegistry, private sanitizer: DomSanitizer) {
+  constructor(private iconRegistry?: MatIconRegistry, private sanitizer?: DomSanitizer) {
+    super();
     // this.updateIconTemplate();
-    for(let group in this.features){
-      for(let option in this.features[group]){
-        iconRegistry.addSvgIcon(option, sanitizer.bypassSecurityTrustResourceUrl('assets/icons/units/' + group + '/' + option + '.svg'));
-      }
-    } 
+    if(iconRegistry && sanitizer){
+      for(let group in this.features){
+        for(let option in this.features[group]){
+          iconRegistry.addSvgIcon(option, sanitizer.bypassSecurityTrustResourceUrl('assets/icons/units/' + group + '/' + option + '.svg'));
+        }
+      } 
+    }
   }
 
-  public createSVGForCard(entityOptions: EntityOptions,scale:number = 1): string {
-    return this.createSVG(entityOptions,scale);
-  }
-
-  
-  public createSVG(collection,scale:number = 1):string{
-    const x = 160 * scale;
-    const y = 120 * scale;
-    var svg = "<svg   viewBox='0 0 160 120' width= '"+ x + "' height= '" + y + "' version='1.1' xmlns='http://www.w3.org/2000/svg'>";
-    svg += this.compoundSVG(collection,collection.frame);
-    return svg += "</svg>";
-  }
-
-  private  compoundSVG(collection,frame:string):string{
+    
+  protected  compoundSVG(collection):string{
     var svg:string = " ";
+    const frame = collection.frame
     
     for(let element in collection) {
       if (Array.isArray(collection[element])) {
-        svg += this.compoundSVG(collection[element],frame);
+        svg += this.compoundSVG(collection[element]);
       }
       else{
         if (collection[element] != null)
-          svg += this.writeSVGContent(collection,collection[element],frame);
+          svg += this.writeSVGContent(collection[element],frame);
       }
     };
 
     return svg;
   }
 
-  writeSVGContent(collection:FeatureForSelector[],feature: FeatureForSelector,frame:string):string {
+
+  protected writeSVGContent(feature,frame:string):string {
     const type = feature.value.svg.type;
     var svg:string="";
   
@@ -92,7 +78,7 @@ export class SVGUnitsIconsListService {
       svg += "<path ";
       // const draw = "m" + feature.value.svg.x + "," + feature.value.svg.y + (feature.value.svg.d[this.getD(feature)]);
       // escribimos d=""
-      svg += "d='M" + this.iconX + "," + this.iconY + feature.value.svg.d[this.getD(collection,feature,frame)] + "' ";
+      svg += "d='M" + this.iconX + "," + this.iconY + feature.value.svg.d[this.getD(feature,frame)] + "' ";
       // escribimos los atributos
       svg += "stroke-width = '" + feature.value.svg.strokeWidth + "' "
       svg += "stroke = '" + feature.value.svg.stroke + "' ";
@@ -103,12 +89,7 @@ export class SVGUnitsIconsListService {
     return svg;
   }
 
-  getD(collection,type:FeatureForSelector,frame):string{
-    if(frame){
-      return type.value.svg.d[frame.key] != undefined? frame.key :"friendly"
-    }
-    return "friendly";
-  }
+
 
 
 }

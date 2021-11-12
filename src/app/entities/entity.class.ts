@@ -2,8 +2,8 @@ import { Feature, Map, MapBrowserEvent } from "ol";
 import { Coordinate } from "ol/coordinate";
 import Geometry from "ol/geom/Geometry";
 import Style from "ol/style/Style";
-import { EntitiesService } from "../services/entities.service";
-import { SVGUnitsIconsListService } from "../services/svg-units-icons-list.service";
+import { HTTPEntitiesService } from "../services/entities.service";
+import { SvgIconsListService } from "../services/svg-icons-list.service";
 import { entityType } from "./entitiesType";
 
 export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feature{
@@ -18,7 +18,7 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
   // protected olMap:OlMapComponent
   public entityOptions:EntityOptions;
 
-  constructor(public svgService?: SVGUnitsIconsListService,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
+  constructor(public svgService?: SvgIconsListService,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
       super(opt_geometryOrProperties);
       this.updated = Date.now();
       this.location = this.getCoordinates();
@@ -28,7 +28,8 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
       // this.olMap = mapComponent;
       // if(this.olMap)
       //   this.map = mapComponent.map;
-      addEventListener('mousedown',(ev:MouseEvent):void => this.onMouseDown(ev));
+      // addEventListener('mouseup',(ev:MouseEvent):void => this.onDragEnd(ev));
+      // addEventListener('mousedown',(ev:MouseEvent):void => this.onMouseDown(ev));
       // addEventListener('mouseover',(ev:MouseEvent):void => this.onMouseOver(ev))
   }
 
@@ -49,9 +50,9 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
   //   return this.getEntityGeometry().getCoordinates();
   // }
 
-  saveCoordinates(entitiesService:EntitiesService) {
+  saveCoordinates(httpEntitiesService:HTTPEntitiesService) {
     // const coordinates:Coordinate[] = this.getGeometry().getCoordinates();
-    entitiesService.updateCoordinates(this).subscribe(
+    httpEntitiesService.updateCoordinates(this).subscribe(
       data =>{
         console.log(data);
       }
@@ -70,6 +71,10 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
   };    
 
     
+  public onDragEnd(ev):void{
+    console.log("Fin drag");
+  };    
+
   public activateStyle(){
     this.setStyle(this.getStyle());
   }
@@ -78,9 +83,9 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
     return this.style;
   }
 
-  public getSVGTimelineItem(){
-    return this.svgService.createSVG(this.entityOptions)
-  }
+  // public getSVGTimelineItem(){
+  //   return this.svgService.createSVG(this.entityOptions)
+  // }
 
   setCoordinatesOfLocation(coordinates?:Coordinate[]) {
     if(coordinates)

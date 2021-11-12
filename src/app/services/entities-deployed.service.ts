@@ -9,6 +9,8 @@ import { EntityUnit } from '../entities/entity-unit';
 import { Entity } from '../entities/entity.class';
 import { EntityLocated } from '../models/operation';
 import { entityType } from '../entities/entitiesType';
+import { EntitySelector } from '../entities/factory-entity-selector';
+import { SvgIconsListService } from './svg-icons-list.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,8 @@ export class EntitiesDeployedService {
   entities: EntityLocated[] = []
   URL_API: string;
 
-  constructor(private http:HttpClient) {
+  constructor(private http:HttpClient,
+    public svgListOfIconsService:SvgIconsListService) {
     const URL_BASE = environment.baseUrl;
     this.URL_API = URL_BASE + 'api/entities'; 
   }
@@ -48,9 +51,29 @@ export class EntitiesDeployedService {
   }
 
 
-  saveEntity(entityType:entityType){
-    // -------- provisional
-    // operation.user = "Pepe"
-  }
+  // saveEntity(entityType:entityType){
+  //   // -------- provisional
+  //   // operation.user = "Pepe"
+        
+  //   const mapComponent = this.getMapComponent();
+  //   // // const coordinates:Coordinate = []; 
+  //   const coordinates = mapComponent.map.getView().getCenter();
+  //   // this.listOfUnitsCreated.push(this.unitOptions);
+  //   const unit = EntitySelector.getFactory(entityType).createEntity(this.svgListOfIconsService, this.unitOptions,coordinates);
+  //   unit.favorite = this.favorite;
+  //   // La guardamos en la BD
+  //   this.httpEntitiesService.addEntity(unit).subscribe(
+  //     data => {
+  //     this._snackBar.open(
+  //       "Se ha guardado la nueva Unidad en la Base de datos",
+  //       "Cerrar",
+  //       {duration : 3000}
+  //     )
+  //     unit._id = (<Entity>data)._id;
+  //     this.entitySelectorService.entitySelected = unit;
+  //     if (andInsert)
+  //       this.insertUnit(event);
+  //   });
+  // }
 
 }

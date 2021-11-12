@@ -5,6 +5,13 @@
 .timeline-list-view{
     width: 100%;
     display: flex;
+    border-radius: 5px;
+    padding-left: 10px;
+}
+
+.timelines-list{
+    max-height: 250px;
+    overflow: auto;
 }
 
 
@@ -25,6 +32,10 @@
     display: flex;
 }
 
+.phase_manager{
+    display: flex;
+}
+
 mat-radio-button{
     display: flex;
 }
@@ -41,4 +52,11 @@ mat-radio-button{
     display: flex;
     justify-content: space-around;
     margin: 5px;
+}
+
+.selected{
+    background-color: rgb(174, 238, 174,40%);
+}
+.unselected{
+    background-color: white;
 }
