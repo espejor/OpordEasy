@@ -2,7 +2,7 @@ import Geometry from "ol/geom/Geometry";
 import Icon from "ol/style/Icon";
 import IconAnchorUnits from "ol/style/IconAnchorUnits";
 import Style from "ol/style/Style";
-import { FeatureForSelector } from "../models/feature-for-selector";
+import { FeatureForDeploing } from "../models/feature-for-selector";
 import { SVGUnitsIconsListService } from "../services/svg-units-icons-list.service";
 import { entityType } from "./entitiesType";
 import { EntityPoint } from "./entity-point.class";
@@ -26,11 +26,11 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
 
 
 export class UnitOptions extends EntityOptions{
-    frame:FeatureForSelector;
-    main:FeatureForSelector[];
-    sector1:FeatureForSelector;
-    sector2:FeatureForSelector;
-    level:FeatureForSelector;
+    frame:FeatureForDeploing;
+    main:FeatureForDeploing[];
+    sector1:FeatureForDeploing;
+    sector2:FeatureForDeploing;
+    level:FeatureForDeploing;
   
     constructor(){
       super();

@@ -34,7 +34,7 @@
                         </mat-form-field>
                         <div *ngIf = "setFeaturesToSelect != 'sectionAdd'; else textOptions" class="features-container">
                             <div  *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
-                                <div  (click) = "addFeature(feature)"> <!--  [class] = "feature.value.classCSS" -->
+                                <div  (click) = "addFeature(feature)" [class] = "feature.value.classCSS">
                                     <mat-icon svgIcon = "{{feature.key}}" class="icon-selector" ></mat-icon>
                                     <div class="text-selector">{{feature.value.selectorText}}</div>
                                 </div>

@@ -20,7 +20,7 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
   location: Coordinate
 
   // features of text
-  public textLine: string = "";
+  public name: string = "";
   public textColor: Color = [255,255,255];
   private placement = "point";
   public textAlign = "center";
@@ -29,10 +29,10 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
   public rotateWithView = false;
 
   constructor(svgService: SvgIconsListService,entityOptions:EntityOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
-    super(svgService,opt_geometryOrProperties,id);
+    super(entityOptions,svgService,opt_geometryOrProperties,id);
     this.entityType = entityType.point
     // this.map = mapComponent.map;
-    this.entityOptions = entityOptions;
+    // this.entityOptions = entityOptions;
 
     const svgRogh = svgService.createSVG(entityOptions);
     var svg = encodeURIComponent(svgRogh);
@@ -74,7 +74,7 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
     this.style = new Style({
       image: this.image,      
       text: new Text({
-        text: this.textLine,
+        text: this.name,
         placement: this.placement,
         textAlign: this.textAlign,
         textBaseline: this.textBaseline,

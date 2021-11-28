@@ -9,7 +9,7 @@ import { EntityUnit, UnitOptions } from 'src/app/entities/entity-unit';
 import { Entity, EntityOptions } from 'src/app/entities/entity.class';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
-import { FeatureForSelector, TextFeatureForSelector } from 'src/app/models/feature-for-selector';
+import { FeatureForDeploing, TextFeatureForDeploing } from 'src/app/models/feature-for-selector';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
 import { Coordinate } from 'ol/coordinate';
 import { OperationsService } from 'src/app/services/operations.service';
@@ -184,7 +184,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     console.log()
   }
 
-  addFeature(feature:KeyValue<string,FeatureForSelector|TextFeatureForSelector>){
+  addFeature(feature:KeyValue<string,FeatureForDeploing|TextFeatureForDeploing>){
     const selected = this.unitOptions[this.setFeaturesToSelect];
     
     if (Array.isArray(selected)){ // buscamos en un array de Features
@@ -210,16 +210,16 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   }
 
   
-  public updateIconTemplate(feature: FeatureForSelector){
-    const type = feature.value.svg.type;
+  public updateIconTemplate(feature: FeatureForDeploing){
+    const type = feature.value.codeForDeploing.type;
     const element = this.renderer.createElement(type, 'svg');
 
     if (type == "path"){
-      const draw = "m" + feature.value.svg.x + "," + feature.value.svg.y + (feature.value.svg.d[this.getD(feature)]);
+      const draw = "m" + feature.value.codeForDeploing.x + "," + feature.value.codeForDeploing.y + (feature.value.codeForDeploing.d[this.getD(feature)]);
       this.renderer.setAttribute(element, "d", draw);
-      this.renderer.setAttribute(element, "stroke-width", feature.value.svg.strokeWidth)
-      this.renderer.setAttribute(element, "stroke", feature.value.svg.stroke)
-      this.renderer.setAttribute(element, "fill", feature.value.svg.fill)
+      this.renderer.setAttribute(element, "stroke-width", feature.value.codeForDeploing.strokeWidth)
+      this.renderer.setAttribute(element, "stroke", feature.value.codeForDeploing.stroke)
+      this.renderer.setAttribute(element, "fill", feature.value.codeForDeploing.fill)
     }else if (type == "text"){
 
     }
@@ -227,9 +227,9 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     this.renderer.appendChild(this.svg.nativeElement, element)
   }  
 
-  getD(type:FeatureForSelector):string{
+  getD(type:FeatureForDeploing):string{
     if(this.unitOptions.frame)
-      return type.value.svg.d[this.unitOptions.frame.key] != undefined? this.unitOptions.frame.key :"friendly"
+      return type.value.codeForDeploing.d[this.unitOptions.frame.key] != undefined? this.unitOptions.frame.key :"friendly"
     return "friendly";
   }
 

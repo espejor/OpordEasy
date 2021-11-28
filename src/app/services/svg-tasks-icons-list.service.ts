@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { FeatureForSelector } from '../models/feature-for-selector';
+import { FeatureForDeploing } from '../models/feature-for-selector';
 import { SvgIconsListService } from './svg-icons-list.service';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { SvgIconsListService } from './svg-icons-list.service';
 })
 export class SvgTasksIconsListService extends SvgIconsListService {
 
-  public features:{ [key: string]:{text:string,selector: {[key: string]:FeatureForSelector}}} = {
+  public features:{ [key: string]:{text:string,selector: {[key: string]:FeatureForDeploing}}} = {
     tasks:{
         text:"Cometidos Tácticos",
         selector:{

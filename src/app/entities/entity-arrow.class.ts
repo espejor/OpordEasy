@@ -10,7 +10,7 @@ import { EntityLine } from "./entity-line.class";
 
 export class EntityArrow<GeomType extends Geometry = Geometry> extends EntityLine{
     constructor(opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
-        super(opt_geometryOrProperties);
+        super(null,opt_geometryOrProperties);
         this.entityType = entityType.arrow
     }
     

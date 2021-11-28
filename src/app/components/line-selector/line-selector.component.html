@@ -1,7 +1,7 @@
 <div id="modal-content-wrapper">
     <!-- HEADER -->
     <header id="modal-header">
-        <h1 id="modal-title">Selección de Puntos</h1>
+        <h1 id="modal-title">Selección de Líneas</h1>
     </header>
     <!-- SELECTOR -->
    <mat-form-field appearance="fill">
@@ -15,7 +15,7 @@
    
         <!-- CUERPO WINDOW -->
     <section id="modal-body">
-        <!-- OPCIONES de Puntos -->
+        <!-- OPCIONES de Líneas -->
         <mat-card>
             <div   *ngFor = "let feature of svgListOfIcons.features.lines[setFeaturesToSelect].selector | keyvalue:unsorted">
                 <div  (click) = "loadExtraData(feature)" [class] = "feature.value.classCSS">
@@ -24,7 +24,7 @@
                 </div>
             </div>
         </mat-card>  
-        <!-- OPCIONES PARA CADA PUNTO -->
+        <!-- OPCIONES PARA CADA Línea -->
         <mat-card>
 
         </mat-card>  

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -54,6 +54,7 @@ export function HttpLoaderFactory(http:HttpClient){
   return new TranslateHttpLoader(http);
 }
 
+export let AppInjector: Injector;
 
 @NgModule({
   declarations: [
@@ -137,5 +138,11 @@ export function HttpLoaderFactory(http:HttpClient){
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+
+    
+export class AppModule {
+  constructor(private injector: Injector) {
+    AppInjector = this.injector;
+  }
+}
 

@@ -339,8 +339,9 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
     
 
-    this.entityLine.setTextLine("BAZR");
-    this.lineStyle = this.entityLine.getStyle();
+    this.entityLine.setName("BAZR");
+    // this.lineStyle = this.entityLine.getStyle();
+    // this.entityLine.activateStyle();
 
     // this.shapesFeatures.push(this.entityCircle);
     // this.shapesFeatures.push(this.entityTriangle);

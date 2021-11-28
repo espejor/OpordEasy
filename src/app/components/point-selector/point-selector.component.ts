@@ -1,5 +1,5 @@
 import { KeyValue } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import Geometry from 'ol/geom/Geometry';
 import { Pixel } from 'ol/pixel';
@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { entityType } from 'src/app/entities/entitiesType';
 import { Entity, EntityOptions } from 'src/app/entities/entity.class';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
-import { FeatureForSelector } from 'src/app/models/feature-for-selector';
+import { FeatureForDeploing } from 'src/app/models/feature-for-selector';
 import { EntityLocated } from 'src/app/models/operation';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
@@ -21,7 +21,7 @@ import { Selector } from '../selector-base';
   templateUrl: './point-selector.component.html',
   styleUrls: ['./point-selector.component.css']
 })
-export class PointSelectorComponent extends Selector implements OnInit {
+export class PointSelectorComponent extends Selector implements OnInit,AfterViewInit {
   
   public setFeaturesToSelect ;
   public listOfOptions = [];
@@ -40,6 +40,20 @@ export class PointSelectorComponent extends Selector implements OnInit {
     this.setFeaturesToSelect = Object.keys(this.listOfOptions)[0];
   }
 
+  ngAfterViewInit(){
+    this.resetAspectSelectors();
+  }
+
+  resetAspectSelectors() {
+    for (let featuresLabel in this.svgListOfIcons.features){
+      for (let feature in this.svgListOfIcons.features[featuresLabel]){
+        for(let featureForDeploing in this.svgListOfIcons.features[featuresLabel][feature].selector){
+          this.svgListOfIcons.features[featuresLabel][feature].selector[featureForDeploing].classCSS = "unSelected"
+        }
+      }
+    }
+  }
+
   fillArrayOfOptions(): any[] {
     const options:any[] = []
     for(const property in this.svgListOfIcons.features.points) {
@@ -48,7 +62,8 @@ export class PointSelectorComponent extends Selector implements OnInit {
     return options;
   }
 
-  loadExtraData(feature:KeyValue<string,FeatureForSelector>){
+  loadExtraData(feature:KeyValue<string,FeatureForDeploing>){
+    this.resetAspectSelectors();
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // const coordinates:Coordinate = []; 
     const coordinates = mapComponent.map.getView().getCenter();
@@ -103,7 +118,7 @@ export class PointSelectorComponent extends Selector implements OnInit {
 
 
 export class PointOptions extends EntityOptions{
-  icon:FeatureForSelector;
+  icon:FeatureForDeploing;
   name:string
 
   constructor(){

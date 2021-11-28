@@ -12,7 +12,7 @@ import { entityType } from "./entitiesType";
 import { EntityBackBone } from "./entity-backbone.class";
 import { EntityComplex } from "./entity-complex.class";
 import { EntityControlPoint } from "./entity-control-point";
-import { EntityLine } from "./entity-line.class";
+import { EntityLine, LineOptions } from "./entity-line.class";
 import { EntityPointOfLabel } from "./entity-point-of-label.class";
 import { EntityPoint } from "./entity-point.class";
 
@@ -42,7 +42,7 @@ export class EntityAxis<GeomType extends Geometry = Geometry>  extends EntityCom
         
         this.backbone.lineColor = [255,0,0,0];
         this.backbone.lineWidth = 20;
-        this.backbone.textLine = "";
+        this.backbone.name = "";
         this.backbone.textAlign = "end";
         this.backbone.textBaseline = "middle";
         this.backbone.activateStyle();
@@ -50,22 +50,24 @@ export class EntityAxis<GeomType extends Geometry = Geometry>  extends EntityCom
         // mapComponent.dragFeatures.push(this.backbone);
         // mapComponent.shapes.addFeature(this.backbone);
 
+        const lineOption:LineOptions = new LineOptions();
+
         // Create both lateral lines
-        this.rightLine = new EntityLine({
+        this.rightLine = new EntityLine(lineOption,{
             geometry: new LineString(getParallelLineWithEndOffset(coordinates,this.WIDTH/2,RIGHT,this.WIDTH))
         })
 
         this.rightLine.setStyle(this.rightLine.getStyle());
         // mapComponent.shapes.addFeature(this.rightLine);
 
-        this.leftLine = new EntityLine({
+        this.leftLine = new EntityLine(lineOption,{
             geometry: new LineString(getParallelLineWithEndOffset(coordinates,this.WIDTH/2,LEFT,this.WIDTH))
         })
 
         this.leftLine.setStyle(this.leftLine.getStyle());
         // mapComponent.shapes.addFeature(this.leftLine);
 
-        this.tipLine = new EntityLine({
+        this.tipLine = new EntityLine(lineOption,{
             geometry: new LineString(this.getTipLine())
         })
 
@@ -78,7 +80,7 @@ export class EntityAxis<GeomType extends Geometry = Geometry>  extends EntityCom
             geometry: new Point(this.location[0])
         })
 
-        this.pointOfLabel.textLine = "Eje";
+        this.pointOfLabel.name = "Eje";
         this.pointOfLabel.activateStyle();
         // mapComponent.shapes.addFeature(this.pointOfLabel);
         

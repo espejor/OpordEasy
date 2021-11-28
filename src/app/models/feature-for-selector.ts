@@ -1,17 +1,17 @@
 import { extend } from "ol/extent";
 
-export class FeatureForSelector {
+export class FeatureForDeploing {
   [x: string]: any;
   public selectorText:string;
   public classCSS?:string = "unSelected"
-  public svg?:SVGPath;
-  public svg_composed?:SVGPath[];
+  public codeForDeploing?:SVGPathForPoint | SVGPathForPoint[] | propertiesForLine;
+  // public svg_composed?:;
 }
 
-export class FeatureComposed extends FeatureForSelector{
+export class FeatureComposed extends FeatureForDeploing{
 }
 
-export class SVG{
+export class propertiesForDeploing{
     type: string;
     x: string;
     y:string;
@@ -22,7 +22,7 @@ export class SVG{
     font?:string;
     font_Family?:string;
 }
-export class SVGPath extends SVG{
+export class SVGPathForPoint extends propertiesForDeploing{
     d?:{
       friendly:string;
       enemy?:string
@@ -31,11 +31,16 @@ export class SVGPath extends SVG{
     }
 }
 
-export class SVGText extends SVG{
+export class SVGText extends propertiesForDeploing{
   text:string
 }
 
-export class TextFeatureForSelector extends FeatureForSelector{
+export class propertiesForLine extends propertiesForDeploing{
+  name: string = "Name of Line";
+  type: string = "Type of Line"; 
+}
+
+export class TextFeatureForDeploing extends FeatureForDeploing{
   value:string
   public svg:SVGText
 }

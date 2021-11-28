@@ -18,11 +18,12 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
   // protected olMap:OlMapComponent
   public entityOptions:EntityOptions;
 
-  constructor(public svgService?: SvgIconsListService,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
+  constructor(entityOptions:EntityOptions,public svgService?: SvgIconsListService,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
       super(opt_geometryOrProperties);
       this.updated = Date.now();
       this.location = this.getCoordinates();
       this._id = id;
+      this.entityOptions = entityOptions;
   
 
       // this.olMap = mapComponent;

@@ -1,13 +1,14 @@
 import { KeyValue } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Coordinate } from 'ol/coordinate';
 import Geometry from 'ol/geom/Geometry';
 import { Pixel } from 'ol/pixel';
 import { Observable } from 'rxjs';
 import { entityType } from 'src/app/entities/entitiesType';
 import { Entity, EntityOptions } from 'src/app/entities/entity.class';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
-import { FeatureForSelector } from 'src/app/models/feature-for-selector';
+import { FeatureForDeploing } from 'src/app/models/feature-for-selector';
 import { EntityLocated } from 'src/app/models/operation';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
@@ -21,7 +22,7 @@ import { Selector } from '../selector-base';
   templateUrl: './line-selector.component.html',
   styleUrls: ['./line-selector.component.css']
 })
-export class LineSelectorComponent extends Selector implements OnInit {
+export class LineSelectorComponent extends Selector implements OnInit,AfterViewInit {
   
   public setFeaturesToSelect ;
   public listOfOptions = [];
@@ -40,6 +41,21 @@ export class LineSelectorComponent extends Selector implements OnInit {
     this.setFeaturesToSelect = Object.keys(this.listOfOptions)[0];
   }
 
+  
+  ngAfterViewInit(){
+    this.resetAspectSelectors();
+  }
+
+  resetAspectSelectors() {
+    for (let featuresLabel in this.svgListOfIcons.features){
+      for (let feature in this.svgListOfIcons.features[featuresLabel]){
+        for(let featureForDeploing in this.svgListOfIcons.features[featuresLabel][feature].selector){
+          this.svgListOfIcons.features[featuresLabel][feature].selector[featureForDeploing].classCSS = "unSelected"
+        }
+      }
+    }
+  }
+
   fillArrayOfOptions(): any[] {
     const options:any[] = []
     for(const property in this.svgListOfIcons.features.lines) {
@@ -49,16 +65,19 @@ export class LineSelectorComponent extends Selector implements OnInit {
   }
 
 
-  loadExtraData(feature:KeyValue<string,FeatureForSelector>){
+  loadExtraData(feature:KeyValue<string,FeatureForDeploing>){
+    this.resetAspectSelectors();
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // const coordinates:Coordinate = []; 
-    const coordinates = mapComponent.map.getView().getCenter();
+    const center = mapComponent.map.getView().getCenter();
+    const coordinates:Coordinate[] = [];
+    coordinates.push([center[0] - 500,center[1]]);
+    coordinates.push([center[0] + 500,center[1]]);
     feature.value.classCSS = feature.value.classCSS == "selectorSelected"? "unSelected" : "selectorSelected";
     // this.lineOptions = feature.value
     const line = EntitySelector.getFactory(entityType.line).createEntity(feature.value,coordinates);
     
     this.entitySelectorService.entitySelected = line
-
   }
   
   saveLine(line:Entity<Geometry>):Observable<Object>{    // line.favorite = this.favorite;
@@ -75,9 +94,16 @@ export class LineSelectorComponent extends Selector implements OnInit {
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // // const coordinates:Coordinate = []; 
     const pixel:Pixel = [event.x,event.y];
-    const coordinates = mapComponent.map.getCoordinateFromPixel(pixel);
+    var lineStart:Coordinate = mapComponent.map.getCoordinateFromPixel(pixel);
+    lineStart = [lineStart[0] - 5000,lineStart[1]];
+    const lineEnd:Coordinate = [lineStart[0] + 10000,lineStart[1]];
+    const coordinates: Coordinate[] = [];
+    coordinates.push(lineEnd,lineStart);
     // this.listOfUnitsCreated.push(this.lineOptions);
-    const line = EntitySelector.getFactory(entityType.line).createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
+    (<LineOptions>(this.entitySelectorService.entitySelected.entityOptions)).name = "NAME";
+    (<LineOptions>(this.entitySelectorService.entitySelected.entityOptions)).type = "TYPE";
+    const line = EntitySelector.getFactory(entityType.line).
+                createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
 
     this.saveLine(line).subscribe(
       data => {
@@ -105,8 +131,9 @@ export class LineSelectorComponent extends Selector implements OnInit {
 
 
 export class LineOptions extends EntityOptions{
-  icon:FeatureForSelector;
+  icon:FeatureForDeploing;
   name:string
+  type: string;
 
   constructor(){
     super();

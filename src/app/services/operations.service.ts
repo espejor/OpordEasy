@@ -38,7 +38,7 @@ export class OperationsService {
     return this.selectedOperation._id != undefined;
   }
 
-  loadEntity(unit: Entity<Geometry>,coordinates:Coordinate):boolean {
+  loadEntity(unit: Entity<Geometry>,coordinates:Coordinate | Coordinate[]):boolean {
     if(this.isOperationLoaded()){
       this.addEntityToLayout(unit,coordinates);
       return true;
@@ -180,7 +180,7 @@ export class OperationsService {
       this.goPreviousPhase();
   }
 
-  addEntityToLayout(entity: Entity<Geometry>,coordinates:Coordinate) {
+  addEntityToLayout(entity: Entity<Geometry>,coordinates:Coordinate | Coordinate[]) {
     // Solo se incluye si no está incluido ya
     // const coordinates = entity.getCoordinates();
     const id = entity._id;
@@ -351,7 +351,8 @@ export class OperationsService {
     const entityFound = this.selectedOperation.phases[this.phaseOrder].layout.find((item) =>{
       return item.entity._id === entity._id
     })
-    entityFound.location = location
+    if(entityFound)
+      entityFound.location = location
 
     const object = {
       "action" : "updatePosition",
