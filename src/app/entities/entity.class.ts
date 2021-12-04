@@ -4,7 +4,7 @@ import Geometry from "ol/geom/Geometry";
 import Style from "ol/style/Style";
 import { HTTPEntitiesService } from "../services/entities.service";
 import { SvgIconsListService } from "../services/svg-icons-list.service";
-import { entityType } from "./entitiesType";
+import {EntityStakedOrder, entityType } from "./entitiesType";
 
 export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feature{
   _id: string;
@@ -14,6 +14,7 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
   protected style: Style;
   protected location: Coordinate[] |Coordinate;
   entityType: entityType;
+  entityStakedOrder:EntityStakedOrder;
   // protected map: Map;
   // protected olMap:OlMapComponent
   public entityOptions:EntityOptions;
@@ -34,6 +35,9 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
       // addEventListener('mouseover',(ev:MouseEvent):void => this.onMouseOver(ev))
   }
 
+  getStackOrder(){
+    return new EntityStakedOrder().getOrder(entityType[this.entityType])
+  }
 
   copy ():Entity <Geometry>{return null};
 
@@ -110,6 +114,7 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
 }
 
 export class EntityOptions{
+  attachable?:boolean = false;
   // isEnemy:boolean
   constructor(){
     // this.isEnemy= false;

@@ -6,6 +6,7 @@ import Geometry from 'ol/geom/Geometry';
 import { Pixel } from 'ol/pixel';
 import { Observable } from 'rxjs';
 import { entityType } from 'src/app/entities/entitiesType';
+import { LineOptions } from 'src/app/entities/entity-line.class';
 import { Entity, EntityOptions } from 'src/app/entities/entity.class';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
 import { FeatureForDeploing } from 'src/app/models/feature-for-selector';
@@ -65,7 +66,7 @@ export class LineSelectorComponent extends Selector implements OnInit,AfterViewI
   }
 
 
-  loadExtraData(feature:KeyValue<string,FeatureForDeploing>){
+  loadExtraData(feature:KeyValue<string,any>){
     this.resetAspectSelectors();
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // const coordinates:Coordinate = []; 
@@ -75,7 +76,7 @@ export class LineSelectorComponent extends Selector implements OnInit,AfterViewI
     coordinates.push([center[0] + 500,center[1]]);
     feature.value.classCSS = feature.value.classCSS == "selectorSelected"? "unSelected" : "selectorSelected";
     // this.lineOptions = feature.value
-    const line = EntitySelector.getFactory(entityType.line).createEntity(feature.value,coordinates);
+    const line = EntitySelector.getFactory(entityType.line).createEntity(feature.value.codeForDeploing,coordinates);
     
     this.entitySelectorService.entitySelected = line
   }
@@ -100,8 +101,8 @@ export class LineSelectorComponent extends Selector implements OnInit,AfterViewI
     const coordinates: Coordinate[] = [];
     coordinates.push(lineEnd,lineStart);
     // this.listOfUnitsCreated.push(this.lineOptions);
-    (<LineOptions>(this.entitySelectorService.entitySelected.entityOptions)).name = "NAME";
-    (<LineOptions>(this.entitySelectorService.entitySelected.entityOptions)).type = "TYPE";
+    // (<LineOptions>(this.entitySelectorService.entitySelected.entityOptions)).name = "NAME";
+    // (<LineOptions>(this.entitySelectorService.entitySelected.entityOptions)).typeLine = "TYPE";
     const line = EntitySelector.getFactory(entityType.line).
                 createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
 
@@ -130,14 +131,14 @@ export class LineSelectorComponent extends Selector implements OnInit,AfterViewI
 }
 
 
-export class LineOptions extends EntityOptions{
-  icon:FeatureForDeploing;
-  name:string
-  type: string;
+// export class LineOptions extends EntityOptions{
+//   icon:FeatureForDeploing;
+//   name:string
+//   type: string;
 
-  constructor(){
-    super();
-    this.icon = null;
+//   constructor(){
+//     super();
+//     this.icon = null;
 
-  }
-}
+//   }
+// }

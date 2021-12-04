@@ -62,14 +62,14 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
     return options;
   }
 
-  loadExtraData(feature:KeyValue<string,FeatureForDeploing>){
+  loadExtraData(feature:KeyValue<string,any>){
     this.resetAspectSelectors();
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // const coordinates:Coordinate = []; 
     const coordinates = mapComponent.map.getView().getCenter();
     feature.value.classCSS = feature.value.classCSS == "selectorSelected"? "unSelected" : "selectorSelected";
     // this.pointOptions = feature.value
-    const point = EntitySelector.getFactory(entityType.point).createEntity(feature.value,coordinates);
+    const point = EntitySelector.getFactory(entityType.point).createEntity(feature.value.codeForDeploing,coordinates);
     
     this.entitySelectorService.entitySelected = point
 
@@ -116,14 +116,3 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
 // }
 }
 
-
-export class PointOptions extends EntityOptions{
-  icon:FeatureForDeploing;
-  name:string
-
-  constructor(){
-    super();
-    this.icon = null;
-
-  }
-}

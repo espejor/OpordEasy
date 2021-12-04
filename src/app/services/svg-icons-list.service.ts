@@ -31,12 +31,12 @@ export class SvgIconsListService {
   protected  compoundSVG(collection,frameCollection:string):string{
     var svg:string = " ";
     const frame = "friendly"
-    if(Array.isArray(collection.codeForDeploing)){
-      collection.codeForDeploing.forEach(svgItem => {
+    if(Array.isArray(collection)){
+      collection.forEach(svgItem => {
         svg += this.writeSVGContent(svgItem,frame);
       });
     }else{
-      svg += this.writeSVGContent(collection.codeForDeploing,frame);
+      svg += this.writeSVGContent(collection,frame);
     }
     return svg;
   }
@@ -64,7 +64,7 @@ export class SvgIconsListService {
 
   protected getD(type,frame):string{
     if(frame){
-      return type.value.codeForDeploing.d[frame.key] != undefined? frame.key :"friendly"
+      return type.value.d[frame.key] != undefined? frame.key :"friendly"
     }
     return "friendly";
   }

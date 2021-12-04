@@ -14,9 +14,9 @@ export class SvgGeneralIconsListService extends SvgIconsListService {
       command:{
         text:"Mando",
         selector:{
-          control_point: {classCSS : "unSelected", selectorText : "Punto de Control",codeForDeploing:{type:"path", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m25,-25 h30 v35 h-30 z m0,35 l15,15 l15,-15"}}},
-          contact_point: {classCSS : "unSelected", selectorText : "Punto de Contacto", codeForDeploing:{type:"path", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m20,4 h40 v40 h-40z"}}},
-          coordination_point: {classCSS : "unSelected", selectorText : "Punto de Coordinación", codeForDeploing:{type:"path", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m40,4a20,20 0 1 0 1,0z m-13,6l28,28m-28,0l28,-28"}}},
+          control_point: {classCSS : "unSelected", selectorText : "Punto de Control",codeForDeploing:{type:"path", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, attachable:true, d:{friendly:"m25,-25 h30 v35 h-30 z m0,35 l15,15 l15,-15"}}},
+          contact_point: {classCSS : "unSelected", selectorText : "Punto de Contacto", codeForDeploing:{type:"path", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, attachable:true, d:{friendly:"m20,4 h40 v40 h-40z"}}},
+          coordination_point: {classCSS : "unSelected", selectorText : "Punto de Coordinación", codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"#E8E8CE", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, attachable:true, d:{friendly:"m40,4a20,20 0 1 0 1,0z m-13,6l28,28m-28,0l28,-28"}}},
         }
       },
       obs:{
@@ -83,12 +83,14 @@ export class SvgGeneralIconsListService extends SvgIconsListService {
       command:{
         text: "Mando",
         selector:{
-          light_line: {classCSS : "unSelected", selectorText : "Línea de iluminación reducida",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"NOMBRE"}},
+          boundary: {classCSS : "unSelected", selectorText : "Límites",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"",typeLine:"",lineVisible:true,echelon:"assets/icons/echelons/platoon.svg",svgWidth:1  }},
+          light_line: {classCSS : "unSelected", selectorText : "Línea de iluminación reducida",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"NOMBRE",typeLine:"LL",lineVisible:true}},
         }
       },
       maneuver:{
         text: "Maniobra",
         selector:{
+          friendly_present: {classCSS : "unSelected", selectorText : "Presencia Fuerzas Propias",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"",typeLine:"",lineVisible:false,pattern:"assets/icons/patterns/friendly_present.svg"}},
 
         }
       },

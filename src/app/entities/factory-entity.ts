@@ -11,5 +11,14 @@ export abstract class EntityFactory<GeomType extends Geometry = Geometry> {
   abstract getSVGService():SvgIconsListService;
 }
 
+export function getOrderFeature(name:string){
+  const order = {
+    line:0,
+    point:1,
+    unit:2
+  }
+  return order[name]
+}
+
 
 

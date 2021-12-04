@@ -4,13 +4,15 @@ import { Coordinate } from 'ol/coordinate';
 import { environment } from '../../environments/environment';
 import Geometry from 'ol/geom/Geometry';
 import Point from 'ol/geom/Point';
-import { OlMapComponent } from '../components/nav/ol-map/ol-map.component';
+import { CustomSnap, OlMapComponent } from '../components/nav/ol-map/ol-map.component';
 import { EntityUnit } from '../entities/entity-unit';
 import { Entity } from '../entities/entity.class';
 import { EntityLocated } from '../models/operation';
 import { entityType } from '../entities/entitiesType';
 import { EntitySelector } from '../entities/factory-entity-selector';
 import { SvgIconsListService } from './svg-icons-list.service';
+import Snap from 'ol/interaction/Snap';
+import { Collection, Feature } from 'ol';
 
 @Injectable({
   providedIn: 'root'
@@ -39,12 +41,30 @@ export class EntitiesDeployedService {
 
     entityLocated.entity.setFlatCoordinatesfromLocation(entityLocated.location );
     this.olMapComponent.shapesFeatures.push(entityLocated.entity);
+    const sortedArray = this.olMapComponent.shapesFeatures.getArray().sort((a,b) => {
+      return a.getStackOrder() >= b.getStackOrder() ? 1 : -1
+    });
+    // this.olMapComponent.shapesFeatures.clear()
+    // sortedArray.forEach(entity => {
+    //   this.olMapComponent.shapesFeatures.push(entity)
+    // });
+    
     this.olMapComponent.dragFeatures.push(entityLocated.entity);
+    // this.olMapComponent.snapFeatures.push(entityLocated.entity);
+    this.olMapComponent.snap.set("source",this.olMapComponent.shapesVectorLayer);
+    // this.olMapComponent.snap = new CustomSnap({
+    //   source:this.olMapComponent.shapesVectorLayer,
+    //   pixelTolerance:40
+    // })
+    this.olMapComponent.snap.addFeature(entityLocated.entity)
+    // this.olMapComponent.map.addInteraction(this.olMapComponent.snap)
+    // this.olMapComponent.moveFeatures.push(entityLocated.entity);
   }
 
   resetEntitiesDeployed() {
     this.olMapComponent.shapesFeatures.clear();
     this.olMapComponent.dragFeatures.clear();
+    this.olMapComponent.snap.clearFeatures()
   }  
 
   updateMap(){

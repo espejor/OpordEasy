@@ -1,4 +1,8 @@
 import { Coordinate } from "ol/coordinate";
+import { Pixel } from "ol/pixel";
+import { AppInjector } from "../app.module";
+import { EntitiesDeployedService } from "../services/entities-deployed.service";
+import { distanceBetweenPixels } from "./pixels-geometry";
 
 export function fromFlatToArray(coordinatesList:number[]):Coordinate[]{
     var coordinatesArray:Coordinate[] = new Array(coordinatesList.length / 2);
@@ -18,3 +22,11 @@ export function fromFlatToArray(coordinatesList:number[]):Coordinate[]{
 function showError() {
     throw new Error("Lista de Coordenadas con datos impares");
 }
+
+export function distanceInPixelBetweenCoordinates(c1:Coordinate,c2:Coordinate):number{
+    const map = AppInjector.get(EntitiesDeployedService).getMapComponent().map
+    const p1:Pixel = map.getPixelFromCoordinate(c1) 
+    const p2:Pixel = map.getPixelFromCoordinate(c2)
+    return distanceBetweenPixels(p1,p2); 
+}
+

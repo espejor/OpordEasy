@@ -2,7 +2,7 @@ import { Feature } from "ol";
 import { Coordinate } from "ol/coordinate";
 import Geometry from "ol/geom/Geometry";
 import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
-import Style from "ol/style/Style";
+import Style, { StyleFunction, StyleLike } from "ol/style/Style";
 import Text from "ol/style/Text";
 import { Color } from "ol/color";
 import Stroke from "ol/style/Stroke";
@@ -41,9 +41,9 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
 
   protected startTextStyle : Style;
   protected endTextStyle : Style;
-  protected centralTextStyle : Style;
+  protected centralIconStyle : Style;
 
-  protected styles: Style[] = [];
+  protected styles: StyleFunction;
   // start: Point;
   // end:Point;
   // rotation: number;
@@ -51,84 +51,91 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   pointStyle: Style;
   trianglePatternStyles: Style;
   lineStyle: Style;
-  map: any;
+  // map: any;  
+
+  // pattern: string = "assets/patterns/triangle.svg";
+  pattern: string = "assets/patterns/friendly_present.svg";
+  anchor: number[] = [1,1];
+
+  lineOptions:LineOptions;
 
   constructor(lineOptions?:LineOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
     super(lineOptions,null,opt_geometryOrProperties,id);
     this.entityType = entityType.line
+    this.lineOptions = lineOptions;
     // this.entityOptions = lineOptions;
 
     // this.centralText = new Style({text:new Text({text:"Central"})});
     // this.borderText = new Style({text:new Text({text:"Lateralxxxxxxxxxxxxxxxxxxxxxxxxx"})});
 
-    this.map = AppInjector.get(EntitiesDeployedService).getMapComponent().map;
+    // this.map = AppInjector.get(EntitiesDeployedService).getMapComponent().map;
 
     if(lineOptions){
       this.name = lineOptions.name;
-      this.type = lineOptions.type;
+      this.type = lineOptions.typeLine;
     }
     this.lineStyle = this.getStyle()
-    this.centralTextStyle = this.configureCentralText();
+    // this.centralIconStyle = this.configureCentralIcon(lineOptions.echelon);
     this.startTextStyle = this.configureStartText();
     this.endTextStyle = this.configureEndText();
     this.pointStyle = this.getPoint()
-    this.trianglePatternStyles = this.createTrianglePattern();
-    this.styles.push(this.centralTextStyle);
-    this.styles.push(this.startTextStyle);
-    this.styles.push(this.endTextStyle);
-    this.styles.push(this.lineStyle);
-    this.styles.push(this.pointStyle);
-    // if(this.map)
-      this.styles.push(this.trianglePatternStyles);
-    this.setStyle(this.styles);
+    // this.trianglePatternStyles = this.createTrianglePattern();
+    const entity = this;
+    var stylesFunction = function(feature:Feature){
+      const styles: Style[] = []
+      if(lineOptions.echelon)
+        styles.push(...entity.configureCentralIcon(feature,lineOptions.echelon,lineOptions.svgWidth));
+      styles.push(entity.startTextStyle);
+      styles.push(entity.endTextStyle);
+      if (lineOptions. lineVisible)
+        styles.push(entity.lineStyle);
+      styles.push(entity.pointStyle);
+      if(lineOptions.pattern)
+        styles.push(...entity.createTrianglePattern(feature));
+      return styles
+    }
+
+    if(lineOptions){
+      this.styles = stylesFunction;
+      this.setStyle(this.styles)
+    }
   }
 
 
-  createTrianglePattern():Style {
-    var stylesList:Style[] = [];
+  createTrianglePattern(feature:Feature) {
     const entity = this;
+    var stylesList:Style[] = [];
     const wide = 20; // pixels
-    const gap = 10;  // pixels
-    class PointsInSegment{
-      coords: Coordinate[] = []
-      angle: number
-    }
-    var pointsCollection:PointsInSegment[] = [];
+    const gap = 0;  // pixels
     const map = AppInjector.get(EntitiesDeployedService).getMapComponent().map;
     var coords:Coordinate[] = []
     var angle = 0
-    const patternStyle:Style = new Style({
-      geometry: (feature) => {
-        var line = <LineString>feature.getGeometry();
-        coords = []
-        line.forEachSegment(function(from,to){
-          var pointsInSegment:PointsInSegment = new PointsInSegment();
-          pointsCollection.push (pointsInSegment); 
-          const fromPx = map.getPixelFromCoordinate(from);
-          const toPx = map.getPixelFromCoordinate(to);
-          const distance = distanceBetweenPixels(fromPx,toPx);
-          angle = angleBetweenPixels(fromPx,toPx);
-          const nShapes = Math.round((distance + gap)/(wide + gap));  // número de repeticiones
-          for (let i = 0; i < nShapes; i++) {
-            const coordinate = map.getCoordinateFromPixel(offsetFromPixel(fromPx,(wide + gap ) * i,angle));
-            pointsInSegment.coords.push(coordinate);
-            coords.push(coordinate)
-          }
-          pointsInSegment.angle = angle;
-        })
-        const mp = new MultiPoint(coords);
-        patternStyle.getImage().setRotation(angle + Math.PI)
-        return mp
-      }, 
-      image: new Icon({
-        opacity: 1,
-        size:[20,20],
-        src: "assets/patterns/triangle.svg",
-        scale: 1,
-        anchor:[1,1]
-      })   
+    var line = <LineString>feature.getGeometry();
+    line.forEachSegment(function(from,to){
+      coords = []
+      const fromPx = map.getPixelFromCoordinate(from);
+      const toPx = map.getPixelFromCoordinate(to);
+      const distance = distanceBetweenPixels(fromPx,toPx);
+      angle = angleBetweenPixels(fromPx,toPx);
+      const nShapes = ((distance + gap)/(wide + gap));  // número de repeticiones
+      for (let i = 0; i < nShapes - 1; i++) {
+        const coordinate = map.getCoordinateFromPixel(offsetFromPixel(fromPx,(wide + gap ) * i,angle));
+        coords.push(coordinate)
+      }
+      stylesList.push(new Style({
+        geometry: new MultiPoint(coords),
+         
+        image: new Icon({
+          opacity: 1,
+          size:[20,20],
+          src: entity.pattern,
+          scale: 1,
+          anchor:entity.anchor,
+          rotation:angle + Math.PI
+        })   
+      }))
     })
-    return patternStyle;
+    return stylesList;
   }
 
   getIcon():Icon{
@@ -156,9 +163,6 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   }
   
   getPoint(): Style {
-    // const svg = '<svg width="80" height="80" version="1.1" xmlns="http://www.w3.org/2000/svg">  <path fill="transparent" stroke="black" stroke-width="2" d=" m40,15 a20,20 0 1 0 1,0z m-13,6l28,28m-28,0l28,-28"/></svg>'  
-    // const end = this.getEntityGeometry().getLastCoordinate();
-    // var base64Svg = btoa(unescape(encodeURIComponent("assets/icons/points/command/control_point.svg")));
     return new Style({
       geometry: function(feature){
         const location = (<LineString>feature.getGeometry()).getFirstCoordinate()
@@ -185,17 +189,36 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     return Math.atan2(dy, dx);
   }
 
-  public configureCentralText():Style{
-    return new Style({
-      text:new Text({
-        text:"BAZR",
-        placement: this.placement,
-        textAlign: "center",
-        textBaseline: this.textBaseline,
-        offsetY:7,
-        scale:this.scale
-      })
-    });
+  public configureCentralIcon(feature:Feature,imageSrc:string,svgWidth:number):Style[]{
+    var styles:Style[] = [];
+    (<LineString>feature.getGeometry()).forEachSegment((from,to) => {
+      const centre = [(from[0] + to[0])/2,(from[1] + to[1])/2]
+      const rotation = Math.atan2(to[1] - from[1], to[0] - from[0]);
+      styles.push(new Style({
+        geometry: new Point(centre), 
+        image: new Icon({
+          opacity: 1,
+          // size:[80,80],
+          src: "assets/icons/ghost_line.svg",
+          // scale: 1,
+          anchor:[0.5,0.5],
+          rotation: -rotation,
+          scale:[svgWidth,1]
+        })      
+      }))
+      styles.push(new Style({
+        geometry: new Point(centre), 
+        image: new Icon({
+          opacity: 1,
+          // size:[80,80],
+          src: imageSrc,
+          scale: 1,
+          anchor:[0.5,0.5]
+        })      
+      }))
+    })
+
+    return styles
   }
 
   
@@ -355,9 +378,9 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     this.name = value;
   }
 
-  public activateStyle(){
-    this.setStyle(this.getStyle());
-  }
+  // public activateStyle(){
+  //   this.setStyle(this.getStyle());
+  // }
   
   public getType(): string {
     return this.type;
@@ -368,6 +391,14 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
 }
 
 export class LineOptions extends EntityOptions{
-  name:string;
-  type:string;
+  name?:string;   //T field
+  typeLine?:string; // LL, PL ...
+  purpose?:string;  // RFL...
+  pattern?:string;  // 
+  coordinationMessures?:string;  // p.e. Controlling HQ
+  dateTimeGroupInitial?: string;  //
+  dateTimeGroupFinal?: string;  //
+  lineVisible?: boolean; // Si la línea se ha de ver ()
+  echelon?:string;
+  svgWidth?:number
 }

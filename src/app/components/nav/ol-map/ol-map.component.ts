@@ -1,11 +1,11 @@
-import { Component, OnInit,AfterViewInit,Input,ElementRef, ViewChild, Renderer2 } from '@angular/core';
+import { Component, OnInit,AfterViewInit,Input,ElementRef, ViewChild, Renderer2, Self } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import XYZ from 'ol/source/XYZ';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
-import {getTopLeft} from 'ol/extent'
+import {containsXY, getTopLeft} from 'ol/extent'
 import { Vector} from 'ol/source';
 import * as Proj from 'ol/proj';
 // import {register} from 'ol/proj/proj4';
@@ -29,6 +29,7 @@ import Circle from 'ol/style/Circle';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Modify, { ModifyEvent } from 'ol/interaction/Modify';
+import Snap, { Options } from 'ol/interaction/Snap';
 import Translate, { TranslateEvent } from 'ol/interaction/Translate';
 import Geometry from 'ol/geom/Geometry';
 import BaseEvent from 'ol/events/Event';
@@ -45,6 +46,21 @@ import { FloatingMenuComponent } from '../floating-menu/floating-menu.component'
 import { OperationsService } from 'src/app/services/operations.service';
 import { OperationsComponent } from '../operations/operations.component';
 import { Listener } from 'ol/events';
+import { Pixel } from 'ol/pixel';
+import Point from 'ol/geom/Point';
+import { AppInjector } from 'src/app/app.module';
+import { distanceBetweenPixels } from 'src/app/utilities/pixels-geometry';
+import GeometryType from 'ol/geom/GeometryType';
+import { features } from 'process';
+import { pointerMove } from 'ol/events/condition';
+import { EntityLine } from 'src/app/entities/entity-line.class';
+import { SvgIconsListService } from 'src/app/services/svg-icons-list.service';
+import { EntityFactory } from 'src/app/entities/factory-entity';
+import { PointFactory } from 'src/app/entities/factory-point';
+import { EntitySelector } from 'src/app/entities/factory-entity-selector';
+import { entityType } from 'src/app/entities/entitiesType';
+import { distanceInPixelBetweenCoordinates } from 'src/app/utilities/coordinates-calc';
+import { FeatureLike } from 'ol/Feature';
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -68,6 +84,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   @ViewChild(FloatingMenuComponent)  mainMenu: FloatingMenuComponent;
   // @ViewChild("ghostElement") ghostFeature: ElementRef
   @ViewChild(OperationsComponent) operationComponent: OperationsComponent;
+
 
   public map: Map;
   private mapEl: HTMLElement;
@@ -98,15 +115,35 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   currentLong: Number = DEFAULT_LON;
   lineStyle: Style;
   fromPNG: Style;
-  dragFeatures: Collection<Entity<Geometry>> = new Collection<Entity<Geometry>>();
+  dragFeatures: Collection<Feature<Geometry>> = new Collection<Feature<Geometry>>();
   moveFeatures: Collection<Feature<Geometry>> = new Collection<Feature<Geometry>>();
-  shapesFeatures: Collection<Feature<Geometry>> = new Collection<Feature<Geometry>>();
-  public shapes: Vector<Geometry> = new VectorSource({features: this.shapesFeatures});
+  snapFeatures: Collection<Feature<Geometry>> = new Collection<Feature<Geometry>>();
+  shapesFeatures: Collection<Entity<Geometry>> = new Collection<Entity<Geometry>>();
+  public shapesVectorLayer: VectorSource<Geometry> = new VectorSource({features: this.shapesFeatures});
   friendly: Style;
   featureDragging: Overlay;
   isMovingCopyFeature: boolean;
   tileGrid:WMTSTileGrid;
+  self: this;
   // svgService: SVGIconsListService;
+
+
+  drag:Modify = new Modify({
+    features:this.dragFeatures
+  })
+  
+  move:Translate = new Translate({
+    features: this.moveFeatures
+  })
+
+
+  snap:CustomSnap = new CustomSnap({
+    source: this.shapesVectorLayer,
+    // features: this.dragFeatures,
+    pixelTolerance:40
+  })
+  callTimes: number;
+
   
   //-------------------------
 
@@ -116,6 +153,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     private renderer: Renderer2,
     public operationsService:OperationsService) {
     entitiesDeployedService.setMapComponent(this);
+    this.self = this;
     // this.svgService = _svgService;
   }
   // attribution = new Attribution({
@@ -136,7 +174,52 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // const layerGraticule = new VectorLayer({ source:vectorLines})
 
     // this.map.addLayer(layerGraticule);
-    this.map.addLayer(graticule.getGraticuleLayer());
+    this.map.getLayers().insertAt(1,graticule.getGraticuleLayer());
+
+    
+    // this.drag = new Modify({
+    //   features:this.dragFeatures,
+    // })
+    
+    // this.move = new Translate({
+    //   features: this.moveFeatures
+    // })
+
+
+    var coordinates: Coordinate[] = new Array();
+    coordinates.push(
+      Proj.fromLonLat([-6,39]),
+      Proj.fromLonLat([-6.5,39.5]));
+
+    var coordinatesShape: Coordinate[] = new Array();
+    coordinatesShape.push(
+      Proj.fromLonLat([-7,39]),
+      Proj.fromLonLat([-6.5,39]));
+  
+
+
+
+    // const line = new Feature(new LineString([[-6,39],[-6,40]]))
+    const line = new EntityLine(null,new LineString(coordinates))
+    const point = new EntityPoint(null,null,new Point(coordinatesShape[0]))
+    // const point = EntitySelector.getFactory(entityType.point).createEntity(null,[0,0]);
+
+    // this.snap = new Snap({
+    //   source: this.shapesVectorLayer,
+    //   features: this.snapFeatures,
+    //   pixelTolerance:30,
+    // })
+
+    // this.shapesFeatures.push(line)
+    // this.dragFeatures.push(line)
+    // this.snap.addFeature(line)
+
+    // this.shapesFeatures.push(point)
+    // this.dragFeatures.push(point)
+    // this.snap.addFeature(point)
+
+    this.snap.setActive(true)
+    // this.snap.setActive(true)
 
     // this.activatedOperationsFormOpened = this.mainMenu.activatedOperationsFormOpened
   }
@@ -151,7 +234,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       // deactivate drag
       this.map.removeInteraction(this.drag);
     }else{
-      this.map.addInteraction(this.drag);
+      // this.map.addInteraction(this.drag);
     }
   }
 
@@ -178,29 +261,8 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       "UTM"
     );
     const centerUTM = converter.forward(centerLatLon);
-    // console.log("------------- SRC Projection: " + srcProj + "\n")
-    // register(src);
-    
-    // console.log("------------- coordenadas: " + center)
-    // this.currentLat = lat;
-
   }
 
-  drag:Modify = new Modify({
-    features:this.dragFeatures,
-    style: null
-  })
-  
-  move:Translate = new Translate({
-    features: this.moveFeatures
-  })
-
-    
-  // modify:Modify = new Modify({
-  //   features: this.moveFeatures
-  // })
-
-  
   ngOnInit(): void {
     for (var z = 0; z < 18; ++z) {
       // generate resolutions and matrixIds arrays for this WMTS
@@ -239,21 +301,11 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     //   // rainfall: 500
     // })
 
-    var coordinates: Coordinate[] = new Array();
-    coordinates.push(
-      Proj.fromLonLat([-6,39]),
-      Proj.fromLonLat([-6.5,39.5]));
+    //  const line = new Feature({
+    //   geometry: new LineString(coordinates)
+    // })
 
-    var coordinatesShape: Coordinate[] = new Array();
-    coordinatesShape.push(
-      Proj.fromLonLat([-7,39]),
-      Proj.fromLonLat([-6.5,39]));
-  
-
-    this.entityLine = new EntityArrow({
-      geometry: new LineString(coordinates)
-    })
-
+    // const point = new Feature(new Point(coordinatesShape[0]))
 
     // this.drag = new Modify({
     //   features: new Collection([this.entityTriangle,this.entityLine]),
@@ -263,11 +315,11 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.dragFeatures.push(this.entityCircle);
     // this.dragFeatures.push(this.entityTriangle);
     // this.dragFeatures.push(this.entityFriendly);
-    this.dragFeatures.push(this.entityLine);
+    // this.dragFeatures.push(line);
     
-    this.drag = new Modify({
-      features:this.dragFeatures
-    });
+    // this.drag = new Modify({
+    //   features:this.dragFeatures
+    // });
 
 
     // this.lineStyle = new Style({
@@ -337,21 +389,9 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       })
     })
 
-    
-
-    this.entityLine.setName("BAZR");
-    // this.lineStyle = this.entityLine.getStyle();
-    // this.entityLine.activateStyle();
-
-    // this.shapesFeatures.push(this.entityCircle);
-    // this.shapesFeatures.push(this.entityTriangle);
-    // this.shapesFeatures.push(this.entityFriendly);
-    this.shapesFeatures.push(this.entityLine);
-
-
 
     var entitieslayer = new VectorLayer({
-      source: this.shapes
+      source: this.shapesVectorLayer
     });
 
     this.mapEl = this.elementRef.nativeElement.querySelector('#map');
@@ -368,25 +408,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
         }),
         opacity: 1
       }),
-        // new TileLayer({
-        //   opacity:0.7,
-        //   source: new OSM()
-        // }),
-        // new TileLayer({
-        //   opacity: 0.7,
-        //   extent: this.proj4326.getExtent(),
-        //   source: new WMTS({
-        //     url: 'http://www.ign.es/wmts/mapa-raster/',
-        //     layer: 'MTN',
-        //     matrixSet: 'EPSG:4326',
-        //     format: 'image/png',
-        //     projection: this.proj4326,
-        //     tileGrid: this.tileGrid,
-        //     style: 'default',
-        //     wrapX: true,
-        //     attributions: 'Teselas de PNOA cedido por © Instituto Geográfico Nacional de España'
-        //   })
-        // }),
         entitieslayer
       ],
       
@@ -402,14 +423,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       ])
     });
 
-    
-    // this.entityAxis = new EntityAxis(coordinatesShape);
-
-
-    // this.entityCircle.setStyle(this.circle);
-    // this.entityTriangle.setStyle(this.triangle);
-    // this.entityFriendly.setStyle(this.friendly);
-    // this.entityLine.setStyle([this.lineStyle]);
 
     this.map.on("change", (evt:MapEvent) => {
       // evt..forEach(feature => {
@@ -428,88 +441,115 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
     this.move.on("translateend",(evt:TranslateEvent)=> {
       evt.features.forEach(feature => {
-        // // Guardar las nuevas coordenadas en la BD
-        // this.httpEntitiesService.updateCoordinates(<EntityPoint>feature).subscribe(
-        //   data => {
-        //     console.log(data);
-        //   }
-        // );
         this.operationsService.updateEntityPositionInOperation(<Entity>feature)
-        // (<EntityPoint>feature).setCoordinates(this.httpEntitiesService,(<EntityPoint>feature).getCoordinates())
       })
     })
 
-    this.map.addInteraction(this.drag);
-    this.map.addInteraction(this.move);
-    // this.map.addInteraction(this.modify);
 
-    this.drag.on("modifyend",(evt:ModifyEvent) => {
-      evt.features.forEach(feature => {
-        // // Guardar las nuevas coordenadas en la BD
-        // this.httpEntitiesService.updateCoordinates(<EntityPoint>feature).subscribe(
-        //   data => {
-        //     console.log(data);
-        //   }
-        // );
-        this.operationsService.updateEntityPositionInOperation(<Entity>feature)
-        // (<EntityPoint>feature).setCoordinates(this.httpEntitiesService,(<EntityPoint>feature).getCoordinates())
-      })
-    }) 
-    // this.map.addInteraction(this.mouseup);
+    this.map.addInteraction(this.snap);
 
-    // this.entityTriangle
-    //   .on(
-    //     'change',
-    //     function(event){
-    //       this.mapComponent.currentLat = this.getLocation()[1].toFixed(3);
-    //       this.mapComponent.currentLong = this.getLocation()[0].toFixed(3);
-    //     });
+    this.drag.on("modifystart",(evt:ModifyEvent) => {
+      console.log("")
+      const features: Feature[] = evt.features.getArray()
+      features.splice(0,features.length - 1)
+    })
 
-    // this.entityTriangle.onMouseUp = function (event:MouseEvent):void{
-    //   this.mapComponent.currentLat = 0;
-    //   this.mapComponent.currentLong = 0;
-    // }
 
-    // this.entityFriendly
-    //   .on(
-    //     'change',
-    //     function(event){
-    //       this.mapComponent.currentLat = this.getLocation()[1].toFixed(3);
-    //       this.mapComponent.currentLong = this.getLocation()[0].toFixed(3);
-    //     });
+var dragSource = new VectorSource();
 
-    // this.entityFriendly.onMouseUp = function (event:MouseEvent):void{
-    //   this.mapComponent.currentLat = 0;
-    //   this.mapComponent.currentLong = 0;
-    // }
+var modify = new Modify({
+  source:dragSource
+})
 
-    var self = this;
-    this.map.on("pointermove", function (evt:MapBrowserEvent) {
-      if(this.locatingEntity){
+this.map.addInteraction(modify);
 
-      }else{
-        var entity:Entity;
-        var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
-          // feature.onMouseOver(evt);
-          entity = feature;
-          return true;
-        }); 
-        if (hit) {
-          this.getTargetElement().style.cursor = 'pointer';
-          try{
-            entity.onMouseOver(evt);
-          }catch{
-            console.log("Feature predefinida");
-          }
-        } else {
-          this.getTargetElement().style.cursor = '';
-          // self.onMouseExit(evt);
-          self.shapes.getFeatures().forEach((feature) => {
-            (<Entity>feature).onMouseExit(evt);
-          })        
-        }
+function pointermove(e) {
+  if (e.dragging) {
+    return;
+  }
+  var features = self.map.getFeaturesAtPixel(e.pixel, {
+    layerFilter: function(l) {
+      return l == entitieslayer;
+    }
+  });
+  if (features.length > 0 && features[0] != dragSource.getFeatures()[0]) {
+    dragSource.clear();
+    dragSource.addFeature(<Feature>features[0]);
+  }
+}
+
+this.map.on("pointermove", pointermove);
+
+modify.on("modifyend",(evt:ModifyEvent) => {
+
+  const self = this;
+  const map:Map = this.map
+  const range = 40;
+  const pointer:Coordinate = evt.target.vertexFeature_.geometryChangeKey_.target.getCoordinates()
+  const entityMoving:Entity = <Entity>evt.features.getArray()[0]
+  const pixelPointer:Pixel = map.getPixelFromCoordinate(pointer);
+  var pixelsCandidates:[{pixel:Pixel,order:number}]// Puntos candidatos a ser snapped
+  var closest:{pixel:Pixel,order:number};
+  var distance:number = Number.MAX_VALUE;
+  var newCoordinate:Coordinate |Coordinate[]
+  var closestCoordinate:Coordinate |Coordinate[]
+  this.shapesFeatures.forEach(function (entityCandidate:Entity) {
+    if (entityCandidate.entityOptions.attachable && entityCandidate._id != entityMoving._id){
+      newCoordinate = entityCandidate.getGeometry().getClosestPoint(pointer);
+      const newDistance = distanceInPixelBetweenCoordinates(newCoordinate,pointer)
+      if (newDistance < range && newDistance < distance){
+        distance = newDistance
+        closestCoordinate = newCoordinate
+      } 
+    }
+
+  });
+  if (closestCoordinate === undefined){
+    closestCoordinate = pointer
+  }
+  var order = 0;
+  const coords = entityMoving.getCoordinates()
+  if (Array.isArray(coords)){
+    order = this.indexOfCoord(coords,pointer)
+    if(order > -1){
+        coords [order] = <Coordinate>closestCoordinate
+        entityMoving.setCoordinates(coords)
+    }
+  }else{
+    entityMoving.setCoordinates(closestCoordinate)
+  }
+
+  self.operationsService.updateEntityPositionInOperation(entityMoving)
+})
+
+
+var self = this;
+this.map.on("pointermove", function (evt:MapBrowserEvent) {
+  if(this.locatingEntity){
+
+  }else{
+    var entity:Entity;
+    var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
+      // feature.onMouseOver(evt);
+      entity = feature;
+      return true;
+    }); 
+    if (hit) {
+      this.getTargetElement().style.cursor = 'pointer';
+      try{
+        entity.onMouseOver(evt);
+      }catch{
+        console.log("Feature predefinida");
       }
-    }); // Fin pointermove
+    } else {
+      this.getTargetElement().style.cursor = '';
+      // self.onMouseExit(evt);
+      self.shapesVectorLayer.getFeatures().forEach((feature) => {
+        (<Entity>feature).onMouseExit(evt);
+      })        
+    }
+  }
+}); // Fin pointermove
 
     var container = document.getElementById ("popup");
     var content = document.getElementById ("popup-content");
@@ -601,6 +641,14 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // })
 
   } // NgOnInit
+  indexOfCoord(coords: Coordinate | Coordinate[], pointer: Coordinate): number {
+    for (let i = 0; i < coords.length; i++) {
+      if (coords[i][0] == pointer[0])
+        if(coords[i][1] == pointer[1])
+          return i
+    }
+    return -1
+  }
 
 
   // on(type: 'mousedown', listener: (evt: BaseEvent) => void): void{
@@ -619,3 +667,26 @@ function coerceCssPixelValue(value: any): string {
   return cssUnitsPattern.test(value) ? value : `${value}px`;
 }
 
+
+export class CustomSnap extends Snap{
+  features:Feature<Geometry>[] = [];
+
+  constructor(opt_options?: Options){
+    super(opt_options)
+  }
+  addFeature(feature:Feature<Geometry>, opt_listen?: boolean):void{
+    super.addFeature(feature,opt_listen);
+    if(!this.features.includes(feature))
+      this.features.push (feature)
+  }
+  removeFeature(feature:Feature<Geometry>, opt_listen?: boolean):void{
+    super.removeFeature(feature,opt_listen);
+    if(this.features.includes(feature))
+      this.features = this.features.filter(item => item != feature);
+  }
+  clearFeatures(){
+    this.features.forEach(feature => {
+      this.removeFeature(feature)
+    });
+  }    
+}
