@@ -21,6 +21,8 @@ import { EntitySelectorService } from 'src/app/services/entity-selector.service'
 import { EntityLocated } from 'src/app/models/operation';
 import { Pixel } from 'ol/pixel';
 import { Selector } from '../selector-base';
+import Draw, { DrawEvent } from 'ol/interaction/Draw';
+import GeometryType from 'ol/geom/GeometryType';
 
 @Component({
   selector: 'app-unit-selector',
@@ -82,13 +84,33 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     return this.createSVG.bind(this);
   }
   
-  insertUnit(event,coordinates?){
+  insertUnit(coordinates?:Coordinate[]){
     const mapComponent = this.entitiesDeployed.getMapComponent();
-    const pixel:Pixel = [event.x,event.y];
-    if (!coordinates)
-      coordinates = mapComponent.map.getCoordinateFromPixel(pixel);
+    // const pixel:Pixel = [event.x,event.y];
+    // if (!coordinates)
+      // coordinates = mapComponent.map.getCoordinateFromPixel(pixel);
+    if(this.entitySelectorService.entitySelected == undefined){
+      const draw:Draw = new Draw({
+        source:mapComponent.shapesVectorLayer,
+        type: GeometryType.POINT
+      })
+      
+      mapComponent.map.addInteraction(draw);
+  
+      var coords = [];
+      draw.on("drawend", (evt:DrawEvent) => {
+        mapComponent.map.removeInteraction(draw);
+        coords = (<Point>evt.feature.getGeometry()).getCoordinates()
+        this.deployUnit(coords);
+      })
+    }else{
+      this.deployUnit(coordinates)
+    }
+  }
+
+  deployUnit(coordinates){
     if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
-      this.saveUnit(true,event)
+      this.saveUnit(true,coordinates)
     }else if(this.operationsService.loadEntity(this.entitySelectorService.entitySelected,coordinates)){
       const entityLocated:EntityLocated = new EntityLocated(this.entitySelectorService.entitySelected,this.entitySelectorService.entitySelected.getCoordinates())
       // entityLocated.entity = this.entitySelectorService.entitySelected
@@ -96,16 +118,18 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
       this.entitiesDeployed.addNewEntity(entityLocated);
       this.entitySelectorService.entitySelected = undefined;
     }
+
   }
 
 
-  saveUnit(andInsert = false,event?){
+  saveUnit(andInsert = false,coordinates?){
     // this.entitiesDeployed.saveEntity(entityType.unit);
     // ---todo Intentar referenciar con viewChild o Output/Input 
     
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // // const coordinates:Coordinate = []; 
-    const coordinates = mapComponent.map.getView().getCenter();
+    if(!coordinates)
+      coordinates = mapComponent.map.getView().getCenter();
     // this.listOfUnitsCreated.push(this.unitOptions);
     const unit = EntitySelector.getFactory(entityType.unit).createEntity(this.unitOptions,coordinates);
     unit.favorite = this.favorite;
@@ -120,7 +144,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
       unit._id = (<Entity>data)._id;
       this.entitySelectorService.entitySelected = unit;
       if (andInsert)
-        this.insertUnit(event);
+        this.insertUnit(coordinates);
     });
   }
 
@@ -136,15 +160,17 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   updateAspectSelectors(){
     this.resetAspectSelectors();
     for (let featuresLabel in this.unitOptions){
-      if (this.unitOptions[featuresLabel] != null){ // Inicializado
-        if (Array.isArray(this.unitOptions[featuresLabel])){ // es un array
-          if(this.unitOptions[featuresLabel].length > 0){
-            for (let featureInArray in this.unitOptions[featuresLabel]){
-              this.svgListOfIcons.features[featuresLabel][this.unitOptions[featuresLabel][featureInArray].key].classCSS = "selectorSelected"
+      if (featuresLabel != "attachable"){
+        if (this.unitOptions[featuresLabel] != null){ // Inicializado
+          if (Array.isArray(this.unitOptions[featuresLabel])){ // es un array
+            if(this.unitOptions[featuresLabel].length > 0){
+              for (let featureInArray in this.unitOptions[featuresLabel]){
+                this.svgListOfIcons.features[featuresLabel][this.unitOptions[featuresLabel][featureInArray].key].classCSS = "selectorSelected"
+              }
             }
+          }else{
+            this.svgListOfIcons.features[featuresLabel][this.unitOptions[featuresLabel].key].classCSS = "selectorSelected"
           }
-        }else{
-          this.svgListOfIcons.features[featuresLabel][this.unitOptions[featuresLabel].key].classCSS = "selectorSelected"
         }
       }
     }
@@ -166,14 +192,16 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
 
   goThrougtArray(collection){
     for(let element in collection) {
-      if (Array.isArray(collection[element])) {
-        this.goThrougtArray(collection[element]);
-      }
-      else{
-        if (collection[element] != null)
-          this.updateIconTemplate(collection[element]);
-        // else
-        //   this.deleteIconTemplate(collection[element])
+      if(element != "attachable"){
+        if (Array.isArray(collection[element])) {
+          this.goThrougtArray(collection[element]);
+        }
+        else{
+          if (collection[element] != null)
+            this.updateIconTemplate(collection[element]);
+          // else
+          //   this.deleteIconTemplate(collection[element])
+        }
       }
     };
   }

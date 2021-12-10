@@ -1,8 +1,7 @@
 import { Feature } from "ol";
 import { Coordinate } from "ol/coordinate";
 import Geometry from "ol/geom/Geometry";
-import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
-import Style, { StyleFunction, StyleLike } from "ol/style/Style";
+import Style, { StyleFunction } from "ol/style/Style";
 import Text from "ol/style/Text";
 import { Color } from "ol/color";
 import Stroke from "ol/style/Stroke";
@@ -10,17 +9,12 @@ import LineString from "ol/geom/LineString";
 import { Entity, EntityOptions } from "./entity.class";
 import { entityType } from "./entitiesType";
 import Point from "ol/geom/Point";
-import { getInterpolationArgsLength } from "@angular/compiler/src/render3/view/util";
 import { EntitiesDeployedService } from "../services/entities-deployed.service";
-import ImageStyle from "ol/style/Image";
 import Icon from "ol/style/Icon";
-import { MatIconRegistry } from "@angular/material/icon";
-import { DomSanitizer } from "@angular/platform-browser";
-import { IconRegisterService } from "../services/icon-register.service";
 import { AppInjector } from "../app.module";
 import { angleBetweenPixels, distanceBetweenPixels, offsetFromPixel } from "../utilities/pixels-geometry";
 import MultiPoint from "ol/geom/MultiPoint";
-import { UrlSegment } from "@angular/router";
+import ol_coordinate_cspline from "ol-ext/render/Cspline";
 
 export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   // private style: Style;
@@ -42,6 +36,8 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   protected startTextStyle : Style;
   protected endTextStyle : Style;
   protected centralIconStyle : Style;
+  protected purposeEndStyle : Style;
+  protected purposeStartStyle: Style;
 
   protected styles: StyleFunction;
   // start: Point;
@@ -58,17 +54,16 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   anchor: number[] = [1,1];
 
   lineOptions:LineOptions;
+  smooth: boolean = true;
 
   constructor(lineOptions?:LineOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
     super(lineOptions,null,opt_geometryOrProperties,id);
     this.entityType = entityType.line
     this.lineOptions = lineOptions;
-    // this.entityOptions = lineOptions;
 
-    // this.centralText = new Style({text:new Text({text:"Central"})});
-    // this.borderText = new Style({text:new Text({text:"Lateralxxxxxxxxxxxxxxxxxxxxxxxxx"})});
-
-    // this.map = AppInjector.get(EntitiesDeployedService).getMapComponent().map;
+    if (this.smooth){
+      // this.setCoordinates(ol_coordinate_cspline(this.getCoordinates()))
+    }
 
     if(lineOptions){
       this.name = lineOptions.name;
@@ -78,9 +73,12 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     // this.centralIconStyle = this.configureCentralIcon(lineOptions.echelon);
     this.startTextStyle = this.configureStartText();
     this.endTextStyle = this.configureEndText();
+    this.purposeEndStyle = this.configureEndPurposeText();
+    this.purposeStartStyle = this.configureStartPurposeText();
     this.pointStyle = this.getPoint()
     // this.trianglePatternStyles = this.createTrianglePattern();
     const entity = this;
+
     var stylesFunction = function(feature:Feature){
       const styles: Style[] = []
       if(lineOptions.echelon)
@@ -91,9 +89,15 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
         styles.push(entity.lineStyle);
       styles.push(entity.pointStyle);
       if(lineOptions.pattern)
-        styles.push(...entity.createTrianglePattern(feature));
+        styles.push(...entity.createPattern(feature));
+      if(lineOptions.purpose){
+        styles.push(entity.purposeEndStyle);
+        styles.push(entity.purposeStartStyle);
+      }
       return styles
     }
+
+    // this.getGeometry().cspline()
 
     if(lineOptions){
       this.styles = stylesFunction;
@@ -101,8 +105,9 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     }
   }
 
+  
 
-  createTrianglePattern(feature:Feature) {
+  createPattern(feature:Feature):Style[] {
     const entity = this;
     var stylesList:Style[] = [];
     const wide = 20; // pixels
@@ -110,7 +115,8 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     const map = AppInjector.get(EntitiesDeployedService).getMapComponent().map;
     var coords:Coordinate[] = []
     var angle = 0
-    var line = <LineString>feature.getGeometry();
+    var line:LineString = <LineString>feature.getGeometry();
+
     line.forEachSegment(function(from,to){
       coords = []
       const fromPx = map.getPixelFromCoordinate(from);
@@ -118,12 +124,16 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
       const distance = distanceBetweenPixels(fromPx,toPx);
       angle = angleBetweenPixels(fromPx,toPx);
       const nShapes = ((distance + gap)/(wide + gap));  // número de repeticiones
-      for (let i = 0; i < nShapes - 1; i++) {
-        const coordinate = map.getCoordinateFromPixel(offsetFromPixel(fromPx,(wide + gap ) * i,angle));
+      const mod = nShapes - Math.floor(nShapes);
+      const initialGap = mod * wide/2
+      for (let i = 0; i < nShapes-1; i++) {
+        const coordinate = map.getCoordinateFromPixel(offsetFromPixel(fromPx,((wide + gap ) * i )+ initialGap,angle));
         coords.push(coordinate)
       }
-      stylesList.push(new Style({
-        geometry: new MultiPoint(coords),
+      // const lastCoord = coords.splice(length-1,1)
+      const mp = new MultiPoint(coords)
+      var mpStyle = new Style({
+        geometry: mp,
          
         image: new Icon({
           opacity: 1,
@@ -133,7 +143,10 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
           anchor:entity.anchor,
           rotation:angle + Math.PI
         })   
-      }))
+      })
+
+      stylesList.push(mpStyle)
+
     })
     return stylesList;
   }
@@ -280,6 +293,69 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     });
     return style;
   }
+
+  public configureEndPurposeText():Style{
+    if(this.lineOptions.purpose){
+      const text: string = this.lineOptions.purpose; 
+      const style = new Style({
+        geometry: function(feature){
+          const start = new Point((<EntityLine>feature).getPenultimate());
+          const end = new Point((<EntityLine>feature).getEntityGeometry().getLastCoordinate());
+          const rotation = (<EntityLine>feature).getOrientation(end, start);
+          (<EntityLine>feature).purposeEndStyle.getText().setRotation(-rotation);
+          return new Point((<LineString>feature.getGeometry()).getLastCoordinate());
+        } ,
+        text:new Text({
+          stroke: this.stroke,
+          text: text,
+          // placement: "point",
+          // textAlign: "start",
+          // textBaseline: "middle",
+          offsetX: text.length * 5,
+          offsetY: -7,
+          rotateWithView:true,
+          // rotation: -rotation, 
+          // overflow:true,
+          padding:[10,10,10,10],
+          scale:this.scale
+        })
+      });
+      return style;
+    }
+    return null
+  }
+
+  public configureStartPurposeText():Style{
+    if(this.lineOptions.purpose){
+      const text: string = this.lineOptions.purpose; 
+      const style = new Style({
+        geometry: function(feature){
+          const start = new Point((<LineString>feature.getGeometry()).getFirstCoordinate());
+          const end = new Point((<EntityLine>feature).getCoordinates()[1]);
+          const rotation = (<EntityLine>feature).getOrientation(end, start);
+          (<EntityLine>feature).purposeStartStyle.getText().setRotation(-rotation);
+          return new Point((<LineString>feature.getGeometry()).getFirstCoordinate())
+        } ,
+        text:new Text({
+          stroke: this.stroke,
+          text: text,
+          // placement: "point",
+          // textAlign: "start",
+          // textBaseline: "middle",
+          offsetX: text.length * -5,
+          offsetY: -7,
+          rotateWithView:true,
+          // rotation: -rotation, 
+          // overflow:true,
+          padding:[10,10,10,10],
+          scale:this.scale
+        })
+      });
+      return style;
+    }
+    return null
+  }
+
 
  public getPattern(): Style{
   // const iconRegistry:MatIconRegistry = AppInjector.get(MatIconRegistry);

@@ -48,6 +48,8 @@ import { GlobalsService } from './services/globals.service';
 import { NewPhaseDialogComponent } from './components/nav/ol-map/new-phase-dialog/new-phase-dialog.component';
 import { LineSelectorDialogLoaderComponent } from './components/line-selector-dialog-loader/line-selector-dialog-loader.component';
 import { LineSelectorComponent } from './components/line-selector/line-selector.component';
+import { AreaSelectorComponent } from './components/area-selector/area-selector.component';
+import { AreaSelectorDialogLoaderComponent } from './components/area-selector-dialog-loader/area-selector-dialog-loader.component';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -79,7 +81,9 @@ export let AppInjector: Injector;
     PhaseComponent,
     NewPhaseDialogComponent,
     LineSelectorDialogLoaderComponent,
-    LineSelectorComponent
+    LineSelectorComponent,
+    AreaSelectorDialogLoaderComponent,
+    AreaSelectorComponent
   ],
   imports: [
     BrowserModule,

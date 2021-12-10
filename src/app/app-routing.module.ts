@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AreaSelectorDialogLoaderComponent } from './components/area-selector-dialog-loader/area-selector-dialog-loader.component';
 import { LineSelectorDialogLoaderComponent } from './components/line-selector-dialog-loader/line-selector-dialog-loader.component';
 import { NavComponent } from './components/nav/nav.component';
 import { PointSelectorDialogLoaderComponent } from './components/point-selector-dialog-loader/point-selector-dialog-loader.component';
@@ -18,7 +19,15 @@ const routes: Routes = [
     },{
       path:'Lineas',
       component: LineSelectorDialogLoaderComponent
-    }]
+    },{
+      path:'Areas',
+      component: AreaSelectorDialogLoaderComponent
+    } 
+    // ,{
+    //   path:'Tasks',
+    //   component: TaskSelectorDialogLoaderComponent
+    // }
+  ]
   },
   { 
     path: '**', // bonus: all routes not defined forward to /home

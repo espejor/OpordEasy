@@ -1,0 +1,67 @@
+#modal-content-wrapper{
+    display: flex;
+    flex-direction: column;
+}    
+
+#modal-body{
+    display: flex;
+}
+
+mat-card{
+    background-color: silver;
+    padding: 5px;
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    width: "300px";
+}
+.unit-result{
+    background-color: darkgray;
+    height: "300px";
+}
+
+.selector, .selectorSelected, .unSelected{
+    color: black;
+    width: 90px;
+    /* height: 100px; */
+    background-color: white;
+    padding-left: 5px;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 0px;
+    /* flex: 1; */
+    display: flexbox;
+    margin: 2px;
+}
+.selectorSelected{
+    background-color: darkkhaki;
+}
+
+.icon-selector{
+    width: 82px;
+    height: 82px;
+    stroke-width: 2px;
+    stroke: black; 
+    margin: 0px;
+    text-align: center;
+}
+
+.text-selector{
+    font-weight: 500;
+    text-decoration: double;
+    margin-top: -12px;
+    text-align: center;
+}
+
+footer{
+    margin-top: 10px;
+    display: flex;
+}
+.button-modal{
+    flex: 1;
+}
+
+mat-icon{
+    align-items: center;
+    width: 80px;
+}

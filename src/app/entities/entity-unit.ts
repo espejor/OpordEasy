@@ -34,6 +34,7 @@ export class UnitOptions extends EntityOptions{
   
     constructor(){
       super();
+      this.attachable = true;
       this.frame = null;
       this.main = [];
       this.sector1 = null;

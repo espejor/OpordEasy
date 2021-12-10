@@ -57,12 +57,14 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
     const frame = frameCollection;
     
     for(let element in collection) {
-      if (Array.isArray(collection[element])) {
-        svg += this.compoundSVG(collection[element],frame);
-      }
-      else{
-        if (collection[element] != null)
-          svg += this.writeSVGContent(collection[element],frame);
+      if(element != "attachable"){
+        if (Array.isArray(collection[element])) {
+          svg += this.compoundSVG(collection[element],frame);
+        }
+        else{
+          if (collection[element] != null)
+            svg += this.writeSVGContent(collection[element],frame);
+        }
       }
     };
 

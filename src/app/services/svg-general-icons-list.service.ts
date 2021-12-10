@@ -56,6 +56,8 @@ export class SvgGeneralIconsListService extends SvgIconsListService {
       maneuver:{
         text: "Maniobra",
         selector:{
+          occupied_assembly: {classCSS : "unSelected", selectorText : "Zona de reunión ocupada",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"ALFA",typeLine:"AA",lineVisible:true}},
+
 
         }
       },
@@ -91,12 +93,15 @@ export class SvgGeneralIconsListService extends SvgIconsListService {
         text: "Maniobra",
         selector:{
           friendly_present: {classCSS : "unSelected", selectorText : "Presencia Fuerzas Propias",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"",typeLine:"",lineVisible:false,pattern:"assets/icons/patterns/friendly_present.svg"}},
+          phase_line: {classCSS : "unSelected", selectorText : "Línea de coordinación",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"NOMBRE",typeLine:"PL",lineVisible:true}},
+          feba: {classCSS : "unSelected", selectorText : "FEBA",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"",typeLine:"FEBA",lineVisible:true}},
 
         }
       },
       fires:{
         text: "Fuegos",
         selector:{
+          rfl: {classCSS : "unSelected", selectorText : "Línea de Fuegos Restringido",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"RED",typeLine:"PL",purpose:"RFL", lineVisible:true}},
 
         }
       },

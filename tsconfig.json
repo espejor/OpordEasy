@@ -20,8 +20,14 @@
       "es2018",
       "dom"
     ],
-    "allowSyntheticDefaultImports" : true
-    ,"esModuleInterop": true
+    "allowSyntheticDefaultImports" : true,
+    "esModuleInterop": true,
+    "paths": {
+      "ol": ["node_modules/@types/ol"],
+      "ol/*": ["node_modules/@types/ol/*"],
+      "ol-ext": ["node_modules/@types/ol-ext"],
+      "ol-ext/*": ["node_modules/@types/ol-ext/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

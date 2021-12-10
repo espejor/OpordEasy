@@ -6,14 +6,16 @@ export enum entityType {
     line,
     arrow,
     axis,
+    area,
     task
 }
 export class EntityStakedOrder{
     order = {
-        line : 0,
-        pointOfLabel : 1,
-        point : 2,
-        unit : 3
+        area: 0,
+        line : 1,
+        pointOfLabel : 2,
+        point : 3,
+        unit : 4
     }
     getOrder(type:string){
         return this.order[type]

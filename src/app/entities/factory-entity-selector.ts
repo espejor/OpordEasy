@@ -1,4 +1,5 @@
 import { entityType } from "./entitiesType";
+import { AreaFactory } from "./factory-area";
 import { EntityFactory } from "./factory-entity";
 import { LineFactory } from "./factory-line";
 import { PointFactory } from "./factory-point";
@@ -14,8 +15,11 @@ export class EntitySelector{
         return new PointFactory()
     
       case entityType.line:
-        return new LineFactory()
-    
+          return new LineFactory()
+  
+      case entityType.area:
+        return new AreaFactory()
+          
       default:
         throw new Error("No existe ese tipo de Entidad");
     }

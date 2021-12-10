@@ -1,12 +1,11 @@
-import { Component, OnInit,AfterViewInit,Input,ElementRef, ViewChild, Renderer2, Self } from '@angular/core';
+import { Component, OnInit,AfterViewInit,Input,ElementRef, ViewChild, Renderer2 } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import XYZ from 'ol/source/XYZ';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
-import {containsXY, getTopLeft} from 'ol/extent'
-import { Vector} from 'ol/source';
+import {getTopLeft} from 'ol/extent'
 import * as Proj from 'ol/proj';
 // import {register} from 'ol/proj/proj4';
 import * as proj4x from 'proj4';
@@ -18,7 +17,7 @@ import {
   ZoomSlider
 } from 'ol/control';
 import Overlay from 'ol/Overlay'
-import {fromLonLat, get as getProjection} from 'ol/proj';
+import {get as getProjection} from 'ol/proj';
 import {getWidth} from 'ol/extent';
 import { Collection, Feature, MapBrowserEvent, MapEvent } from 'ol';
 import Style from 'ol/style/Style';
@@ -32,7 +31,6 @@ import Modify, { ModifyEvent } from 'ol/interaction/Modify';
 import Snap, { Options } from 'ol/interaction/Snap';
 import Translate, { TranslateEvent } from 'ol/interaction/Translate';
 import Geometry from 'ol/geom/Geometry';
-import BaseEvent from 'ol/events/Event';
 import { EntityPoint } from 'src/app/entities/entity-point.class';
 import LineString from 'ol/geom/LineString';
 import { EntityArrow } from 'src/app/entities/entity-arrow.class';
@@ -45,22 +43,14 @@ import { UtmService } from 'src/app/services/utm.service';
 import { FloatingMenuComponent } from '../floating-menu/floating-menu.component';
 import { OperationsService } from 'src/app/services/operations.service';
 import { OperationsComponent } from '../operations/operations.component';
-import { Listener } from 'ol/events';
 import { Pixel } from 'ol/pixel';
 import Point from 'ol/geom/Point';
-import { AppInjector } from 'src/app/app.module';
-import { distanceBetweenPixels } from 'src/app/utilities/pixels-geometry';
-import GeometryType from 'ol/geom/GeometryType';
-import { features } from 'process';
-import { pointerMove } from 'ol/events/condition';
 import { EntityLine } from 'src/app/entities/entity-line.class';
-import { SvgIconsListService } from 'src/app/services/svg-icons-list.service';
-import { EntityFactory } from 'src/app/entities/factory-entity';
-import { PointFactory } from 'src/app/entities/factory-point';
-import { EntitySelector } from 'src/app/entities/factory-entity-selector';
-import { entityType } from 'src/app/entities/entitiesType';
 import { distanceInPixelBetweenCoordinates } from 'src/app/utilities/coordinates-calc';
-import { FeatureLike } from 'ol/Feature';
+import Draw from 'ol/interaction/Draw';
+import GeometryType from 'ol/geom/GeometryType';
+import ol_coordinate_cspline from 'ol-ext/render/Cspline';
+// import * as PerspectiveMap from "node_modules/openlayers-ext/lib/render/Cspline.js";
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -144,7 +134,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   })
   callTimes: number;
 
-  
+
   //-------------------------
 
   constructor(private elementRef: ElementRef, 
@@ -218,7 +208,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.dragFeatures.push(point)
     // this.snap.addFeature(point)
 
-    this.snap.setActive(true)
+    // this.snap.setActive(true)
     // this.snap.setActive(true)
 
     // this.activatedOperationsFormOpened = this.mainMenu.activatedOperationsFormOpened
@@ -390,9 +380,15 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     })
 
 
-    var entitieslayer = new VectorLayer({
-      source: this.shapesVectorLayer
+    var entitiesLayer = new VectorLayer({
+      source: this.shapesVectorLayer,
+      renderOrder:(a:Entity,b:Entity) => {
+        return a.getStackOrder() >= b.getStackOrder() ? 1 : -1
+      }
     });
+
+    // const c = ol_coordinate_cspline([[0, 0], [10, 10]])
+    // console.log(ol_coordinate_cspline(c));
 
     this.mapEl = this.elementRef.nativeElement.querySelector('#map');
     // this.setSize();
@@ -408,7 +404,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
         }),
         opacity: 1
       }),
-        entitieslayer
+        entitiesLayer
       ],
       
       view: new View({
@@ -423,6 +419,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       ])
     });
 
+    // this.map.setPerspective(30)
 
     this.map.on("change", (evt:MapEvent) => {
       // evt..forEach(feature => {
@@ -469,7 +466,7 @@ function pointermove(e) {
   }
   var features = self.map.getFeaturesAtPixel(e.pixel, {
     layerFilter: function(l) {
-      return l == entitieslayer;
+      return l == entitiesLayer;
     }
   });
   if (features.length > 0 && features[0] != dragSource.getFeatures()[0]) {
@@ -544,9 +541,9 @@ this.map.on("pointermove", function (evt:MapBrowserEvent) {
     } else {
       this.getTargetElement().style.cursor = '';
       // self.onMouseExit(evt);
-      self.shapesVectorLayer.getFeatures().forEach((feature) => {
-        (<Entity>feature).onMouseExit(evt);
-      })        
+      // self.shapesVectorLayer.getFeatures().forEach((feature) => {
+      //   (<Entity>feature).onMouseExit(evt);
+      // })        
     }
   }
 }); // Fin pointermove

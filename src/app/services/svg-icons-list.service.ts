@@ -64,7 +64,7 @@ export class SvgIconsListService {
 
   protected getD(type,frame):string{
     if(frame){
-      return type.value.d[frame.key] != undefined? frame.key :"friendly"
+      return type.value.codeForDeploing.d[frame.key] != undefined? frame.key :"friendly"
     }
     return "friendly";
   }

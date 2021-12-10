@@ -3,15 +3,11 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Coordinate } from 'ol/coordinate';
 import Geometry from 'ol/geom/Geometry';
-import GeometryType from 'ol/geom/GeometryType';
-import Point from 'ol/geom/Point';
-import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import { Pixel } from 'ol/pixel';
 import { Observable } from 'rxjs';
 import { entityType } from 'src/app/entities/entitiesType';
-import { Entity, EntityOptions } from 'src/app/entities/entity.class';
+import { Entity } from 'src/app/entities/entity.class';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
-import { FeatureForDeploing } from 'src/app/models/feature-for-selector';
 import { EntityLocated } from 'src/app/models/operation';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
@@ -21,12 +17,11 @@ import { SvgGeneralIconsListService } from 'src/app/services/svg-general-icons-l
 import { Selector } from '../selector-base';
 
 @Component({
-  selector: 'app-point-selector',
-  templateUrl: './point-selector.component.html',
-  styleUrls: ['./point-selector.component.css']
+  selector: 'app-area-selector',
+  templateUrl: './area-selector.component.html',
+  styleUrls: ['./area-selector.component.css']
 })
-export class PointSelectorComponent extends Selector implements OnInit,AfterViewInit {
-  
+export class AreaSelectorComponent extends Selector implements OnInit,AfterViewInit {
   public setFeaturesToSelect ;
   public listOfOptions = [];
 
@@ -44,6 +39,7 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
     this.setFeaturesToSelect = Object.keys(this.listOfOptions)[0];
   }
 
+  
   ngAfterViewInit(){
     this.resetAspectSelectors();
   }
@@ -60,63 +56,62 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
 
   fillArrayOfOptions(): any[] {
     const options:any[] = []
-    for(const property in this.svgListOfIcons.features.points) {
-      options[property] = this.svgListOfIcons.features.points[property].text;
+    for(const property in this.svgListOfIcons.features.areas) {
+      options[property] = this.svgListOfIcons.features.areas[property].text;
     };
     return options;
   }
+
 
   loadExtraData(feature:KeyValue<string,any>){
     this.resetAspectSelectors();
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // const coordinates:Coordinate = []; 
-    const coordinates = mapComponent.map.getView().getCenter();
+    const center = mapComponent.map.getView().getCenter();
+    const coordinates:Coordinate[] = [];
+    coordinates.push([center[0] - 500,center[1]]);
+    coordinates.push([center[0] + 500,center[1]]);
     feature.value.classCSS = feature.value.classCSS == "selectorSelected"? "unSelected" : "selectorSelected";
-    // this.pointOptions = feature.value
-    const point = EntitySelector.getFactory(entityType.point).createEntity(feature.value.codeForDeploing,coordinates);
+    // this.areaOptions = feature.value
+    const area = EntitySelector.getFactory(entityType.area).createEntity(feature.value.codeForDeploing,coordinates);
     
-    this.entitySelectorService.entitySelected = point
-
+    this.entitySelectorService.entitySelected = area
   }
   
-  savePoint(point:Entity<Geometry>):Observable<Object>{    // point.favorite = this.favorite;
+  saveArea(area:Entity<Geometry>):Observable<Object>{    // area.favorite = this.favorite;
     // La guardamos en la BD
-    return this.httpEntitiesService.addEntity(point);
+    return this.httpEntitiesService.addEntity(area);
   }
 
-
-  insertPoint(event) {
-    // this.entitiesDeployed.saveEntity(entityType.point);
+  
+    
+  insertArea(event) {
+    // this.entitiesDeployed.saveEntity(entityType.area);
     // ---todo Intentar referenciar con viewChild o Output/Input 
     
     const mapComponent = this.entitiesDeployed.getMapComponent();
-    const draw:Draw = new Draw({
-      source:mapComponent.shapesVectorLayer,
-      type: GeometryType.POINT
-    })
-    
-    mapComponent.map.addInteraction(draw);
-
-    var coordinates: Coordinate = [];
-    draw.on("drawend", (evt:DrawEvent) => {
-      mapComponent.map.removeInteraction(draw);
-      
-      coordinates = (<Point>evt.feature.getGeometry()).getCoordinates()
     // // const coordinates:Coordinate = []; 
-    // const pixel:Pixel = [event.x,event.y];
-    // const coordinates = mapComponent.map.getCoordinateFromPixel(pixel);
-    // this.listOfUnitsCreated.push(this.pointOptions);
-    const point = EntitySelector.getFactory(entityType.point).createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
+    const pixel:Pixel = [event.x,event.y];
+    var areaStart:Coordinate = mapComponent.map.getCoordinateFromPixel(pixel);
+    areaStart = [areaStart[0] - 5000,areaStart[1]];
+    const areaEnd:Coordinate = [areaStart[0] + 10000,areaStart[1]];
+    const coordinates: Coordinate[] = [];
+    coordinates.push(areaEnd,areaStart);
+    // this.listOfUnitsCreated.push(this.areaOptions);
+    // (<AreaOptions>(this.entitySelectorService.entitySelected.entityOptions)).name = "NAME";
+    // (<AreaOptions>(this.entitySelectorService.entitySelected.entityOptions)).typeArea = "TYPE";
+    const area = EntitySelector.getFactory(entityType.area).
+                createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
 
-    this.savePoint(point).subscribe(
+    this.saveArea(area).subscribe(
       data => {
       this._snackBar.open(
-        "Se ha guardado el Punto en la Base de datos",
+        "Se ha guardado la Línea en la Base de datos",
         "Cerrar",
         {duration : 3000}
       )
-      point._id = (<Entity>data)._id;
-      this.entitySelectorService.entitySelected = point;
+      area._id = (<Entity>data)._id;
+      this.entitySelectorService.entitySelected = area;
     // if (!coordinates)
     // if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
     // }else 
@@ -128,8 +123,6 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
         this.entitySelectorService.entitySelected = undefined;
       }
     });
-  })
   }
 // }
 }
-

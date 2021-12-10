@@ -3,6 +3,9 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Coordinate } from 'ol/coordinate';
 import Geometry from 'ol/geom/Geometry';
+import GeometryType from 'ol/geom/GeometryType';
+import LineString from 'ol/geom/LineString';
+import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import { Pixel } from 'ol/pixel';
 import { Observable } from 'rxjs';
 import { entityType } from 'src/app/entities/entitiesType';
@@ -89,43 +92,48 @@ export class LineSelectorComponent extends Selector implements OnInit,AfterViewI
   
     
   insertLine(event) {
-    // this.entitiesDeployed.saveEntity(entityType.line);
-    // ---todo Intentar referenciar con viewChild o Output/Input 
+    // ---TODO Intentar referenciar con viewChild o Output/Input 
     
     const mapComponent = this.entitiesDeployed.getMapComponent();
-    // // const coordinates:Coordinate = []; 
-    const pixel:Pixel = [event.x,event.y];
-    var lineStart:Coordinate = mapComponent.map.getCoordinateFromPixel(pixel);
-    lineStart = [lineStart[0] - 5000,lineStart[1]];
-    const lineEnd:Coordinate = [lineStart[0] + 10000,lineStart[1]];
-    const coordinates: Coordinate[] = [];
-    coordinates.push(lineEnd,lineStart);
-    // this.listOfUnitsCreated.push(this.lineOptions);
-    // (<LineOptions>(this.entitySelectorService.entitySelected.entityOptions)).name = "NAME";
-    // (<LineOptions>(this.entitySelectorService.entitySelected.entityOptions)).typeLine = "TYPE";
-    const line = EntitySelector.getFactory(entityType.line).
-                createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
+    const draw:Draw = new Draw({
+      source:mapComponent.shapesVectorLayer,
+      type: GeometryType.LINE_STRING
+    })
+    
+    // draw.setProperties({"type":GeometryType.LINE_STRING})
+    mapComponent.map.addInteraction(draw);
 
-    this.saveLine(line).subscribe(
-      data => {
-      this._snackBar.open(
-        "Se ha guardado la Línea en la Base de datos",
-        "Cerrar",
-        {duration : 3000}
-      )
-      line._id = (<Entity>data)._id;
-      this.entitySelectorService.entitySelected = line;
-    // if (!coordinates)
-    // if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
-    // }else 
-      if(this.operationsService.loadEntity(this.entitySelectorService.entitySelected,coordinates)){
-        const entityLocated:EntityLocated = new EntityLocated(this.entitySelectorService.entitySelected,this.entitySelectorService.entitySelected.getCoordinates())
-        // entityLocated.entity = this.entitySelectorService.entitySelected
-        // entityLocated.location = this.entitySelectorService.entitySelected.getCoordinates();
-        this.entitiesDeployed.addNewEntity(entityLocated);
-        this.entitySelectorService.entitySelected = undefined;
-      }
-    });
+    var coordinates: Coordinate[] = [];
+    draw.on("drawend", (evt:DrawEvent) => {
+      mapComponent.map.removeInteraction(draw);
+      
+      coordinates = (<LineString>evt.feature.getGeometry()).getCoordinates()
+
+    // const pixel:Pixel = [event.x,event.y];
+    // var lineStart:Coordinate = mapComponent.map.getCoordinateFromPixel(pixel);
+    // lineStart = [lineStart[0] - 5000,lineStart[1]];
+    // const lineEnd:Coordinate = [lineStart[0] + 10000,lineStart[1]];
+    // const coordinates: Coordinate[] = [];
+    // coordinates.push(lineEnd,lineStart);
+      const line = EntitySelector.getFactory(entityType.line).
+                  createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
+
+      this.saveLine(line).subscribe(
+        data => {
+        this._snackBar.open(
+          "Se ha guardado la Línea en la Base de datos",
+          "Cerrar",
+          {duration : 3000}
+        )
+        line._id = (<Entity>data)._id;
+        this.entitySelectorService.entitySelected = line;
+        if(this.operationsService.loadEntity(this.entitySelectorService.entitySelected,coordinates)){
+          const entityLocated:EntityLocated = new EntityLocated(this.entitySelectorService.entitySelected,this.entitySelectorService.entitySelected.getCoordinates())
+          this.entitiesDeployed.addNewEntity(entityLocated);
+          this.entitySelectorService.entitySelected = undefined;
+        }
+      });
+    })
   }
 // }
 }

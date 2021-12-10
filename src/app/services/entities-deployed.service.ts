@@ -41,24 +41,6 @@ export class EntitiesDeployedService {
 
     entityLocated.entity.setFlatCoordinatesfromLocation(entityLocated.location );
     this.olMapComponent.shapesFeatures.push(entityLocated.entity);
-    const sortedArray = this.olMapComponent.shapesFeatures.getArray().sort((a,b) => {
-      return a.getStackOrder() >= b.getStackOrder() ? 1 : -1
-    });
-    // this.olMapComponent.shapesFeatures.clear()
-    // sortedArray.forEach(entity => {
-    //   this.olMapComponent.shapesFeatures.push(entity)
-    // });
-    
-    this.olMapComponent.dragFeatures.push(entityLocated.entity);
-    // this.olMapComponent.snapFeatures.push(entityLocated.entity);
-    this.olMapComponent.snap.set("source",this.olMapComponent.shapesVectorLayer);
-    // this.olMapComponent.snap = new CustomSnap({
-    //   source:this.olMapComponent.shapesVectorLayer,
-    //   pixelTolerance:40
-    // })
-    this.olMapComponent.snap.addFeature(entityLocated.entity)
-    // this.olMapComponent.map.addInteraction(this.olMapComponent.snap)
-    // this.olMapComponent.moveFeatures.push(entityLocated.entity);
   }
 
   resetEntitiesDeployed() {
