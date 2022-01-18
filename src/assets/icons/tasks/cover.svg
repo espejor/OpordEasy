@@ -1,0 +1,15 @@
+
+
+
+<svg width="80" height="80" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <g>
+    <rect stroke="#000" height="10" width="12" y="35" x="34" fill="#00ffff"/>
+    <path fill="none" stroke-width="2" d="m55,40 l12,-10 v6 l12,-10 m-5,0 h5 v5" id="svg_1" stroke="#000"/>
+    <path fill="none" stroke-width="2" d="m5,27 h-4 v5 m0,-5 l12,10 v-6 l12,10" id="svg_1" stroke="#000"/>
+
+    
+    <text font-size="10" x="25" y="44" >C</text>
+    <text font-size="10"  x="48" y="44" >C</text>
+ </g>
+
+</svg>

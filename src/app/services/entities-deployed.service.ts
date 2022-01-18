@@ -13,6 +13,7 @@ import { EntitySelector } from '../entities/factory-entity-selector';
 import { SvgIconsListService } from './svg-icons-list.service';
 import Snap from 'ol/interaction/Snap';
 import { Collection, Feature } from 'ol';
+import ol_coordinate_cspline from 'ol-ext/render/Cspline';
 
 @Injectable({
   providedIn: 'root'
@@ -36,8 +37,9 @@ export class EntitiesDeployedService {
   }
 
   addNewEntity(entityLocated: EntityLocated, coordinates?:Coordinate[] | Coordinate) {
+
     if (coordinates)
-      entityLocated.location = coordinates;
+      entityLocated.location = coordinates;    
 
     entityLocated.entity.setFlatCoordinatesfromLocation(entityLocated.location );
     this.olMapComponent.shapesFeatures.push(entityLocated.entity);

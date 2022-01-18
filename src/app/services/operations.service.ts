@@ -345,7 +345,7 @@ export class OperationsService {
     });
   }
 
-  updateEntityPositionInOperation(entity: Entity) {
+updateEntityPositionInOperation(entity: Entity) {
     const operation = this.selectedOperation
     const location = entity.getCoordinates();
     const entityFound = this.selectedOperation.phases[this.phaseOrder].layout.find((item) =>{
@@ -366,6 +366,30 @@ export class OperationsService {
     });
   }
 
+
+updateEntityInOperation(entity: Entity) {
+    const operation = this.selectedOperation
+    // const location = entity.getCoordinates();
+    const entityFound = this.selectedOperation.phases[this.phaseOrder].layout.find((item) =>{
+      return item.entity._id === entity._id
+    })
+    // if(entityFound)
+      // entityFound.location = location
+
+    const object = {
+      "action" : "updateEntity",
+      // "location" : location, 
+      "phase": this.phaseOrder,
+      "entity": entity
+    }
+    return this.http.put(this.URL_API + `/${operation._id}`,object)
+    .subscribe(data => {
+      console.log(data);
+    });
+  }
+
+
+  
   getOperations(){
     return this.http.get(this.URL_API);
   }

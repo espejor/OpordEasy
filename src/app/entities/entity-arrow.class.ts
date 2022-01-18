@@ -1,40 +1,92 @@
-import { Coordinate } from "ol/coordinate";
+import { Feature } from "ol";
+import { LineString } from "ol/geom";
 import Geometry from "ol/geom/Geometry";
 import Point from "ol/geom/Point";
 import Icon from "ol/style/Icon";
-import IconAnchorUnits from "ol/style/IconAnchorUnits";
 import Style from "ol/style/Style";
-import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
 import { entityType } from "./entitiesType";
 import { EntityLine } from "./entity-line.class";
+import { TaskOptions } from "./entity-task.class";
 
 export class EntityArrow<GeomType extends Geometry = Geometry> extends EntityLine{
-    constructor(opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
-        super(null,opt_geometryOrProperties);
-        this.entityType = entityType.arrow
-    }
-    
-    public rotationOfTip(): Number{
-        var dx = this.getEnd[0] - this.getPenultimate[0];
-        var dy = this.getEnd[1] - this.getPenultimate[1];
-        return Math.atan2(dy, dx);
-    }
+  tipStyle: Style;
+  tailStyle: Style;
+  constructor(taskOptions:TaskOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?) {
+    super(taskOptions,opt_geometryOrProperties,id);
+    this.entityType = entityType.arrow
+    const entity = this
+    this.tipStyle = this.getTipStyle()
+    this.tailStyle = this.getTailStyle()
 
-    public getArrowStile():Style{    
-        var arrowStyle = new Style({
-            geometry: new Point(this.getEnd()),
-            image: new Icon({
-            anchor: [0.75,0.5],
-            anchorXUnits: IconAnchorUnits.FRACTION,
-            anchorYUnits: IconAnchorUnits.FRACTION,
-            opacity: 1,
-            // size: [24,24],
-            color: 'red',
-            src: 'assets/icons/up-arrow.png',
-            rotateWithView: true,
-            rotation: -this.rotationOfTip()
-            })
-        })
-        return arrowStyle;
+    var stylesFunction = function(feature:Feature){
+      const styles: Style[] = []
+      styles.push(entity.tipStyle)
+      styles.push(entity.tailStyle)
+      if(taskOptions.echelon)
+        styles.push(...entity.configureCentralIcon(feature,taskOptions.echelon,taskOptions.svgWidth));
+      // styles.push(entity.startTextStyle);
+      // styles.push(entity.endTextStyle);
+      if (taskOptions. lineVisible)
+        styles.push(entity.lineStyle);
+      if(taskOptions.pattern)
+        styles.push(...entity.createPattern(feature));
+      if(taskOptions.purpose){
+        styles.push(entity.purposeEndStyle);
+        styles.push(entity.purposeStartStyle);
+      }
+      return styles
     }
+    if(taskOptions){
+        this.styles = stylesFunction;
+        this.setStyle(this.styles)
+    }
+  }
+
+
+  public getTipStyle():Style{    
+    var tipSource = (<TaskOptions>this.entityOptions).tipSource
+    var arrowStyle = new Style({
+      geometry: function(feature){
+        const location = (<LineString>feature.getGeometry()).getFirstCoordinate()
+        const point = new Point(location)
+        const end = new Point((<LineString>feature.getGeometry()).getFirstCoordinate());
+        const start = new Point((<EntityLine>feature).getCoordinates()[1]);
+        const rotation = (<EntityLine>feature).getOrientation(end, start);
+        (<EntityArrow>feature).tipStyle.getImage().setRotation(-(rotation + Math.PI/2));
+        return point;
+      },
+      image: new Icon({
+        anchor: [0.5,0.2],
+        opacity: 1,
+        src: tipSource,
+        rotateWithView: true
+      })
+    })
+    return arrowStyle;
+  }
+
+  public getTailStyle():Style{    
+    var tailSource = (<TaskOptions>this.entityOptions).tailSource
+    var arrowStyle = new Style({
+      geometry: function(feature){
+        const location = (<LineString>feature.getGeometry()).getLastCoordinate()
+        const point = new Point(location)
+        const start = new Point((<LineString>feature.getGeometry()).getLastCoordinate());
+        const length = (<LineString>feature.getGeometry()).getCoordinates().length
+        const end = new Point((<LineString>feature.getGeometry()).getCoordinates()[length - 2]);
+        const rotation = (<EntityLine>feature).getOrientation(end, start);
+        (<EntityArrow>feature).tailStyle.getImage().setRotation(-(rotation + Math.PI/2));
+        return point;
+      },
+      image: new Icon({
+        anchor: [0.5,0],
+        opacity: 1,
+        src: tailSource,
+        rotateWithView: true,
+        scale:1
+      })
+    })
+    return arrowStyle;
+  }
+
 }

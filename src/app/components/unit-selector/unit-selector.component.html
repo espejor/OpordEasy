@@ -32,7 +32,7 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <div *ngIf = "setFeaturesToSelect != 'sectionAdd'; else textOptions" class="features-container">
+                        <div *ngIf = "setFeaturesToSelect != 'extraData'; else textOptions" class="features-container">
                             <div  *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
                                 <div  (click) = "addFeature(feature)" [class] = "feature.value.classCSS">
                                     <mat-icon svgIcon = "{{feature.key}}" class="icon-selector" ></mat-icon>
@@ -43,10 +43,20 @@
                         <ng-template #textOptions>
                             <div class="features-container">
                                 <form>
+                                    <mat-checkbox class="example-margin"(change)="addFO($event.checked)">Fuerza Operativa</mat-checkbox>
+                                    <br/>
+                                    <mat-checkbox class="example-margin"(change)="addCG($event.checked)">CG/PC</mat-checkbox>
+                                    <br/>
+                                    <mat-radio-group name="reinforced" aria-label="¿Reforzada?" [(ngModel)]="reinforcedOptionSelected">
+                                        <mat-radio-button #button  *ngFor="let option of reinforcedOptions" [value]="option" (click)="checkState($event, button)">
+                                            {{option}}
+                                          </mat-radio-button>
+                                      </mat-radio-group>
+                                    
                                     <div  *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
                                         <mat-form-field  >
-                                            <mat-label>{{feature.value}}</mat-label>
-                                            <input matInput placeholder="Designación" (change) = "updateFeature($event)" value ="">
+                                            <mat-label>{{feature.value.selectorText}}</mat-label>
+                                            <input matInput #plus placeholder={{feature.value.value}} value="" (change) = "updateFeatureWithText($event,feature)">
                                         </mat-form-field>
                                     </div>
                                 </form>

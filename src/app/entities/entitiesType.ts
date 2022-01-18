@@ -7,15 +7,24 @@ export enum entityType {
     arrow,
     axis,
     area,
-    task
+    task,
+    multipoint,
+    circle
 }
+
+export function getEntityType(type:string):entityType{
+    return entityType[type]
+}
+
 export class EntityStakedOrder{
     order = {
         area: 0,
         line : 1,
-        pointOfLabel : 2,
-        point : 3,
-        unit : 4
+        multipoint: 2,
+        circle: 3,
+        pointOfLabel : 4,
+        point : 5,
+        unit : 6
     }
     getOrder(type:string){
         return this.order[type]

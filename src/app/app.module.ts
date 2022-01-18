@@ -50,13 +50,15 @@ import { LineSelectorDialogLoaderComponent } from './components/line-selector-di
 import { LineSelectorComponent } from './components/line-selector/line-selector.component';
 import { AreaSelectorComponent } from './components/area-selector/area-selector.component';
 import { AreaSelectorDialogLoaderComponent } from './components/area-selector-dialog-loader/area-selector-dialog-loader.component';
+import { TaskSelectorComponent } from './components/task-selector/task-selector.component';
+import { TaskSelectorDialogLoaderComponent } from './components/task-selector-dialog-loader/task-selector-dialog-loader.component';
 
 
 export function HttpLoaderFactory(http:HttpClient){
   return new TranslateHttpLoader(http);
 }
 
-export let AppInjector: Injector;
+// export let AppInjector: Injector;
 
 @NgModule({
   declarations: [
@@ -83,7 +85,9 @@ export let AppInjector: Injector;
     LineSelectorDialogLoaderComponent,
     LineSelectorComponent,
     AreaSelectorDialogLoaderComponent,
-    AreaSelectorComponent
+    AreaSelectorComponent,
+    TaskSelectorDialogLoaderComponent,
+    TaskSelectorComponent
   ],
   imports: [
     BrowserModule,
@@ -145,8 +149,5 @@ export let AppInjector: Injector;
 
     
 export class AppModule {
-  constructor(private injector: Injector) {
-    AppInjector = this.injector;
-  }
 }
 

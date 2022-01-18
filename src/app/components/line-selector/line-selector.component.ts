@@ -100,7 +100,6 @@ export class LineSelectorComponent extends Selector implements OnInit,AfterViewI
       type: GeometryType.LINE_STRING
     })
     
-    // draw.setProperties({"type":GeometryType.LINE_STRING})
     mapComponent.map.addInteraction(draw);
 
     var coordinates: Coordinate[] = [];
@@ -109,12 +108,6 @@ export class LineSelectorComponent extends Selector implements OnInit,AfterViewI
       
       coordinates = (<LineString>evt.feature.getGeometry()).getCoordinates()
 
-    // const pixel:Pixel = [event.x,event.y];
-    // var lineStart:Coordinate = mapComponent.map.getCoordinateFromPixel(pixel);
-    // lineStart = [lineStart[0] - 5000,lineStart[1]];
-    // const lineEnd:Coordinate = [lineStart[0] + 10000,lineStart[1]];
-    // const coordinates: Coordinate[] = [];
-    // coordinates.push(lineEnd,lineStart);
       const line = EntitySelector.getFactory(entityType.line).
                   createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
 

@@ -4,8 +4,18 @@ import { Coordinate, distance} from "ol/coordinate";
 export const LEFT = 1;
 export const RIGHT = 0;
 
-export function getPerpendicularPoint(origin:Coordinate,angle:number,distance:number): Coordinate{
-    return getPointToVector(origin,angle + Math.PI/2,distance);
+export function getPerpendicularPoint(origin:Coordinate,rotation:number,distance:number): Coordinate{
+    return getPointToVector(origin,rotation + Math.PI/2,distance);
+}
+
+export function distanceFromPointToLine(point:Coordinate,p1:Coordinate,p2:Coordinate):number{
+    const x0 = point[0]
+    const y0 = point[1]
+    const x1 = p1[0]
+    const y1 = p1[1]
+    const x2 = p2[0]
+    const y2 = p2[1]
+    return (Math.abs(((x2-x1)*(y1-y0)) - ((x1-x0)*(y2-y1))))/distance(p1,p2)
 }
 
 export function getParallelLineWithEndOffset(coordinates: Coordinate[],distance:number,side:number,offset:number): Coordinate[] {
@@ -76,5 +86,25 @@ export function getPointToVector(origin:Coordinate,angle:number,distance:number)
     newPoint[0] = origin[0] + distance * Math.cos(angle);
     newPoint[1] = origin[1] + distance * Math.sin(angle);
     return newPoint;
+}
+
+export function getCoordsForArc(center:Coordinate,radius:number,angle:number = 2 * Math.PI,rotation:number = 0,segments:number = 10):Coordinate[]{
+    const coordinates:Coordinate [] = []
+    for (let i = 0; i <= segments; i++) {
+        var x = center[0] + (radius * Math.cos(i* (angle/segments) + rotation))
+        var y = center[1] + (radius * Math.sin(i* (angle/segments) + rotation))
+        coordinates.push([x,y])
+    }
+    return coordinates        
+}
+
+export function getCoordsForArcFrom2Points(p1:Coordinate,p2:Coordinate,alfa:number = 0.5 * Math.PI,segments:number = 10):Coordinate[]{
+    const beta = (0.5 * Math.PI) - (alfa/2) // ángulo entre p1, p2 y r
+    const d = distance(p1,p2);  // distancia entre los dos puntos
+    const r = (d/2) / Math.sin(alfa/2)  // radio
+    const gamma = getOrientation(p1,p2) // orientación entre los 2 puntos
+    const rotation = gamma + beta - Math.PI // rotación del arco
+    const c = getPointToVector(p1,gamma + beta,r)   // centro de la circunferencia
+    return getCoordsForArc(c,r,alfa,rotation,segments);
 }
 

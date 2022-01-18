@@ -16,7 +16,7 @@ export class SvgGeneralIconsListService extends SvgIconsListService {
         selector:{
           control_point: {classCSS : "unSelected", selectorText : "Punto de Control",codeForDeploing:{type:"path", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, attachable:true, d:{friendly:"m25,-25 h30 v35 h-30 z m0,35 l15,15 l15,-15"}}},
           contact_point: {classCSS : "unSelected", selectorText : "Punto de Contacto", codeForDeploing:{type:"path", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, attachable:true, d:{friendly:"m20,4 h40 v40 h-40z"}}},
-          coordination_point: {classCSS : "unSelected", selectorText : "Punto de Coordinación", codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"#E8E8CE", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, attachable:true, d:{friendly:"m40,4a20,20 0 1 0 1,0z m-13,6l28,28m-28,0l28,-28"}}},
+          coordination_point: {classCSS : "unSelected", selectorText : "Punto de Coordinación", codeForDeploing:{type:"file", x:this.x, y:this.y, fill:"#E8E8CE", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, attachable:true, file:{file:"assets/icons/points/command/coordination_point.svg",scale:0.5}}},
         }
       },
       obs:{
@@ -56,9 +56,12 @@ export class SvgGeneralIconsListService extends SvgIconsListService {
       maneuver:{
         text: "Maniobra",
         selector:{
-          occupied_assembly: {classCSS : "unSelected", selectorText : "Zona de reunión ocupada",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"ALFA",typeLine:"AA",lineVisible:true}},
-
-
+          assembly_area: {classCSS : "unSelected", selectorText : "Zona de reunión",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"ALFA",typeArea:"AA",lineVisible:true}},
+          drop_zone: {classCSS : "unSelected", selectorText : "Zona de Lanzamiento",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"ECHO",typeArea:"DZ",lineVisible:true}},
+          fortified_area: {classCSS : "unSelected", selectorText : "Zona Fortificada",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"ECHO",typeArea:"",lineVisible:false,pattern:{pattern:"assets/patterns/fortified_area.svg",gap:0,wide:20,anchor:[1,1]}}},
+          battle_position: {classCSS : "unSelected", selectorText : "Posición defensiva",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"ECHO",typeArea:"",lineVisible:true,echelon:"assets/icons/echelons/platoon.svg",svgWidth:2}},
+          strong_point: {classCSS : "unSelected", selectorText : "Punto Fuerte",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"BRAVO",typeArea:"",lineVisible:true,echelon:"assets/icons/echelons/platoon.svg",svgWidth:2,pattern:{pattern:"assets/patterns/strong_point.svg",gap:0,wide:20,anchor:[0,0]}}},
+          
         }
       },
       fires:{
@@ -92,7 +95,7 @@ export class SvgGeneralIconsListService extends SvgIconsListService {
       maneuver:{
         text: "Maniobra",
         selector:{
-          friendly_present: {classCSS : "unSelected", selectorText : "Presencia Fuerzas Propias",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"",typeLine:"",lineVisible:false,pattern:"assets/icons/patterns/friendly_present.svg"}},
+          friendly_present: {classCSS : "unSelected", selectorText : "Presencia Fuerzas Propias",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"",typeLine:"",lineVisible:false,pattern:{pattern:"assets/patterns/friendly_present.svg",gap:0,wide:20,anchor:[1,1]}}},
           phase_line: {classCSS : "unSelected", selectorText : "Línea de coordinación",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"NOMBRE",typeLine:"PL",lineVisible:true}},
           feba: {classCSS : "unSelected", selectorText : "FEBA",codeForDeploing:{type:"class", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,name:"",typeLine:"FEBA",lineVisible:true}},
 

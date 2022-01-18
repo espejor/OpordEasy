@@ -1,0 +1,10 @@
+
+
+<svg width="80" height="80" version='1.1' xmlns="http://www.w3.org/2000/svg">
+   <path d="m10,30a32,32 0 0 1 60,0" stroke-width="3" fill="none" id="svg_2" stroke="black"/>
+   <path d="m10,50a32,32 0 0 0 60,0" stroke-width="3" fill="none" id="svg_2" stroke="black"/>
+   <path d="m7,21l2,9l9,-2" stroke-width="3" fill="none" id="svg_2" stroke="black"/>
+   <path d="m7,59l2,-9l9,2" stroke-width="3" fill="none" id="svg_2" stroke="black"/>
+  <text font-style="normal" font-size="14" y="44" x="53" id="svg_3">LOC</text>
+  
+  </svg>

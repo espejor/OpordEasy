@@ -1,0 +1,10 @@
+<svg width="80" height="80" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <g>
+  <title>Layer 1</title>
+  <line  y2="70" x2="78" y1="10" x1="78" stroke-width="3" stroke="#000" fill="none"/>
+  <line  y2="40" x2="36" y1="40" x1="2" stroke-width="3" stroke="#000" fill="none"/>
+  <line  y2="40" x2="78" y1="40" x1="46" stroke-width="3" stroke="#000" fill="none"/>
+  <text  x="37" y="44" >B</text>
+ </g>
+
+</svg>

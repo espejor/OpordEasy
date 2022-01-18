@@ -1,5 +1,5 @@
 <svg width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
-<!-- <g> -->
-    <circle cx="10" cy="10" r="10" fill="#fff1" />
+<!-- <g> -->  
+    <ellipse stroke="#0000ff" ry="8" rx="8" id="svg_1" cy="10" cx="10" stroke-width="2" fill="#ff0000"/>
 <!-- </g> -->
 </svg>

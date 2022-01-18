@@ -1,0 +1,7 @@
+<svg width="80" height="80" version='1.1' xmlns="http://www.w3.org/2000/svg">
+  <line fill="none" stroke="#000" stroke-width="3" x1="10" y1="10" x2="30" y2="30" id="svg_1" stroke-linejoin="undefined" stroke-linecap="undefined"/>
+  <line fill="none" stroke="#000" stroke-width="3" x1="70" y1="10" x2="50" y2="30" id="svg_1" stroke-linejoin="undefined" stroke-linecap="undefined"/>
+  <line fill="none" stroke="#000" stroke-width="3" x1="10" y1="70" x2="30" y2="50" id="svg_1" stroke-linejoin="undefined" stroke-linecap="undefined"/>
+  <line fill="none" stroke="#000" stroke-width="3" x1="70" y1="70" x2="50" y2="50" id="svg_1" stroke-linejoin="undefined" stroke-linecap="undefined"/>
+  <text font-weight="bold" font-family= "sans-serif" xml:space="preserve" text-anchor="start" font-size="24" id="svg_2" y="48" x="32" stroke-width="0" stroke="#000" fill="#000000">D</text>
+</svg>

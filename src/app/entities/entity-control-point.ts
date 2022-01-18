@@ -1,39 +1,107 @@
-import { Feature, MapBrowserEvent } from "ol";
+import { Collection, Map, MapBrowserEvent } from "ol";
 import { Coordinate } from "ol/coordinate";
 import Geometry from "ol/geom/Geometry";
+import Modify, { ModifyEvent } from "ol/interaction/Modify";
+import { Pixel } from "ol/pixel";
+import VectorSource from "ol/source/Vector";
+import { Fill, Stroke } from "ol/style";
 import Icon from "ol/style/Icon";
 import IconAnchorUnits from "ol/style/IconAnchorUnits";
 import Style from "ol/style/Style";
-import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
+import { HTTPEntitiesService } from "../services/entities.service";
+import { OperationsService } from "../services/operations.service";
+import { Globals } from "../utilities/globals";
 import { entityType } from "./entitiesType";
-import { EntityComplex } from "./entity-complex.class";
 import { EntityPoint } from "./entity-point.class";
+import { Entity } from "./entity.class";
 
 export class EntityControlPoint<GeomType extends Geometry = Geometry>  extends EntityPoint{
-  private coordinate:Coordinate;
-  private entityComplex:EntityComplex;
   private styleOver:Style;
   private styleExited:Style;
-
-  
-  constructor(entityComplex:EntityComplex,opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
+  dragging: boolean = false;
+  hostId: string;
+    
+  constructor(host:Entity, opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
     super(null,null,opt_geometryOrProperties);
+    this.hostId = host._id
+
     this.entityType = entityType.controlPoint
-    this.entityComplex = entityComplex;
-    this.createStyles();
-    this.setStyle(this.styleExited);
+    const map:Map = Globals.MAP
+    const dragSource:VectorSource = Globals.DRAG_SOURCE;  
+    var modify:Modify = Globals.MODIFY;
+    
+    this.createStyles()
+    this.setStyle(this.styleOver)    
+    // const style = this.getStyle()
+    // style.setStroke(new Stroke({
+    //     color: [255,255,255,0]
+    //   }))
+
+    
+
+    if(!dragSource.hasFeature(this))
+      dragSource.addFeature(this);
+
+    
+    // var modify = new Modify({
+    //   source:dragSource
+    // })
+
+    const inters = map.getInteractions().getArray()
+  
+
+    
+    if(!inters.includes(modify))
+        map.addInteraction(modify)
+
+    modify.on("modifystart",(evt:ModifyEvent) => {
+      if(evt.mapBrowserEvent.dragging){
+        this.dragging = true
+      }    
+    })
+
+    modify.on("modifyend",(evt:ModifyEvent) => {
+      if(!evt.mapBrowserEvent.dragging)
+        this.dragging = false
+    }) 
   }
+
+  onModifyEnd(evt:ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService): void {
+    const entity:Entity = shapesFeatures.getArray().filter(e => e._id == this.hostId)[0]
+    entitiesService.updateEntity(entity).subscribe(data => 
+      console.log(data)
+    )
+  }
+
+  setCoordinates(coordinates: Coordinate): void {
+    if (!this.dragging)
+      super.setCoordinates(coordinates)
+  }
+
+  setListeners() {
+    const map:Map = Globals.MAP
+    map.on("pointerdrag",(evt: MapBrowserEvent<UIEvent>) => {
+      const pixel:Pixel = evt.pixel
+      // map. .forEach(element => {
+        
+      // });
+      console.log("------------------Arrastrnado punto de control")
+    })
+  }
+
   createStyles() {
     this.styleOver = new Style({
+      // stroke:new Stroke({color:[100,100,100]}),
+      // fill:new Fill({color:[100,100,100]})
       image: new Icon({
         anchor: [0.5,0.5],
         anchorXUnits: IconAnchorUnits.FRACTION,
         anchorYUnits: IconAnchorUnits.FRACTION,
-        opacity: 1,
-        scale: 0.5,
-        // size: [24,24],
+        opacity: 0.01,
+        scale: 1,
+        size: [24,24],
         color: 'white',
-        src: 'assets/icons/circle24.svg'
+        src: 'assets/icons/point.svg'
       })
     })
 
@@ -43,11 +111,13 @@ export class EntityControlPoint<GeomType extends Geometry = Geometry>  extends E
         anchorXUnits: IconAnchorUnits.FRACTION,
         anchorYUnits: IconAnchorUnits.FRACTION,
         opacity: 1,
-        scale: 1,
+        size: [24,24],
+        scale: 0.5,
         src: 'assets/icons/circle-null.svg'
       })
     })
   }
+
 
     // ----------- Listeners
     onMouseOver(ev:MapBrowserEvent):void{
@@ -58,7 +128,7 @@ export class EntityControlPoint<GeomType extends Geometry = Geometry>  extends E
       this.setStyle(this.styleExited)
     }
     
-    public onMouseDown(ev){
+    onMouseDown(ev){
       console.log("down en botón de control");
     };
     

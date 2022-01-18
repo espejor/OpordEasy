@@ -2,7 +2,10 @@ import { KeyValue } from '@angular/common';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Coordinate } from 'ol/coordinate';
+import { Polygon } from 'ol/geom';
 import Geometry from 'ol/geom/Geometry';
+import GeometryType from 'ol/geom/GeometryType';
+import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import { Pixel } from 'ol/pixel';
 import { Observable } from 'rxjs';
 import { entityType } from 'src/app/entities/entitiesType';
@@ -86,43 +89,41 @@ export class AreaSelectorComponent extends Selector implements OnInit,AfterViewI
   
     
   insertArea(event) {
-    // this.entitiesDeployed.saveEntity(entityType.area);
     // ---todo Intentar referenciar con viewChild o Output/Input 
     
     const mapComponent = this.entitiesDeployed.getMapComponent();
-    // // const coordinates:Coordinate = []; 
-    const pixel:Pixel = [event.x,event.y];
-    var areaStart:Coordinate = mapComponent.map.getCoordinateFromPixel(pixel);
-    areaStart = [areaStart[0] - 5000,areaStart[1]];
-    const areaEnd:Coordinate = [areaStart[0] + 10000,areaStart[1]];
-    const coordinates: Coordinate[] = [];
-    coordinates.push(areaEnd,areaStart);
-    // this.listOfUnitsCreated.push(this.areaOptions);
-    // (<AreaOptions>(this.entitySelectorService.entitySelected.entityOptions)).name = "NAME";
-    // (<AreaOptions>(this.entitySelectorService.entitySelected.entityOptions)).typeArea = "TYPE";
-    const area = EntitySelector.getFactory(entityType.area).
-                createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
+    const draw:Draw = new Draw({
+      source:mapComponent.shapesVectorLayer,
+      type: GeometryType.POLYGON
+    })
+    
+    mapComponent.map.addInteraction(draw);
 
-    this.saveArea(area).subscribe(
-      data => {
-      this._snackBar.open(
-        "Se ha guardado la Línea en la Base de datos",
-        "Cerrar",
-        {duration : 3000}
-      )
-      area._id = (<Entity>data)._id;
-      this.entitySelectorService.entitySelected = area;
-    // if (!coordinates)
-    // if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
-    // }else 
-      if(this.operationsService.loadEntity(this.entitySelectorService.entitySelected,coordinates)){
-        const entityLocated:EntityLocated = new EntityLocated(this.entitySelectorService.entitySelected,this.entitySelectorService.entitySelected.getCoordinates())
-        // entityLocated.entity = this.entitySelectorService.entitySelected
-        // entityLocated.location = this.entitySelectorService.entitySelected.getCoordinates();
-        this.entitiesDeployed.addNewEntity(entityLocated);
-        this.entitySelectorService.entitySelected = undefined;
-      }
-    });
+    var coordinates: Coordinate[] = [];
+    draw.on("drawend", (evt:DrawEvent) => {
+      mapComponent.map.removeInteraction(draw);
+
+      coordinates = (<Polygon>evt.feature.getGeometry()).getCoordinates()[0]
+
+      const area = EntitySelector.getFactory(entityType.area).
+                  createEntity(this.entitySelectorService.entitySelected.entityOptions,coordinates);
+
+      this.saveArea(area).subscribe(
+        data => {
+        this._snackBar.open(
+          "Se ha guardado el Área en la Base de datos",
+          "Cerrar",
+          {duration : 3000}
+        )
+        area._id = (<Entity>data)._id;
+        this.entitySelectorService.entitySelected = area;
+        if(this.operationsService.loadEntity(this.entitySelectorService.entitySelected,coordinates)){
+          const entityLocated:EntityLocated = new EntityLocated(this.entitySelectorService.entitySelected,this.entitySelectorService.entitySelected.getCoordinates())
+          this.entitiesDeployed.addNewEntity(entityLocated);
+          this.entitySelectorService.entitySelected = undefined;
+        }
+      });
+    })
   }
 // }
 }

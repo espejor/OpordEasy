@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Entity } from '../entities/entity.class';
 import { environment } from '../../environments/environment';
+import { Globals } from '../utilities/globals';
 // import Geometry from 'ol/geom/Geometry';
 // import { Entity } from '../entities/entity.class';
 
@@ -13,7 +14,7 @@ export class HTTPEntitiesService {
   URL_API: string;
 
 
-  constructor(private http:HttpClient) {
+  constructor(public http:HttpClient) {
     const URL_BASE = environment.baseUrl;
     this.URL_API = URL_BASE + 'api/entities'; 
   }

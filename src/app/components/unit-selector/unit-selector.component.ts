@@ -45,12 +45,15 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   private unitOptions: UnitOptions = new UnitOptions();
   private path:string = "assets/icons/units"
   public listOfOptions = {frame:"Marco",main:"Sector Principal",level:"Escalón", section1:"Sector superior",
-    section2:"Sector inferior",sectionAdd:"Campos adicionales"};
+    section2:"Sector inferior",extraData:"Campos adicionales"};
   public setFeaturesToSelect = "frame";
   public unitResultIconName = "unit_result"
 
   // public listOfUnitsCreated: UnitOptions[] = [];
   listOfFavorites: EntityUnit[];
+
+  reinforcedOptions:string[] = ["Reforzada","Reducida", "Reforzada Y Reducida"]
+  reinforcedOptionSelected: null
 
 
   constructor(public svgListOfIconsService: SVGUnitsIconsListService, 
@@ -160,7 +163,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   updateAspectSelectors(){
     this.resetAspectSelectors();
     for (let featuresLabel in this.unitOptions){
-      if (featuresLabel != "attachable"){
+      if (featuresLabel != "attachable" && featuresLabel != "extraData"){
         if (this.unitOptions[featuresLabel] != null){ // Inicializado
           if (Array.isArray(this.unitOptions[featuresLabel])){ // es un array
             if(this.unitOptions[featuresLabel].length > 0){
@@ -184,8 +187,14 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   createSVG(entity?: EntityUnit){
     if (entity)
       this.unitOptions = <UnitOptions>entity.entityOptions;
-    while ( this.svg.nativeElement.firstChild){
-      this.svg.nativeElement.removeChild(this.svg.nativeElement.firstChild);
+    for(let i = 0;i < this.svg.nativeElement.childNodes.length;i++){
+      const child = this.svg.nativeElement.childNodes[i]
+      if(child.tagName == "path" || child.tagName  == undefined ){
+        if(child.id != "foSymbol" && child.id != "cgSymbol" ){
+          this.svg.nativeElement.removeChild(child);
+          i--
+        }
+      }
     }
     this.goThrougtArray(this.unitOptions);
   }
@@ -206,10 +215,99 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     };
   }
 
-  updateFeature(event){
-    // const label = 
-    const value = event.srcElement.value
-    console.log()
+  checkState(event, el) {
+    event.preventDefault();
+    if (this.reinforcedOptionSelected && this.reinforcedOptionSelected === el.value) {
+      el.checked = false;
+      this.reinforcedOptionSelected = null;
+    } else {
+      this.reinforcedOptionSelected = el.value
+      el.checked = true;
+    }
+    const txt:string = this.reinforcedOptionSelected == "Reforzada"? "(+)":this.reinforcedOptionSelected == "Reducida"?"(-)":this.reinforcedOptionSelected == "Reforzada Y Reducida"?"(±)":" "
+    const feature = {key:"reinforced",value:{codeForDeploing:{x:165,y:70,visible:true,text:txt,fontSize:"18",indent:"start"}}}
+    this.updateFeatureWithText(event,feature,txt)
+  }
+
+  addCG(event){
+    this.removeChildElement(this.svg.nativeElement,"cgSymbol")
+    if(event){
+      const cg = this.renderer.createElement("path", 'svg');
+      const x = 80
+      const y = 130
+      const draw = "m" + x + "," + y + " m0,0 v60";
+      this.renderer.setAttribute(cg, "d", draw);
+      this.renderer.setAttribute(cg, "stroke-width", "2")
+      this.renderer.setAttribute(cg, "stroke", "#000")
+      this.renderer.setAttribute(cg, "fill", "#00000001")
+      this.renderer.setAttribute(cg, "id", "cgSymbol");
+      this.renderer.appendChild(this.svg.nativeElement, cg)
+
+      const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m0,60 v60"}};
+      const data = {key:"cgSymbol",value:{codeForDeploing: obj}}
+
+      const exist = this.unitOptions.extraData.some(f => f.key == "cgSymbol")
+      if(exist)
+        this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != "cgSymbol")
+      this.unitOptions.extraData.push(data) 
+    }
+  }
+
+  addFO(event){
+    this.removeChildElement(this.svg.nativeElement,"foSymbol")
+    if(event){
+      const fo = this.renderer.createElement("path", 'svg');
+      const x = 95
+      const y = 70
+      const draw = "m" + x + "," + y + " m0,0 v-20h50v20";
+      this.renderer.setAttribute(fo, "d", draw);
+      this.renderer.setAttribute(fo, "stroke-width", "2")
+      this.renderer.setAttribute(fo, "stroke", "#000")
+      this.renderer.setAttribute(fo, "fill", "#00000001")
+      this.renderer.setAttribute(fo, "id", "foSymbol");
+      this.renderer.appendChild(this.svg.nativeElement, fo)
+
+      const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m15,0 v-20h50v20"}};
+      const data = {key:"foSymbol",value:{codeForDeploing: obj}}
+
+      const exist = this.unitOptions.extraData.some(f => f.key == "foSymbol")
+      if(exist)
+        this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != "foSymbol")
+      this.unitOptions.extraData.push(data) 
+
+    }
+  }
+
+  updateFeatureWithText(event:Event,feature,value?:string){
+    this.removeChildElement(this.svg.nativeElement,feature.key)
+    const text = this.renderer.createElement("text", 'svg');
+    const textValue = value?value:(event.target as HTMLInputElement).value
+    const txt = this.renderer.createText(textValue)
+    const fontSize = feature.value.codeForDeploing.fontSize?feature.value.codeForDeploing.fontSize:"12"
+    const indent = feature.value.codeForDeploing.indent?feature.value.codeForDeploing.indent:"end"
+    this.renderer.setAttribute(text, "x", feature.value.codeForDeploing.x);
+    this.renderer.setAttribute(text, "y", feature.value.codeForDeploing.y);
+    this.renderer.setAttribute(text, "id", feature.key);
+    this.renderer.setAttribute(text, "style", "font: " + fontSize + "px sans-serif; text-anchor: " + indent);
+    this.renderer.appendChild(this.svg.nativeElement, text)
+    this.renderer.appendChild(text, txt)
+
+    const obj = {visible:feature.value.codeForDeploing.visible, type: "text", x: feature.value.codeForDeploing.x,y: feature.value.codeForDeploing.y,text:txt.data,indent:feature.value.codeForDeploing.indent}
+    const data = {key:feature.key,value:{codeForDeploing: obj}}
+    // this.unitOptions.extraData[feature.key] = obj
+    const exist = this.unitOptions.extraData.some(f => f.key == feature.key)
+    if(exist)
+      this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != feature.key)
+    this.unitOptions.extraData.push(data) 
+  }
+
+  removeChildElement(parent:any,childId:string){
+    // const parent: HTMLElement = this.svg.nativeElement;
+    const children = parent.childNodes;
+    children.forEach((child:any) => {
+      if (child.id == childId)
+        this.renderer.removeChild(parent,child)
+    })
   }
 
   addFeature(feature:KeyValue<string,FeatureForDeploing|TextFeatureForDeploing>){

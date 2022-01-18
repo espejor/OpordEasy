@@ -82,6 +82,18 @@ operationCtrl.updateOperation = async (req,res) => {
                 console.log(response);
                 break;
 
+            case "updateEntity":
+                const entityE = req.body.entity;
+                console.log("updateEntity");
+                query = {[`phases.${phase}.layout.$[ett].entity`]: entityE}
+                response = await OperationModel.updateOne({_id : req.params.id},{
+                    $set : query
+                },
+                    {arrayFilters: [{"ett.entity" : entityId}]
+                })
+                console.log(response);
+                break;
+            
             case "updateCombo":
                 query = {
                     [`comboEntities`]: entityId,

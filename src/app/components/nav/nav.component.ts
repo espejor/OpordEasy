@@ -9,7 +9,7 @@ import { map, shareReplay } from 'rxjs/operators';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent {
-  menuItemsLeft = ['Unidades', 'Puntos', 'Líneas', 'Áreas', 'Otros'];
+  menuItemsLeft = ['Units', 'Points', 'Líneas', 'Áreas', 'Otros'];
   menuItemsRight = ['Operations', 'Templates'];
 
   activatedOperationsFormOpened = false;

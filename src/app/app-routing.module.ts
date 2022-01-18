@@ -4,6 +4,7 @@ import { AreaSelectorDialogLoaderComponent } from './components/area-selector-di
 import { LineSelectorDialogLoaderComponent } from './components/line-selector-dialog-loader/line-selector-dialog-loader.component';
 import { NavComponent } from './components/nav/nav.component';
 import { PointSelectorDialogLoaderComponent } from './components/point-selector-dialog-loader/point-selector-dialog-loader.component';
+import { TaskSelectorDialogLoaderComponent } from './components/task-selector-dialog-loader/task-selector-dialog-loader.component';
 import { UnitSelectorDialogLoaderComponent } from './components/unit-selector-dialog-loader/unit-selector-dialog-loader.component';
 
 const routes: Routes = [
@@ -11,22 +12,22 @@ const routes: Routes = [
     path:'',
     component: NavComponent,
     children: [{
-      path:'Unidades',
+      path:'Units',
       component: UnitSelectorDialogLoaderComponent
     },{
-      path:'Puntos',
+      path:'Points',
       component: PointSelectorDialogLoaderComponent
     },{
-      path:'Lineas',
+      path:'Lines',
       component: LineSelectorDialogLoaderComponent
     },{
       path:'Areas',
       component: AreaSelectorDialogLoaderComponent
     } 
-    // ,{
-    //   path:'Tasks',
-    //   component: TaskSelectorDialogLoaderComponent
-    // }
+    ,{
+      path:'Tasks',
+      component: TaskSelectorDialogLoaderComponent
+    }
   ]
   },
   { 

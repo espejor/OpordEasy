@@ -31,26 +31,34 @@ import Modify, { ModifyEvent } from 'ol/interaction/Modify';
 import Snap, { Options } from 'ol/interaction/Snap';
 import Translate, { TranslateEvent } from 'ol/interaction/Translate';
 import Geometry from 'ol/geom/Geometry';
-import { EntityPoint } from 'src/app/entities/entity-point.class';
-import LineString from 'ol/geom/LineString';
-import { EntityArrow } from 'src/app/entities/entity-arrow.class';
+// import { EntityPoint } from 'src/app/entities/entity-point.class';
+// import LineString from 'ol/geom/LineString';
+// import { EntityArrow } from 'src/app/entities/entity-arrow.class';
 import RegularShape from 'ol/style/RegularShape';
-import { EntityAxis } from 'src/app/entities/entity-axis.class';
+// import { EntityAxis } from 'src/app/entities/entity-axis.old.class';
 import { Entity } from 'src/app/entities/entity.class';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
-import { GraticuleUTM } from 'src/app/utilities/graticule';
+// import { GraticuleUTM } from 'src/app/utilities/graticule';
 import { UtmService } from 'src/app/services/utm.service';
-import { FloatingMenuComponent } from '../floating-menu/floating-menu.component';
+// import { FloatingMenuComponent } from '../floating-menu/floating-menu.component';
 import { OperationsService } from 'src/app/services/operations.service';
-import { OperationsComponent } from '../operations/operations.component';
-import { Pixel } from 'ol/pixel';
-import Point from 'ol/geom/Point';
-import { EntityLine } from 'src/app/entities/entity-line.class';
+// import { OperationsComponent } from '../operations/operations.component';
+// import { Pixel } from 'ol/pixel';
+// import Point from 'ol/geom/Point';
+// import { EntityLine } from 'src/app/entities/entity-line.class';
 import { distanceInPixelBetweenCoordinates } from 'src/app/utilities/coordinates-calc';
-import Draw from 'ol/interaction/Draw';
+// import Draw, { DrawEvent } from 'ol/interaction/Draw';
+// import GeometryType from 'ol/geom/GeometryType';
+// import { getCoordsForArc, getCoordsForArcFrom2Points } from 'src/app/utilities/geometry-calc';
+import { Globals } from 'src/app/utilities/globals';
+import Graticule from "ol-ext/control/Graticule"
+import { GraticuleUTM } from 'src/app/utilities/graticule';
+import { HTTPEntitiesService } from 'src/app/services/entities.service';
+import { features } from 'process';
+import { EntityMultiPoint } from 'src/app/entities/entity-multipoint.class';
+import { Condition } from 'selenium-webdriver';
+import { never } from 'ol/events/condition';
 import GeometryType from 'ol/geom/GeometryType';
-import ol_coordinate_cspline from 'ol-ext/render/Cspline';
-// import * as PerspectiveMap from "node_modules/openlayers-ext/lib/render/Cspline.js";
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -71,13 +79,14 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   @Input() zoom: number = 13;
   @Input() width: string | number = DEFAULT_WIDTH;
   @Input() height: string | number = DEFAULT_HEIGHT;
-  @ViewChild(FloatingMenuComponent)  mainMenu: FloatingMenuComponent;
+  // @ViewChild(FloatingMenuComponent)  mainMenu: FloatingMenuComponent;
   // @ViewChild("ghostElement") ghostFeature: ElementRef
-  @ViewChild(OperationsComponent) operationComponent: OperationsComponent;
+  // @ViewChild(OperationsComponent) operationComponent: OperationsComponent;
 
 
   public map: Map;
   private mapEl: HTMLElement;
+
 
   resolutions = [];
   matrixIds = [];
@@ -86,20 +95,17 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
 
   // ----------- Entidades de prueba
-  entityCircle: EntityPoint;
-  entityTriangle: EntityPoint;
-  entityFriendly: EntityPoint;
-  entityLine: EntityArrow;
-  entityAxis: EntityAxis;
+  // entityCircle: EntityPoint;
+  // entityTriangle: EntityPoint;
+  // entityFriendly: EntityPoint;
+  // entityLine: EntityArrow;
+  // entityAxis: EntityAxis;
   
   vertix: Style;
   triangle: Style;
   circle: Style;
 
   // -------------- SERVICIO PARA RECIBIR LOS DATOS DE LAS ENTIDADES A VER
-
-
-
 
   currentLat: Number = DEFAULT_LAT;
   currentLong: Number = DEFAULT_LON;
@@ -133,6 +139,8 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     pixelTolerance:40
   })
   callTimes: number;
+  dragSource: VectorSource<Geometry>;
+  modify: Modify;
 
 
   //-------------------------
@@ -140,10 +148,12 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   constructor(private elementRef: ElementRef, 
     public entitiesDeployedService: EntitiesDeployedService,
     private utmService:UtmService,
-    private renderer: Renderer2,
-    public operationsService:OperationsService) {
+    // private renderer: Renderer2,
+    public operationsService:OperationsService,
+    public entitiesService:HTTPEntitiesService) {
     entitiesDeployedService.setMapComponent(this);
     this.self = this;
+    
     // this.svgService = _svgService;
   }
   // attribution = new Attribution({
@@ -190,8 +200,8 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
 
     // const line = new Feature(new LineString([[-6,39],[-6,40]]))
-    const line = new EntityLine(null,new LineString(coordinates))
-    const point = new EntityPoint(null,null,new Point(coordinatesShape[0]))
+    // const line = new EntityLine(null,new LineString(coordinates))
+    // const point = new EntityPoint(null,null,new Point(coordinatesShape[0]))
     // const point = EntitySelector.getFactory(entityType.point).createEntity(null,[0,0]);
 
     // this.snap = new Snap({
@@ -212,6 +222,12 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     // this.snap.setActive(true)
 
     // this.activatedOperationsFormOpened = this.mainMenu.activatedOperationsFormOpened
+
+    Globals.MAP = this.map
+    Globals.SHAPES_VECTOR_LAYER = this.shapesVectorLayer
+    Globals.DRAG_SOURCE = this.dragSource
+    Globals.MODIFY = this.modify
+    
   }
 
   onPointerMove():void {
@@ -264,6 +280,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       resolutions: this.resolutions,
       matrixIds: this.matrixIds,
     });
+
 
     // this.entityTriangle = new EntityPoint(this,{
     //   geometry: new Point(Proj.fromLonLat([this.lon, this.lat])),
@@ -383,7 +400,11 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     var entitiesLayer = new VectorLayer({
       source: this.shapesVectorLayer,
       renderOrder:(a:Entity,b:Entity) => {
-        return a.getStackOrder() >= b.getStackOrder() ? 1 : -1
+        try{
+          return a.getStackOrder() >= b.getStackOrder() ? 1 : -1
+        }catch{
+          return 1
+        }
       }
     });
 
@@ -415,11 +436,43 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
       controls: defaultControls().extend([
         new ScaleLine({text:false}),
-        new ZoomSlider
+        new ZoomSlider,
+        // new Graticule({ projection: "EPSG:4326" })
       ])
     });
 
-    // this.map.setPerspective(30)
+
+    // const arc:Draw = new Draw({
+    //   source:this.shapesVectorLayer,
+    //   type: GeometryType.LINE_STRING,
+    //   // style:new Style({
+    //   //   stroke: new Stroke({
+    //   //     color: "#00000001"
+    //   //   })
+    //   // }),
+    //   maxPoints:2
+    // }) 
+
+    // this.map.addInteraction(arc);
+
+    // arc.on("drawend", (evt:DrawEvent) => {
+    //   const p1 = (<LineString>evt.feature.getGeometry()).getCoordinates()[0];
+    //   const p2 = (<LineString>evt.feature.getGeometry()).getCoordinates()[1];
+      
+    //   const ls = new Feature(new LineString(getCoordsForArcFrom2Points(p1,p2,Math.PI/2)))
+    //   evt.feature.setStyle(new Style({
+    //     stroke: new Stroke({
+    //       color: "#00000001"
+    //     })
+    //   }))
+
+        
+    //   // const center = (<Point>(evt.feature.getGeometry())).getCoordinates();
+    //   // const ls = new Feature(new LineString(getCoordsForArc(center,500,Math.PI,Math.PI/2,20)))
+    //   this.shapesVectorLayer.addFeature(ls);
+    //   // evt.feature = null
+    // })
+    // // this.map.setPerspective(30)
 
     this.map.on("change", (evt:MapEvent) => {
       // evt..forEach(feature => {
@@ -445,79 +498,53 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
     this.map.addInteraction(this.snap);
 
+
+    this.dragSource = new VectorSource();
+
+    this.modify = new Modify({
+      source:this.dragSource,
+      insertVertexCondition:((ev) => {
+        if(this.dragSource.getFeatures()[0] instanceof EntityMultiPoint)
+          return false
+        return true
+      })
+    })
+
+    this.map.addInteraction(this.modify);
+
+
+    this.map.on("pointermove", (e) => {
+      if (e.dragging) {
+        this.modify;
+        return;
+      }
+      var features = this.map.getFeaturesAtPixel(e.pixel, {
+        layerFilter: function(l) {
+          return l == entitiesLayer;
+        }
+      });
+      if (features.length > 0 && features[0] != this.dragSource.getFeatures()[0]) {
+        this.dragSource.clear();
+        const feature = <Feature>features[0]
+        this.dragSource.addFeature(feature);          
+      }
+    });
+
+
     this.drag.on("modifystart",(evt:ModifyEvent) => {
       console.log("")
       const features: Feature[] = evt.features.getArray()
       features.splice(0,features.length - 1)
     })
 
-
-var dragSource = new VectorSource();
-
-var modify = new Modify({
-  source:dragSource
-})
-
-this.map.addInteraction(modify);
-
-function pointermove(e) {
-  if (e.dragging) {
-    return;
-  }
-  var features = self.map.getFeaturesAtPixel(e.pixel, {
-    layerFilter: function(l) {
-      return l == entitiesLayer;
-    }
-  });
-  if (features.length > 0 && features[0] != dragSource.getFeatures()[0]) {
-    dragSource.clear();
-    dragSource.addFeature(<Feature>features[0]);
-  }
-}
-
-this.map.on("pointermove", pointermove);
-
-modify.on("modifyend",(evt:ModifyEvent) => {
-
-  const self = this;
-  const map:Map = this.map
-  const range = 40;
-  const pointer:Coordinate = evt.target.vertexFeature_.geometryChangeKey_.target.getCoordinates()
-  const entityMoving:Entity = <Entity>evt.features.getArray()[0]
-  const pixelPointer:Pixel = map.getPixelFromCoordinate(pointer);
-  var pixelsCandidates:[{pixel:Pixel,order:number}]// Puntos candidatos a ser snapped
-  var closest:{pixel:Pixel,order:number};
-  var distance:number = Number.MAX_VALUE;
-  var newCoordinate:Coordinate |Coordinate[]
-  var closestCoordinate:Coordinate |Coordinate[]
-  this.shapesFeatures.forEach(function (entityCandidate:Entity) {
-    if (entityCandidate.entityOptions.attachable && entityCandidate._id != entityMoving._id){
-      newCoordinate = entityCandidate.getGeometry().getClosestPoint(pointer);
-      const newDistance = distanceInPixelBetweenCoordinates(newCoordinate,pointer)
-      if (newDistance < range && newDistance < distance){
-        distance = newDistance
-        closestCoordinate = newCoordinate
-      } 
-    }
-
-  });
-  if (closestCoordinate === undefined){
-    closestCoordinate = pointer
-  }
-  var order = 0;
-  const coords = entityMoving.getCoordinates()
-  if (Array.isArray(coords)){
-    order = this.indexOfCoord(coords,pointer)
-    if(order > -1){
-        coords [order] = <Coordinate>closestCoordinate
-        entityMoving.setCoordinates(coords)
-    }
-  }else{
-    entityMoving.setCoordinates(closestCoordinate)
-  }
-
-  self.operationsService.updateEntityPositionInOperation(entityMoving)
-})
+    this.modify.on("modifystart", function (evt:ModifyEvent) {
+      console.log("arrastrando")
+    })
+    
+    this.modify.on("modifyend",(evt:ModifyEvent) => {
+      if(evt.features.getLength() > 0)
+        (<Entity>evt.features.getArray()[0]).onModifyEnd(evt,this.map,this.shapesFeatures,this.operationsService,this.entitiesService)
+    })
 
 
 var self = this;
@@ -623,29 +650,8 @@ this.map.on("pointermove", function (evt:MapBrowserEvent) {
         
         // return true;
     })
-
-
-    // this.map.on("change",function(evt:MapBrowserEvent){
-    //   var entity:Entity;
-    //   var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
-    //     // feature.onMouseOver(evt);
-    //     entity = feature;
-    //     return true;
-    //   }); 
-    //   if (hit) {
-    //     (<Entity>entity).onMouseDown(evt);
-    //   }
-    // })
-
   } // NgOnInit
-  indexOfCoord(coords: Coordinate | Coordinate[], pointer: Coordinate): number {
-    for (let i = 0; i < coords.length; i++) {
-      if (coords[i][0] == pointer[0])
-        if(coords[i][1] == pointer[1])
-          return i
-    }
-    return -1
-  }
+
 
 
   // on(type: 'mousedown', listener: (evt: BaseEvent) => void): void{

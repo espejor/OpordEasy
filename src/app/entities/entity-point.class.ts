@@ -12,7 +12,7 @@ import { entityType } from "./entitiesType";
 import { SvgIconsListService } from "../services/svg-icons-list.service";
 import IconAnchorUnits from "ol/style/IconAnchorUnits";
 import Icon from "ol/style/Icon";
-import { FeatureForDeploing } from "../models/feature-for-selector";
+import { FeatureForDeploing, PointOptions } from "../models/feature-for-selector";
 
 export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
   public image: ImageStyle;
@@ -28,27 +28,35 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
   public textBaseline = "center";
   public scale = 1.5;
   public rotateWithView = false;
+  anchor: number[] = [0.5,0.45];
 
   constructor(svgService: SvgIconsListService,entityOptions:EntityOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
     super(entityOptions,svgService,opt_geometryOrProperties,id);
     this.entityType = entityType.point
     // this.map = mapComponent.map;
     // this.entityOptions = entityOptions;
-
+    var src = ""
+    var scale = 0.5
     if(svgService){
-      const svgRogh = svgService.createSVG(entityOptions);
-      var svg = encodeURIComponent(svgRogh);
+      if ((<PointOptions>entityOptions).file){
+        src = (<PointOptions>entityOptions).file.file
+        scale = (<PointOptions>entityOptions).file.scale
+      }else{
+        const svgRogh = svgService.createSVG(entityOptions);
+        var svg = encodeURIComponent(svgRogh);
+        src = "data:image/svg+xml;charset=utf-8," + svg
+      }
       // const svg = (svgService.createSVG(entityOptions));
-
+      
       const icon = new Icon({
-        anchor: [0.5,0.5],
+        anchor: this.getAnchor(),
         anchorXUnits: IconAnchorUnits.FRACTION,
         anchorYUnits: IconAnchorUnits.FRACTION,
         opacity: 1,
-        scale: 0.5,
+        scale: scale,
         // size: [24,24],
         // color: 'black',
-        src: "data:image/svg+xml;charset=utf-8," + svg
+        src: src
       })
 
       // this.setStyle(null)
@@ -57,6 +65,13 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
   }  
 }
 
+getAnchor(){
+  return this.anchor
+}
+
+setCoordinates(coordinates: Coordinate): void {
+    super.setCoordinates(coordinates)
+}
 
   getEntityGeometry():Point{
       return <Point>super.getGeometry();
@@ -99,26 +114,8 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
     return this.style;
   }
   
-  // getCoordinate():Coordinate{
-  //   return this.coordinates[0];
-  // }
 
-  // public getLocation(){
-  //   return Proj.toLonLat((<Point>this.getGeometry()).getCoordinates());
-  // }    
   // Métodos handle event no declarados en la Clase padre   
   onMouseUp(ev:MouseEvent):void{};
   
 }
-
-
-// export class PointOptions extends EntityOptions{
-//   icon:FeatureForDeploing;
-//   name:string
-
-//   constructor(){
-//     super();
-//     this.attachable = true;
-//     this.icon = null;
-//   }
-// }

@@ -1,7 +1,4 @@
 import Geometry from "ol/geom/Geometry";
-import Icon from "ol/style/Icon";
-import IconAnchorUnits from "ol/style/IconAnchorUnits";
-import Style from "ol/style/Style";
 import { FeatureForDeploing } from "../models/feature-for-selector";
 import { SVGUnitsIconsListService } from "../services/svg-units-icons-list.service";
 import { entityType } from "./entitiesType";
@@ -14,6 +11,18 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
   constructor(svgService: SVGUnitsIconsListService,entityOptions:UnitOptions,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
       super(<SVGUnitsIconsListService>svgService,entityOptions,opt_geometryOrProperties,id);
       this.entityType = entityType.unit
+  }
+
+  getAnchor(): number[] {
+    if (this.isCG())
+      return [0.37,1]
+    return super.getAnchor()
+  }
+
+  isCG():boolean {
+    if ((<UnitOptions>this.entityOptions).extraData)
+      return (<UnitOptions>this.entityOptions).extraData.some(f => f.key == "cgSymbol");
+    return false
   }
   
   copy(): EntityUnit{
@@ -31,6 +40,9 @@ export class UnitOptions extends EntityOptions{
     sector1:FeatureForDeploing;
     sector2:FeatureForDeploing;
     level:FeatureForDeploing;
+
+    extraData:FeatureForDeploing[]
+    // {designation?:TextInUnitOptions,heighterUnit?:TextInUnitOptions,designation?:TextInUnitOptions,designation?:TextInUnitOptions}
   
     constructor(){
       super();
@@ -40,6 +52,7 @@ export class UnitOptions extends EntityOptions{
       this.sector1 = null;
       this.sector2 = null;
       this.level = null;
+      this.extraData = [];
     }
   }
   

@@ -1,0 +1,15 @@
+<svg width="80" height="80" version='1.1' xmlns="http://www.w3.org/2000/svg">
+<g id="svg_1" stroke="null">
+   <path d="m50,3a36,36 0 1 0 0,72" stroke-width="3" fill="none" id="svg_2" stroke="black"/>
+  </g>
+  <line fill="none" stroke="#000" x1="48.4372" y1="4.42007" x2="48.4372" y2="14.8761" id="svg_3" stroke-linejoin="undefined" stroke-linecap="undefined" stroke-width="3"/>
+  <line fill="none" stroke="#000" x1="38.57197" y1="6.64921" x2="38.57197" y2="17.10525" id="svg_4" stroke-linejoin="undefined" stroke-linecap="undefined" stroke-width="3" transform="rotate(-22.5 38.572 11.8772)"/>
+  <line transform="rotate(-45 29.6828 17.9103)" fill="none" stroke="#000" x1="29.68281" y1="12.68229" x2="29.68281" y2="23.13832" id="svg_5" stroke-linejoin="undefined" stroke-linecap="undefined" stroke-width="3"/>
+  <line fill="none" stroke="#000" x1="23.33957" y1="21.6436" x2="23.33957" y2="32.09964" id="svg_6" stroke-linejoin="undefined" stroke-linecap="undefined" stroke-width="3" transform="rotate(-67.5 23.3396 26.8716)"/>
+  <line fill="none" stroke="#000" x1="20.00748" y1="32.8299" x2="20.00748" y2="43.28593" id="svg_7" stroke-linejoin="undefined" stroke-linecap="undefined" stroke-width="3" transform="rotate(-90 20.0075 38.0579)"/>
+  <line fill="none" stroke="#000" x1="48.4372" y1="63.12205" x2="48.4372" y2="73.57808" id="svg_8" stroke-linejoin="undefined" stroke-linecap="undefined" stroke-width="3"/>
+  <line transform="rotate(22 37.9168 65.7311)" fill="none" stroke="#000" x1="37.91681" y1="60.50304" x2="37.91681" y2="70.95908" id="svg_9" stroke-linejoin="undefined" stroke-linecap="undefined" stroke-width="3"/>
+  <line transform="rotate(45 28.8966 59.7093)" fill="none" stroke="#000" x1="28.89663" y1="54.48124" x2="28.89663" y2="64.93727" id="svg_10" stroke-linejoin="undefined" stroke-linecap="undefined" stroke-width="3"/>
+  <line transform="rotate(67 22.9465 50.1952)" fill="none" stroke="#000" x1="22.94648" y1="44.96715" x2="22.94648" y2="55.42319" id="svg_11" stroke-linejoin="undefined" stroke-linecap="undefined" stroke-width="3"/>
+  <path stroke="#000" id="svg_12" d="m34.27516,39.29019l14.90106,-15.02026l14.90106,15.02026l-14.90106,15.02026l-14.90106,-15.02026z" stroke-width="3" fill="#ff8080"/>
+</svg>

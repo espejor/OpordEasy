@@ -6,21 +6,19 @@ import Text from "ol/style/Text";
 import { Color } from "ol/color";
 import Stroke from "ol/style/Stroke";
 import LineString from "ol/geom/LineString";
-import { Entity, EntityOptions } from "./entity.class";
+import { Entity, EntityOptions, Pattern } from "./entity.class";
 import { entityType } from "./entitiesType";
 import Point from "ol/geom/Point";
 import { EntitiesDeployedService } from "../services/entities-deployed.service";
 import Icon from "ol/style/Icon";
-import { AppInjector } from "../app.module";
+// import { AppInjector } from "../app.module";
 import { angleBetweenPixels, distanceBetweenPixels, offsetFromPixel } from "../utilities/pixels-geometry";
 import MultiPoint from "ol/geom/MultiPoint";
 import ol_coordinate_cspline from "ol-ext/render/Cspline";
+import { Globals } from "../utilities/globals";
 
 export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   // private style: Style;
-
-  public lineColor: Color = [0,0,0];
-  public lineWidth: number = 2;
 
   public name: string = "";
   private type: string = "PL";
@@ -35,39 +33,33 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
 
   protected startTextStyle : Style;
   protected endTextStyle : Style;
-  protected centralIconStyle : Style;
+  // protected centralIconStyle : Style;
   protected purposeEndStyle : Style;
   protected purposeStartStyle: Style;
 
   protected styles: StyleFunction;
-  // start: Point;
-  // end:Point;
-  // rotation: number;
   stroke:Stroke = new Stroke({width:0.7});
   pointStyle: Style;
   trianglePatternStyles: Style;
   lineStyle: Style;
-  // map: any;  
-
-  // pattern: string = "assets/patterns/triangle.svg";
-  pattern: string = "assets/patterns/friendly_present.svg";
   anchor: number[] = [1,1];
 
   lineOptions:LineOptions;
-  smooth: boolean = true;
+  pattern: Pattern;
+  purpose: string;
+  stroke_dasharray: [number,number] = [0,0];
 
   constructor(lineOptions?:LineOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
     super(lineOptions,null,opt_geometryOrProperties,id);
     this.entityType = entityType.line
     this.lineOptions = lineOptions;
 
-    if (this.smooth){
-      // this.setCoordinates(ol_coordinate_cspline(this.getCoordinates()))
-    }
-
     if(lineOptions){
       this.name = lineOptions.name;
       this.type = lineOptions.typeLine;
+      this.pattern = lineOptions.pattern;
+      this.purpose = lineOptions.purpose;
+      this.stroke_dasharray = lineOptions.stroke_dasharray
     }
     this.lineStyle = this.getStyle()
     // this.centralIconStyle = this.configureCentralIcon(lineOptions.echelon);
@@ -105,14 +97,10 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     }
   }
 
-  
-
-  createPattern(feature:Feature):Style[] {
+  createPattern(feature:Feature,shapes?:number):Style[] {
     const entity = this;
     var stylesList:Style[] = [];
-    const wide = 20; // pixels
-    const gap = 0;  // pixels
-    const map = AppInjector.get(EntitiesDeployedService).getMapComponent().map;
+    const map = Globals.MAP;
     var coords:Coordinate[] = []
     var angle = 0
     var line:LineString = <LineString>feature.getGeometry();
@@ -123,14 +111,13 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
       const toPx = map.getPixelFromCoordinate(to);
       const distance = distanceBetweenPixels(fromPx,toPx);
       angle = angleBetweenPixels(fromPx,toPx);
-      const nShapes = ((distance + gap)/(wide + gap));  // número de repeticiones
+      const nShapes = shapes?shapes:((distance + entity.pattern.gap)/(entity.pattern.wide + entity.pattern.gap));  // número de repeticiones
       const mod = nShapes - Math.floor(nShapes);
-      const initialGap = mod * wide/2
+      const initialGap = mod * entity.pattern.wide/2
       for (let i = 0; i < nShapes-1; i++) {
-        const coordinate = map.getCoordinateFromPixel(offsetFromPixel(fromPx,((wide + gap ) * i )+ initialGap,angle));
+        const coordinate = map.getCoordinateFromPixel(offsetFromPixel(fromPx,((entity.pattern.wide + entity.pattern.gap ) * i )+ initialGap,angle));
         coords.push(coordinate)
       }
-      // const lastCoord = coords.splice(length-1,1)
       const mp = new MultiPoint(coords)
       var mpStyle = new Style({
         geometry: mp,
@@ -138,9 +125,9 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
         image: new Icon({
           opacity: 1,
           size:[20,20],
-          src: entity.pattern,
+          src: entity.pattern.pattern,
           scale: 1,
-          anchor:entity.anchor,
+          anchor:entity.pattern.anchor,
           rotation:angle + Math.PI
         })   
       })
@@ -235,6 +222,8 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   }
 
   
+
+  
   public configureStartText():Style{
     // const start = new Point(this.getEntityGeometry().getFirstCoordinate());
     // const end = new Point(this.getEntityGeometry().getCoordinates()[1]);
@@ -295,7 +284,7 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   }
 
   public configureEndPurposeText():Style{
-    if(this.lineOptions.purpose){
+    if(this.purpose){
       const text: string = this.lineOptions.purpose; 
       const style = new Style({
         geometry: function(feature){
@@ -326,7 +315,7 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   }
 
   public configureStartPurposeText():Style{
-    if(this.lineOptions.purpose){
+    if(this.purpose){
       const text: string = this.lineOptions.purpose; 
       const style = new Style({
         geometry: function(feature){
@@ -411,7 +400,8 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
       stroke: new Stroke({
         color: this.lineColor,
         width: this.lineWidth,
-        lineJoin: this.lineJoin
+        lineJoin: this.lineJoin,
+        lineDash:this.stroke_dasharray
       })
     });
     return this.style;
@@ -433,7 +423,7 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   }
 
   
-  public getEnd():Coordinate{
+  public getLastCoordinate():Coordinate{
       var coordinates: Coordinate[] = (<LineString>this.getGeometry()).getCoordinates();
       var dim = coordinates.length;
       return coordinates[dim - 1];
@@ -470,11 +460,13 @@ export class LineOptions extends EntityOptions{
   name?:string;   //T field
   typeLine?:string; // LL, PL ...
   purpose?:string;  // RFL...
-  pattern?:string;  // 
+  pattern?:Pattern;  // 
   coordinationMessures?:string;  // p.e. Controlling HQ
   dateTimeGroupInitial?: string;  //
   dateTimeGroupFinal?: string;  //
   lineVisible?: boolean; // Si la línea se ha de ver ()
   echelon?:string;
-  svgWidth?:number
+  svgWidth?:number;
+  stroke_dasharray?:[number,number] = [0,0]
 }
+

@@ -1,188 +1,230 @@
-
-import { Map } from "ol";
+import { Collection, Map } from "ol";
 import { Coordinate, distance } from "ol/coordinate";
 import BaseEvent from "ol/events/Event";
+import { LineString } from "ol/geom";
 import Geometry from "ol/geom/Geometry";
-import LineString from "ol/geom/LineString";
 import Point from "ol/geom/Point";
-import { TranslateEvent } from "ol/interaction/Translate";
-import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
-import { getOrientation, getParallelLine, getParallelLineWithEndOffset, getPointToVector, LEFT, middlePoint, RIGHT } from "../utilities/geometry-calc";
+import { ModifyEvent } from "ol/interaction/Modify";
+import { Pixel } from "ol/pixel";
+import VectorSource from "ol/source/Vector";
+import Icon from "ol/style/Icon";
+import Stroke from "ol/style/Stroke";
+import Style from "ol/style/Style";
+import { HTTPEntitiesService } from "../services/entities.service";
+import { OperationsService } from "../services/operations.service";
+import { getOrientation, getParallelLineWithEndOffset, getPointToVector, LEFT, RIGHT } from "../utilities/geometry-calc";
+import { Globals } from "../utilities/globals";
 import { entityType } from "./entitiesType";
-import { EntityBackBone } from "./entity-backbone.class";
-import { EntityComplex } from "./entity-complex.class";
 import { EntityControlPoint } from "./entity-control-point";
-import { EntityLine, LineOptions } from "./entity-line.class";
-import { EntityPointOfLabel } from "./entity-point-of-label.class";
-import { EntityPoint } from "./entity-point.class";
+import { EntityLine } from "./entity-line.class";
+import { TaskOptions } from "./entity-task.class";
+import { Entity } from "./entity.class";
 
-export class EntityAxis<GeomType extends Geometry = Geometry>  extends EntityComplex{
-    // Entities components
-    private backbone:EntityBackBone;
-    private rightLine:EntityLine;
-    private leftLine:EntityLine;
-    private tipLine: EntityLine;
-    private pointOfLabel: EntityPoint;
-    private controlWidthPoint: EntityPoint;
+export class EntityAxis<GeomType extends Geometry = Geometry> extends EntityLine{
+  tipStyle: Style;
+  rightLineStyle: Style;
+  leftLineStyle: Style;
+  widthControlPointStyle: Style;
 
-    public WIDTH = 5000;
-    DIVISOR: number = 4;
+  public WIDTH = 2000;
+  DIVISOR: number = 4;
 
+  tipAngle: number = 2 * Math.atan((this.WIDTH/2 + this.WIDTH/this.DIVISOR) / this.WIDTH)
+  lastPointRightLine: Coordinate;
+  lastPointLeftLine: Coordinate;
+  penultimatePointRightLine: Coordinate;
+  penultimatePointLeftLine: Coordinate;
+  widthControlPointCoord: Coordinate;
+  widthControlPointGeometry: Point;
+  widthControlPointEntity: EntityControlPoint
+  cpDragging: boolean = false;
+  PRECISION: number = 50;
+  currentPixel: Pixel;
+  controlPointStyle: (feature: any) => Style;
+  changingAxisGeometry: boolean;
+  cpRelocated: boolean;
+  
+  constructor(taskOptions:TaskOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?) {
+    super(taskOptions,opt_geometryOrProperties,id);
 
-    constructor(coordinates: Coordinate[]){
-        super(coordinates);
-        this.entityType = entityType.axis
+    this.entityType = entityType.axis
+    const entity = this
+    this.rightLineStyle = this.getRightLineStyle()
+    this.leftLineStyle = this.getLeftLineStyle()
+    this.tipStyle = this.getTipStyle()
+    this.widthControlPointStyle = this.getWidthControlPointStyle()
 
-        // Create backbone
-        this.backbone = new EntityBackBone([this.rightLine,this.leftLine],{
-            geometry: new LineString(coordinates)
-        })
+    this.widthControlPointEntity = new EntityControlPoint(this,new Point([0,0]))
+  
 
-        this.location = coordinates;
-        
-        this.backbone.lineColor = [255,0,0,0];
-        this.backbone.lineWidth = 20;
-        this.backbone.name = "";
-        this.backbone.textAlign = "end";
-        this.backbone.textBaseline = "middle";
-        this.backbone.activateStyle();
-
-        // mapComponent.dragFeatures.push(this.backbone);
-        // mapComponent.shapes.addFeature(this.backbone);
-
-        const lineOption:LineOptions = new LineOptions();
-
-        // Create both lateral lines
-        this.rightLine = new EntityLine(lineOption,{
-            geometry: new LineString(getParallelLineWithEndOffset(coordinates,this.WIDTH/2,RIGHT,this.WIDTH))
-        })
-
-        this.rightLine.setStyle(this.rightLine.getStyle());
-        // mapComponent.shapes.addFeature(this.rightLine);
-
-        this.leftLine = new EntityLine(lineOption,{
-            geometry: new LineString(getParallelLineWithEndOffset(coordinates,this.WIDTH/2,LEFT,this.WIDTH))
-        })
-
-        this.leftLine.setStyle(this.leftLine.getStyle());
-        // mapComponent.shapes.addFeature(this.leftLine);
-
-        this.tipLine = new EntityLine(lineOption,{
-            geometry: new LineString(this.getTipLine())
-        })
-
-        this.tipLine.activateStyle();
-        // mapComponent.shapes.addFeature(this.tipLine);
-
-        // create point of label
-
-        this.pointOfLabel = new EntityPointOfLabel({
-            geometry: new Point(this.location[0])
-        })
-
-        this.pointOfLabel.name = "Eje";
-        this.pointOfLabel.activateStyle();
-        // mapComponent.shapes.addFeature(this.pointOfLabel);
-        
-        // create point of Lateral Control
-
-        this.controlWidthPoint = new EntityControlPoint(this,{
-            geometry: new Point(this.tipLine.getCoordinate(1))
-        })
-        
-        // mapComponent.moveFeatures.push(this.controlWidthPoint);
-
-        // this.pointOfLabel.activateStyle();
-        // mapComponent.shapes.addFeature(this.controlWidthPoint);
-
-        
-        var self = this;
-        this.backbone.on("change",
-        function(){
-            var newCoordinates:Coordinate[] = self.getCoordinates();
-            self.updateShape(newCoordinates);
-        })
-
-        // this.olMap.move.on("translating",(evt) => this.onDrag(evt));
+    // Gestión del cambio de geometría del eje
+    this.on("change",(evt:BaseEvent) => {
+      this.changingAxisGeometry = true
+      const maxDist = distance(this.getLastCoordinate(),this.getPenultimate())
+      if(this.WIDTH > maxDist - maxDist / 10)
+        this.WIDTH = maxDist - maxDist / 10
+      if(this.widthControlPointCoord){
+        if(!this.cpRelocated)
+          this.locateControlPoint()
+        else
+          this.cpRelocated = false
+      }        
+    })
 
 
-        // this.controlWidthPoint.on("change",
-        // function (ev) {
-        //     var angleOfAxis = getOrientation(self.backbone.getPenultimate(),self.backbone.getEnd()) + Math.PI/2;
-        //     var initMovePoint = self.tipLine.getPenultimate();
-        //     var newPosition = (<Point>this.getGeometry()).getCoordinates();
-        //     var angleOfPoint = getOrientation(initMovePoint,newPosition) - angleOfAxis;
-        //     var newWidth = Math.cos(angleOfPoint) * distance(initMovePoint,newPosition);
-        //     var finalPosition = getPointToVector(initMovePoint,angleOfAxis,newWidth);
 
-        //     (<Point>self.controlWidthPoint.getGeometry()).setCoordinates(finalPosition);
+    // gestión del movimiento del punto de control
+    this.widthControlPointEntity.on("change",(evt:BaseEvent) => {
+          if (this.widthControlPointEntity.dragging){
+            this.cpDragging = true
+            const d = this.calculateNewWidth(evt)
+            const newWidth = (d * this.DIVISOR * 2) / (this.DIVISOR + 2)
+            const maxDist = distance(this.getLastCoordinate(),this.getPenultimate())
+            if(newWidth < maxDist - maxDist/10){
+              this.WIDTH = newWidth
+              taskOptions.axis_options.WIDTH = newWidth
+            }
+            if(!this.cpRelocated)
+              this.locateControlPoint()
+            else
+              this.cpRelocated = false
+          }else{
+            if(!this.cpRelocated)
+              this.locateControlPoint()
+            else
+              this.cpRelocated = false
+          }
+    })
 
-        //     self.WIDTH = newWidth * 4 / 3;
 
-        //     console.log(angleOfAxis + " " + initMovePoint + " " + newPosition);
-            
-        //     // self.WIDTH =10000;
-        //     // self.updateShape();
-        // })
-    } // constructor
-
-
-    private updateShape(newCoordinates:Coordinate[] = this.getCoordinates()):void{
-        this.rightLine.setCoordinates(getParallelLineWithEndOffset(newCoordinates,this.WIDTH/2,RIGHT,this.WIDTH));
-        this.leftLine.setCoordinates(getParallelLineWithEndOffset(newCoordinates,this.WIDTH/2,LEFT,this.WIDTH));
-        this.tipLine.setCoordinates(this.getTipLine());
-        this.pointOfLabel.setCoordinates(newCoordinates[0]);
-        this.controlWidthPoint.setCoordinates(this.tipLine.getCoordinate(1));
+    var stylesFunction = function(feature:EntityAxis){
+  
+      const styles: Style[] = []
+      styles.push(entity.rightLineStyle)
+      styles.push(entity.leftLineStyle)
+      styles.push(entity.tipStyle)  // siempre detrás de las líneas paralelas
+      if (taskOptions. lineVisible)
+        styles.push(entity.lineStyle);
+      return styles
     }
 
-    getEntityGeometry() {
-        return this.backbone.getGeometry();
+    if(taskOptions){
+        this.styles = stylesFunction;
+        this.setStyle(this.styles);
+        try{
+          this.WIDTH = taskOptions.axis_options.WIDTH
+        }catch{
+          this.WIDTH=2000
+        }
     }
 
-    getCoordinates(): Coordinate[]{
-        if (this.backbone)
-            return this.backbone.getCoordinates();
-        return null
-    }
+    // ubicamos el punto de control
+    this.locateControlPoint()
+  }
 
-    private getTipLine(): Coordinate[] {
+    
+  onModifyEnd(evt:ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService) {
+    super.onModifyEnd(evt,map,shapesFeatures,operationsService,entitiesService);
+    this.changingAxisGeometry = false     
+  }
+
+
+
+  calculateNewWidth(evt:BaseEvent): number {
+    const tipPoint = this.getEntityGeometry().getLastCoordinate()
+    const controlPointLocation = (<Point>evt.target.getGeometry()).getCoordinates()
+    return distance(tipPoint,controlPointLocation) * Math.sin(this.tipAngle / 2)
+  }
+
+
+  locateControlPoint(){
+    // this.cpRelocating = true
+    if(!this.cpRelocated){
+      this.cpRelocated = true
+      const lastPoint = this.getCoordinates()[this.getCoordinates().length - 1]
+      const angle = getOrientation(this.getCoordinates()[this.getCoordinates().length - 1],this.getCoordinates()[this.getCoordinates().length - 2])
+      const rootPoint = getPointToVector(lastPoint,angle,this.WIDTH)
+      this.widthControlPointCoord = getPointToVector(rootPoint,angle + Math.PI / 2,this.WIDTH/2 + this.WIDTH / this.DIVISOR) ;
+      (<Point>this.widthControlPointEntity.getGeometry()).setCoordinates(this.widthControlPointCoord);
+
+    }
+  }
+
+
+  getWidthControlPointStyle(): Style {
+    const entity = this
+    return new Style({
+      geometry:function(feature){
+        entity.widthControlPointGeometry = new Point(entity.widthControlPointCoord);
+        return entity.widthControlPointGeometry
+      },
+      image:new Icon({
+        src: "assets/icons/circle-null.svg"
+      })
+    })
+  }
+
+  getRightLineStyle(): Style {
+    const entity = this
+    var rightlineStyle = new Style({
+      geometry:function(feature){
+        const line = new LineString(getParallelLineWithEndOffset((<LineString>feature.getGeometry()).getCoordinates(),entity.WIDTH/2,RIGHT,entity.WIDTH))
+        entity.lastPointRightLine = line.getLastCoordinate();
+        entity.penultimatePointRightLine = line.getCoordinates()[line.getCoordinates().length-2]
+        return line
+      },
+      stroke:new Stroke({
+        color:"black",
+        width:2
+      })
+    })
+    return rightlineStyle;
+  }
+  
+  getLeftLineStyle(): Style {
+    const entity = this
+    var rightlineStyle = new Style({
+      geometry:function(feature){
+        const line = new LineString(getParallelLineWithEndOffset((<LineString>feature.getGeometry()).getCoordinates(),entity.WIDTH/2,LEFT,entity.WIDTH))
+        entity.lastPointLeftLine = line.getLastCoordinate();
+        entity.penultimatePointLeftLine = line.getCoordinates()[line.getCoordinates().length-2]
+        return line
+      },
+      stroke:new Stroke({
+        color:"black",
+        width:2
+      })
+    })
+    return rightlineStyle;
+  }
+
+
+  getTipStyle():Style{
+    const entity = this
+
+    return new Style({
+      geometry: function(feature){
         var tip:Coordinate[] = [];
-        tip.push(this.rightLine.getEnd());
-        var angle = getOrientation(this.rightLine.getPenultimate(),this.rightLine.getEnd());
-        tip.push(getPointToVector(this.rightLine.getEnd(),angle + Math.PI/2,this.WIDTH/this.DIVISOR));
-        tip.push(this.backbone.getEnd());
-        tip.push(getPointToVector(this.leftLine.getEnd(),angle - Math.PI/2,this.WIDTH/this.DIVISOR));
-        tip.push(this.leftLine.getEnd());
+        tip.push(entity.lastPointRightLine);
+        var angle = getOrientation(entity.penultimatePointRightLine,entity.lastPointRightLine);
+        tip.push(getPointToVector(entity.lastPointRightLine,angle + Math.PI/2,entity.WIDTH/entity.DIVISOR));
+        tip.push((<LineString>feature.getGeometry()).getLastCoordinate());
+        entity.widthControlPointCoord = getPointToVector(entity.lastPointLeftLine,angle - Math.PI/2,entity.WIDTH/entity.DIVISOR);
+        const vectorSource:VectorSource = Globals.SHAPES_VECTOR_LAYER
+        if(!vectorSource.hasFeature(entity.widthControlPointEntity))
+          vectorSource.addFeature(entity.widthControlPointEntity);
+        tip.push(entity.widthControlPointCoord);
+        tip.push(entity.lastPointLeftLine);
 
-        return tip;
-    }
+        return new LineString(tip);
+      },
+      stroke:new Stroke({
+        color:"black",
+        width:2
+      })
+    })
+  }
 
-    public onDrag(evt:TranslateEvent){
-        var centreOfAxis = middlePoint(this.tipLine.getStart(),this.tipLine.getEnd());
-        var angleOfAxis = getOrientation(this.backbone.getPenultimate(),this.backbone.getEnd()) + Math.PI/2;
-        var newPosition = evt.coordinate;
-        var angleOfPoint = getOrientation(centreOfAxis,newPosition) - angleOfAxis;
-        var newDistanceToCentre = distance(centreOfAxis,newPosition);
-        var newPerpendicullarDistanceToCentre = Math.cos(angleOfPoint) * newDistanceToCentre;
+  
 
-        if(newPerpendicullarDistanceToCentre >= this.WIDTH / 2)
-        this.WIDTH = (newPerpendicullarDistanceToCentre * 3 / this.DIVISOR) * 2;
-        this.updateShape();
-    }
-
-    /**
-     * putWIDTH
-width:number     */
-    public  putWIDTH(width:number) {
-        this.WIDTH = width;
-    }
-
-    /**
-     * getWIDTH
-     */
-    public getWIDTH() {
-        return this.WIDTH;
-    }
 }
-
-

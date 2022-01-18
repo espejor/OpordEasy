@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { FeatureForDeploing, SVGPathForPoint, TextFeatureForDeploing } from '../models/feature-for-selector';
+import { FeatureForDeploing, SVGPathForPoint, TextFeatureForDeploing, TextInUnitOptions, TextOptions } from '../models/feature-for-selector';
 import { SvgIconsListService } from './svg-icons-list.service';
 
 @Injectable({
@@ -33,8 +33,11 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
     //-----------------------
     // FALTAN FEATURES DE UNIDADES
     // ----------------------
-    sectionAdd: {
-      designation:{selectorText: "Designación",value:"León",codeForDeploing:{type:"text", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth}}
+    extraData: {
+      designation:{selectorText: "Designación",codeForDeploing:{type:"text",x:"75",y:"125",visible:true}},
+      heighterUnit:{selectorText: "Unidad Superior",value:""},
+      typeEquipment:{selectorText: "Tipo de Equipo",codeForDeploing:{type:"text",x:"75",y:"105"}},
+      dateTime:{selectorText: "Fecha-Hora",codeForDeploing:{type:"text",x:"75",y:"65"}}
     }
   }
 
@@ -87,12 +90,23 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
       svg += "fill = '" + feature.value.codeForDeploing.fill + "' ";
       svg += " />";
     }
+    if (type == "text"){
+      const f = <TextOptions>feature.value.codeForDeploing
+      const indent = f.indent?f.indent:"end"
+      const style = "font: 20px sans-serif; text-anchor: " + indent
+      if(f.visible){
+        const x:string = (parseInt(f.x)+10).toLocaleString()
+        const y:string = (parseInt(f.y)-30).toLocaleString()
+        svg += "<text ";
+        svg += "x = '" + x;
+        svg += "' y = '" + y + "'"; 
+
+        svg += " style = '" + style + "' >"
+        svg += f.text + "</text>"
+      }
+    }
   
     return svg;
   }
-
-
-
-
 }
 
