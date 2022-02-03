@@ -1,19 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Coordinate } from 'ol/coordinate';
+import { Geometry } from 'ol/geom';
 import { environment } from '../../environments/environment';
-import Geometry from 'ol/geom/Geometry';
-import Point from 'ol/geom/Point';
-import { CustomSnap, OlMapComponent } from '../components/nav/ol-map/ol-map.component';
-import { EntityUnit } from '../entities/entity-unit';
+import { OlMapComponent } from '../components/nav/ol-map/ol-map.component';
 import { Entity } from '../entities/entity.class';
 import { EntityLocated } from '../models/operation';
-import { entityType } from '../entities/entitiesType';
-import { EntitySelector } from '../entities/factory-entity-selector';
+import { collectionToArray, findElement } from '../utilities/miscelanea';
 import { SvgIconsListService } from './svg-icons-list.service';
-import Snap from 'ol/interaction/Snap';
-import { Collection, Feature } from 'ol';
-import ol_coordinate_cspline from 'ol-ext/render/Cspline';
 
 @Injectable({
   providedIn: 'root'
@@ -29,15 +23,23 @@ export class EntitiesDeployedService {
     this.URL_API = URL_BASE + 'api/entities'; 
   }
 
+  updateEntity(entity: Entity<Geometry>):number {
+    const indexElement = findElement(this.olMapComponent.shapesFeatures,entity,{key:"_id",value:entity._id})
+    if (indexElement != -1){
+      this.olMapComponent.shapesFeatures.setAt(indexElement,entity)
+    }
+    return indexElement
+  }
+
   setMapComponent(olMapComponent: OlMapComponent) {
     this.olMapComponent = olMapComponent;
   }
+
   getMapComponent(): OlMapComponent {
     return this.olMapComponent;
   }
 
   addNewEntity(entityLocated: EntityLocated, coordinates?:Coordinate[] | Coordinate) {
-
     if (coordinates)
       entityLocated.location = coordinates;    
 
@@ -45,10 +47,14 @@ export class EntitiesDeployedService {
     this.olMapComponent.shapesFeatures.push(entityLocated.entity);
   }
 
+  removeEntity(entityLocated: EntityLocated){
+    this.olMapComponent.shapesFeatures.remove(entityLocated.entity)
+  }
+
   resetEntitiesDeployed() {
     this.olMapComponent.shapesFeatures.clear();
     this.olMapComponent.dragFeatures.clear();
-    this.olMapComponent.snap.clearFeatures()
+    // this.olMapComponent.snap.clearFeatures()
   }  
 
   updateMap(){

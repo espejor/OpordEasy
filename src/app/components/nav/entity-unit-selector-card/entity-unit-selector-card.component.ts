@@ -24,7 +24,7 @@ export class EntityUnitSelectorCardComponent implements OnInit {
   }
 
   ngAfterViewInit():void{
-    this.entityCard.nativeElement.innerHTML = this.svgService.createSVGForCard(this.entity.entityOptions,this.size); 
+    this.entityCard.nativeElement.innerHTML = this.svgService.createSVGForCard(this.entity,this.size); 
   }
 
 }

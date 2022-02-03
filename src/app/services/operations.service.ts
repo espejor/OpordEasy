@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { EntityLocated, Operation,Phase, Timeline } from '../models/operation';
 import Geometry from 'ol/geom/Geometry';
-import { Entity, EntityOptions } from '../entities/entity.class';
+import { Entity } from '../entities/entity.class';
 import { environment } from '../../environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EntitiesDeployedService } from './entities-deployed.service';
 import { Coordinate } from 'ol/coordinate';
 import { MatDialog } from '@angular/material/dialog';
 import { NewPhaseDialogComponent } from '../components/nav/ol-map/new-phase-dialog/new-phase-dialog.component';
+import { Globals } from '../utilities/globals';
+import { findElement } from '../utilities/miscelanea';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +20,7 @@ export class OperationsService {
   readonly NEXT = 1;
   
   activatedOperationsFormOpened:boolean = false;
+  opordFormOpened:boolean = false;
   selectedOperation: Operation = new Operation();
   operations: Operation[]
   phaseOrder: number = 0;
@@ -32,6 +35,7 @@ export class OperationsService {
     public dialog: MatDialog) {    
     const URL_BASE = environment.baseUrl;
     this.URL_API = URL_BASE + 'api/operations'; 
+    Globals.OPERATION_SVC = this
   }
 
   isOperationLoaded():boolean {
@@ -48,7 +52,7 @@ export class OperationsService {
         'Abrir Operación', {
         duration: 5000,
         verticalPosition: "top",
-        panelClass: ['style-error']
+        panelClass: ['warning']
       });
       snackRef.onAction().subscribe(() => {
         this.activatedOperationsFormOpened = true;   
@@ -58,12 +62,25 @@ export class OperationsService {
   }
 
   addEntityToTimeline(entity: Entity<Geometry>) {
+    const timelines = this.selectedOperation.phases[this.phaseOrder].timelines
     // Si no hay timelines se agrega uno
-    if(this.selectedOperation.phases[this.phaseOrder].timelines.length == 0)
-      this.selectedOperation.phases[this.phaseOrder].timelines.push(new Timeline())
+    if(timelines.length == 0)
+      timelines.push(new Timeline())
     // Agregamos la entidad al timeline
-    this.selectedOperation.phases[this.phaseOrder].timelines[this.timelineActive].entities.push(entity);
-    // const entities = this.selectedOperation.phases[this.phaseOrder].timelines[this.timelineActive].entities;
+    // Si es la primera entidad ésta debe ser una Unidad
+    if (timelines[this.timelineActive].isEmpty() && entity.getType() != "Unidad"){  
+      this._snackBar.open(
+        "No es posible agregar algo distinto a una Unidad como primer elemento de una Línea tiempo",
+        "",
+        {
+          duration:5000
+        }
+      )
+      return
+    }
+        // const entities = this.selectedOperation.phases[this.phaseOrder].timelines[this.timelineActive].entities;
+    
+    timelines[this.timelineActive].entities.push(entity);
     this.http.put(this.URL_API + `/${this.selectedOperation._id}`,
     {
       // "entities" : this.selectedOperation.phases[this.phaseOrder].timelines[this.timelineActive].entities,
@@ -75,6 +92,13 @@ export class OperationsService {
     }
     ).subscribe((data) => {
       console.log(data);
+    })
+  }
+
+  
+  reorderEntitiesInTimeline() {        
+    this.updateOperation(this.selectedOperation).subscribe(result =>{
+      console.log(result)
     })
   }
 
@@ -260,7 +284,7 @@ export class OperationsService {
     return timelinesForDB;
   }
 
-  prepareListOfDeployedEntities(layout: EntityLocated[]): EntityLocated[] {
+  private prepareListOfDeployedEntities(layout: EntityLocated[]): EntityLocated[] {
     const entities:EntityLocated[] = [];
     layout.forEach(entityDeployed => {
       var entityForDB:any = new Object(); 
@@ -367,18 +391,13 @@ updateEntityPositionInOperation(entity: Entity) {
   }
 
 
-updateEntityInOperation(entity: Entity) {
+  updateEntityInOperation(entity: Entity) {
+    this.updateEntityInCombo(entity)
+    this.updateEntityInTimelines(entity)
+    // this.updateEntityInCombo(entity)
     const operation = this.selectedOperation
-    // const location = entity.getCoordinates();
-    const entityFound = this.selectedOperation.phases[this.phaseOrder].layout.find((item) =>{
-      return item.entity._id === entity._id
-    })
-    // if(entityFound)
-      // entityFound.location = location
-
     const object = {
       "action" : "updateEntity",
-      // "location" : location, 
       "phase": this.phaseOrder,
       "entity": entity
     }
@@ -388,6 +407,105 @@ updateEntityInOperation(entity: Entity) {
     });
   }
 
+  updateEntityInCombo(entity: Entity<Geometry>) {
+    const indexElement = findElement(this.selectedOperation.comboEntities,entity,{key:"_id",value:entity._id})
+    if (indexElement != -1){
+      this.selectedOperation.comboEntities[indexElement] = entity
+    }
+    return indexElement
+  }
+
+  updateEntityInTimelines(entity: Entity<Geometry>) {
+    const phases = this.selectedOperation.phases
+    phases.forEach(phase => {
+      const timelines = phase.timelines
+      timelines.forEach(timeline => {
+        const indexElement = findElement(timeline.entities,entity,{key:"_id",value:entity._id})
+        if (indexElement != -1){
+          timeline.entities[indexElement] = entity
+        }
+      })
+    })
+  }
+
+  
+  deleteEntityFromOperation(entity: Entity<Geometry>) {
+    this.deleteEntityFromLayout(entity)
+  }
+
+  deleteEntityFromLayout(entity: Entity<Geometry>) {
+    // Borrar entidad del layout
+    var entityLocated
+    this.selectedOperation.phases[this.phaseOrder].layout = 
+    this.selectedOperation.phases[this.phaseOrder].layout.filter(item => {
+      if(item.entity._id != entity._id)
+        return true
+      else{
+        entityLocated = item
+        return false
+      }
+    })
+
+    // Si lo quitamos del Layout también lo quitamos de los Timelines
+    // this.deleteEntityFromTimelines(entity)
+    this.deleteEntityFromAllTimelines(entity,true)
+    // Si lo quitamos del layout desaparece del Combo
+    // this.deleteEntityFromCombo(entity)    
+    this.deleteEntityFromCombo(entity)
+
+    // Eliminar del Vector de entidades desplegadas
+    this.entitiesDeployed.removeEntity(entityLocated)
+
+    // Modificar la DB
+    const object = {
+      "action" : "deleteEntityLyt",
+      "phase": this.phaseOrder,
+      "entity": entityLocated
+    }
+    return this.http.put(this.URL_API + `/${this.selectedOperation._id}`,object)
+      .subscribe(data => {
+        console.log(data);
+    });
+
+  }
+
+  deleteEntityFromCombo(entity: Entity<Geometry>) {
+    // Borrar entidad del Combo
+    this.selectedOperation.comboEntities =
+    this.selectedOperation.comboEntities.filter(item => {
+      return item._id != entity._id
+    })
+  }
+
+  deleteEntityFromAllTimelines(entity: Entity<Geometry>,silent = false) {
+    // Borrar entidad de los TimeLines
+    this.selectedOperation.phases[this.phaseOrder].timelines.forEach(timeline => {
+        this.deleteEntityFromTimeline(entity,timeline,silent)
+    })
+  }
+
+  deleteEntityFromTimeline(entity: Entity<Geometry>, timeline: Timeline,silent= false) {
+      if (silent)      
+        timeline.deleteEntity(entity)
+      else{
+        if (!timeline.isEmpty()){
+          const snackRef = this._snackBar.open(
+            "¿Está seguro de que quiere eliminar el símbolo?",
+            "Eliminar",
+            {
+              duration:5000,
+              panelClass: ['mat-toolbar', 'mat-warn']
+            });
+          snackRef.onAction().subscribe(() =>{
+              timeline.deleteEntity(entity)
+              this.updateOperation(this.selectedOperation).subscribe(result =>{
+                this._snackBar.open(`Se ha eliminado un símbolo`,"",{duration:3000})
+              })
+          })
+        }
+      }
+  }
+  
 
   
   getOperations(){

@@ -12,12 +12,13 @@ import { entityType } from "./entitiesType";
 import Icon from "ol/style/Icon";
 import { TaskOptions } from "./entity-task.class";
 import { LineString } from "ol/geom";
-import { distanceFromPointToLine, getCoordsForArc, getCoordsForArcFrom2Points, getOrientation, getPerpendicularPoint, getPointToVector, middlePoint } from "../utilities/geometry-calc";
+import { distanceFromPointToLine, getCoordsForArcFrom2Points, getOrientation, getPerpendicularPoint, getPointToVector, middlePoint } from "../utilities/geometry-calc";
 import { EntityLine } from "./entity-line.class";
 import { Map, Collection } from "ol";
 import { ModifyEvent } from "ol/interaction/Modify";
 import { HTTPEntitiesService } from "../services/entities.service";
 import { OperationsService } from "../services/operations.service";
+import { SvgTasksIconsListService } from "../services/svg-tasks-icons-list.service";
 
 export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends EntityLine{
   public image: ImageStyle;
@@ -48,7 +49,9 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
       this.multiPointOptions = <MultiPointOptions>taskOptions.options
       this.numPoints = this.multiPointOptions.numPoints
       this.points = this.multiPointOptions.points
+      // this.file = this.file.file
     }
+
 
 
     // Dibujamos la task
@@ -108,10 +111,26 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
 
     this.setStyle(styleFunction)
   }
+  
+  
+  getSvgSvcFieldsOfExtraData(){
+    return null
+  }
 
   onModifyEnd(evt: ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService): void {
     this.setCoordinates(this.getCoordinates())
     super.onModifyEnd(evt,map,shapesFeatures,operationsService,entitiesService)
+  }
+
+
+  getHTMLCodeForIconTimeline(): string {    
+    const file = this.file.file
+    return '<div style="height: 50px;"><img src="' + file + 
+    '" style="vertical-align: top;width: 50px"></div>'
+  }
+
+  getType(): string {
+    return ("Tarea");
   }
 
   fixUbicationRealPoints() {

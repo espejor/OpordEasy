@@ -9,6 +9,7 @@ import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import { Pixel } from 'ol/pixel';
 import { Observable } from 'rxjs';
 import { entityType } from 'src/app/entities/entitiesType';
+import { AreaOptions } from 'src/app/entities/entity-area.class';
 import { Entity } from 'src/app/entities/entity.class';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
 import { EntityLocated } from 'src/app/models/operation';
@@ -27,6 +28,9 @@ import { Selector } from '../selector-base';
 export class AreaSelectorComponent extends Selector implements OnInit,AfterViewInit {
   public setFeaturesToSelect ;
   public listOfOptions = [];
+  fieldsToShow: AreaOptions["extraData"]["textFields"];
+  listsToShow: AreaOptions["extraData"]["lists"];
+  // numsToShow: AreaOptions["extraData"]["numbers"];
 
   constructor(public svgListOfIcons: SvgGeneralIconsListService, 
     private  entitiesDeployed:EntitiesDeployedService,
@@ -66,7 +70,35 @@ export class AreaSelectorComponent extends Selector implements OnInit,AfterViewI
   }
 
 
+  updateFeatureWithTextField(event,option){
+    (<AreaOptions>this.entitySelectorService.entitySelected.entityOptions).extraData.textFields[option.key].value = event.target.value
+  }
+
+  updateFeatureWithList(event,option){
+    (<AreaOptions>this.entitySelectorService.entitySelected.entityOptions).extraData.lists[option.key].value = event.value    
+  }
+
+  // updateFeatureWithTextNumber(event,option){
+  //   (<AreaOptions>this.entitySelectorService.entitySelected.entityOptions).extraData.numbers[option.key].value = event.target.value
+  // }
+  
+  resetExtraData(){
+    this.fieldsToShow = undefined
+    this.listsToShow = undefined
+  }
+
   loadExtraData(feature:KeyValue<string,any>){
+    if(feature.value.codeForDeploing.extraData){
+      this.fieldsToShow = feature.value.codeForDeploing.extraData.textFields
+      this.listsToShow = feature.value.codeForDeploing.extraData.lists
+      // this.numsToShow = feature.value.codeForDeploing.extraData.numbers
+    }else{
+      this.resetExtraData()
+      // this.fieldsToShow = undefined
+      // this.listsToShow = undefined
+      // this.numsToShow = undefined
+    }
+
     this.resetAspectSelectors();
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // const coordinates:Coordinate = []; 

@@ -82,7 +82,7 @@ export class EntityAxis<GeomType extends Geometry = Geometry> extends EntityLine
             const maxDist = distance(this.getLastCoordinate(),this.getPenultimate())
             if(newWidth < maxDist - maxDist/10){
               this.WIDTH = newWidth
-              taskOptions.axis_options.WIDTH = newWidth
+              taskOptions["axis_options"] = {WIDTH:newWidth}
             }
             if(!this.cpRelocated)
               this.locateControlPoint()
@@ -112,7 +112,7 @@ export class EntityAxis<GeomType extends Geometry = Geometry> extends EntityLine
         this.styles = stylesFunction;
         this.setStyle(this.styles);
         try{
-          this.WIDTH = taskOptions.axis_options.WIDTH
+          this.WIDTH = taskOptions["axis_options"].WIDTH
         }catch{
           this.WIDTH=2000
         }
@@ -122,7 +122,17 @@ export class EntityAxis<GeomType extends Geometry = Geometry> extends EntityLine
     this.locateControlPoint()
   }
 
+  getHTMLCodeForIconTimeline(): string {
+    const file = this.file.file
+    return '<div style="height: 50px;"><img src="' + file + 
+    '" style="vertical-align: top;width: 50px"></div>'
+  }
+
     
+  getType(): string {
+    return ("Eje de Progresión");
+  }
+
   onModifyEnd(evt:ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService) {
     super.onModifyEnd(evt,map,shapesFeatures,operationsService,entitiesService);
     this.changingAxisGeometry = false     

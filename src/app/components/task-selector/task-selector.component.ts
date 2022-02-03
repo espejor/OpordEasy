@@ -11,11 +11,12 @@ import { Fill, Icon, Stroke, Style } from 'ol/style';
 import { Observable } from 'rxjs';
 import { getEntityType } from 'src/app/entities/entitiesType';
 import { AreaOptions } from 'src/app/entities/entity-area.class';
-import { LineOptions } from 'src/app/entities/entity-line.class';
+import { CircleOptions } from 'src/app/entities/entity-circle';
 import { MultiPointOptions } from 'src/app/entities/entity-multipoint.class';
 import { TaskOptions } from 'src/app/entities/entity-task.class';
 import { Entity } from 'src/app/entities/entity.class';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
+import { LineOptions, PointOptions } from 'src/app/models/feature-for-selector';
 import { EntityLocated } from 'src/app/models/operation';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
@@ -109,7 +110,7 @@ export class TaskSelectorComponent extends Selector implements OnInit,AfterViewI
       maxPoints: nPoints?nPoints:Infinity
     })
 
-    function isMultiPointOption(mpo: MultiPointOptions | LineOptions | AreaOptions): mpo is MultiPointOptions { //magic happens here
+    function isMultiPointOption(mpo: MultiPointOptions | LineOptions | AreaOptions |PointOptions | CircleOptions): mpo is MultiPointOptions { //magic happens here
       return (<MultiPointOptions>mpo).numPoints !== undefined;
     }
     

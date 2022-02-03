@@ -14,8 +14,11 @@ export class FloatingMenuComponent implements OnInit {
   ngOnInit() {
   }
 
+changeViewOPORD(){
+  this.operationsService.opordFormOpened = !this.operationsService.opordFormOpened
+}
 
-changeView(){
+changeViewOperations(){
   this.operationsService.activatedOperationsFormOpened = !this.operationsService.activatedOperationsFormOpened
   const data = this.operationsService.activatedOperationsFormOpened?"activated":"deactivated"
   this.emitter.emit(data);

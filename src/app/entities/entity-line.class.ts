@@ -6,16 +6,16 @@ import Text from "ol/style/Text";
 import { Color } from "ol/color";
 import Stroke from "ol/style/Stroke";
 import LineString from "ol/geom/LineString";
-import { Entity, EntityOptions, Pattern } from "./entity.class";
+import { Entity, Pattern } from "./entity.class";
 import { entityType } from "./entitiesType";
 import Point from "ol/geom/Point";
-import { EntitiesDeployedService } from "../services/entities-deployed.service";
 import Icon from "ol/style/Icon";
 // import { AppInjector } from "../app.module";
 import { angleBetweenPixels, distanceBetweenPixels, offsetFromPixel } from "../utilities/pixels-geometry";
 import MultiPoint from "ol/geom/MultiPoint";
-import ol_coordinate_cspline from "ol-ext/render/Cspline";
 import { Globals } from "../utilities/globals";
+import { LineOptions } from "../models/feature-for-selector";
+import { SvgGeneralIconsListService } from "../services/svg-general-icons-list.service";
 
 export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   // private style: Style;
@@ -48,43 +48,54 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   pattern: Pattern;
   purpose: string;
   stroke_dasharray: [number,number] = [0,0];
+  order: string;
+  coordination: string;
+  initialDateTime:string
+  finalDateTime:string
+  dateTimeEndStyle: Style;
+  dateTimeStartStyle: Style;
+  echelon: any;
+  file: any;
+  verbose: string;
 
   constructor(lineOptions?:LineOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
     super(lineOptions,null,opt_geometryOrProperties,id);
     this.entityType = entityType.line
     this.lineOptions = lineOptions;
 
-    if(lineOptions){
-      this.name = lineOptions.name;
-      this.type = lineOptions.typeLine;
-      this.pattern = lineOptions.pattern;
-      this.purpose = lineOptions.purpose;
-      this.stroke_dasharray = lineOptions.stroke_dasharray
-    }
-    this.lineStyle = this.getStyle()
-    // this.centralIconStyle = this.configureCentralIcon(lineOptions.echelon);
+    this.updateData()
+    this.lineStyle = this.getBasicStyle()
     this.startTextStyle = this.configureStartText();
     this.endTextStyle = this.configureEndText();
     this.purposeEndStyle = this.configureEndPurposeText();
     this.purposeStartStyle = this.configureStartPurposeText();
-    this.pointStyle = this.getPoint()
+    this.dateTimeStartStyle = this.configureStartDateTime();
+    this.dateTimeEndStyle = this.configureEndDateTime();
+    // this.pointStyle = this.getPoint()
     // this.trianglePatternStyles = this.createTrianglePattern();
     const entity = this;
 
     var stylesFunction = function(feature:Feature){
       const styles: Style[] = []
-      if(lineOptions.echelon)
-        styles.push(...entity.configureCentralIcon(feature,lineOptions.echelon,lineOptions.svgWidth));
-      styles.push(entity.startTextStyle);
-      styles.push(entity.endTextStyle);
-      if (lineOptions. lineVisible)
+      if(entity.echelon)
+        styles.push(...entity.configureCentralIcon(feature,entity.echelon,lineOptions.svgWidth));
+      if (entity.startTextStyle)
+        styles.push(entity.startTextStyle);
+      if (entity.endTextStyle)
+        styles.push(entity.endTextStyle);
+      if (lineOptions.lineVisible)
         styles.push(entity.lineStyle);
-      styles.push(entity.pointStyle);
+      if (entity.pointStyle)
+        styles.push(entity.pointStyle);
       if(lineOptions.pattern)
         styles.push(...entity.createPattern(feature));
-      if(lineOptions.purpose){
+      if(entity.purpose){
         styles.push(entity.purposeEndStyle);
         styles.push(entity.purposeStartStyle);
+      }
+      if(entity.dateTimeEndStyle){
+        styles.push(entity.dateTimeEndStyle);
+        styles.push(entity.dateTimeStartStyle);
       }
       return styles
     }
@@ -94,6 +105,60 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     if(lineOptions){
       this.styles = stylesFunction;
       this.setStyle(this.styles)
+    }
+
+
+  }
+
+  getHTMLCodeForIconTimeline(): string {
+    const txt = this.getIdent() == ""?" ":this.getIdent()
+    const typeLine = this.type?this.type:" "
+    const designationObj = {designation:txt,offset:[0,-50]}
+    const typeObj = {type:typeLine,offset:[0,-40]}
+    const file = "assets/icons/lines/" + this.file + ".svg"
+    const svgService = new SvgGeneralIconsListService()
+    return svgService.createSVGForTimeLineFromFile(file,typeObj,designationObj)
+  }
+
+  getIdent(): string {
+    return this.name != ""?this.name:this.order?this.order:""    
+  }
+
+  getVerbose(): string {
+    if(this.lineOptions.verbose)
+      return this.lineOptions.verbose
+    if(this.lineOptions.extraData){
+      var verbose = this.lineOptions.extraData.lists.purpose?this.lineOptions.extraData.lists.purpose.value:this.lineOptions.typeLine 
+      verbose +=  verbose != ""? " " + this.getIdent():this.getIdent()
+      if (verbose != "")
+        return verbose
+    }
+    if(this.lineOptions.typeLine && this.lineOptions.typeLine != "")
+      return this.lineOptions.typeLine
+    return this.lineOptions.typeEntity
+  }
+  
+
+  updateData() {
+    const lineOptions = this.lineOptions;
+    if(lineOptions){
+      if(lineOptions.extraData){
+        if(lineOptions.extraData.textFields){
+          this.name = lineOptions.extraData.textFields.name?lineOptions.extraData.textFields.name.value:undefined;
+          this.coordination = lineOptions.extraData.textFields.coordination?lineOptions.extraData.textFields.coordination.value:undefined;
+          this.initialDateTime = lineOptions.extraData.textFields.initDateTime?lineOptions.extraData.textFields.initDateTime.value:undefined;
+          this.finalDateTime = lineOptions.extraData.textFields.finalDateTime?lineOptions.extraData.textFields.finalDateTime.value:undefined;
+        }
+        if(lineOptions.extraData.lists){
+          this.purpose = lineOptions.extraData.lists.purpose?lineOptions.extraData.lists.purpose.value:undefined;
+          this.echelon = lineOptions.extraData.lists.echelon?lineOptions.extraData.lists.echelon.value:undefined;
+        }
+      }
+      this.type = this.purpose?this.purpose:lineOptions.typeLine;
+      this.pattern = lineOptions.pattern;
+      this.stroke_dasharray = lineOptions.stroke_dasharray
+      this.file = lineOptions.file
+      this.verbose = lineOptions.verbose
     }
   }
 
@@ -162,26 +227,26 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     })
   }
   
-  getPoint(): Style {
-    return new Style({
-      geometry: function(feature){
-        const location = (<LineString>feature.getGeometry()).getFirstCoordinate()
-        const point = new Point(location)
-        const start = new Point((<LineString>feature.getGeometry()).getFirstCoordinate());
-        const end = new Point((<EntityLine>feature).getCoordinates()[1]);
-        const rotation = (<EntityLine>feature).getOrientation(end, start);
-        (<EntityLine>feature).pointStyle.getImage().setRotation(-rotation);
-        return point;
-      }, 
-      image: new Icon({
-        opacity: 1,
-        size:[80,80],
-        src: "assets/icons/points/command/contact_point.svg",
-        scale: 0.5,
-        anchor:[0.3,1]
-      })      
-    })
-  }
+  // getPoint(): Style {
+  //   return new Style({
+  //     geometry: function(feature){
+  //       const location = (<LineString>feature.getGeometry()).getFirstCoordinate()
+  //       const point = new Point(location)
+  //       const start = new Point((<LineString>feature.getGeometry()).getFirstCoordinate());
+  //       const end = new Point((<EntityLine>feature).getCoordinates()[1]);
+  //       const rotation = (<EntityLine>feature).getOrientation(end, start);
+  //       (<EntityLine>feature).pointStyle.getImage().setRotation(-rotation);
+  //       return point;
+  //     }, 
+  //     image: new Icon({
+  //       opacity: 1,
+  //       size:[80,80],
+  //       src: "assets/icons/points/command/contact_point.svg",
+  //       scale: 0.5,
+  //       anchor:[0.3,1]
+  //     })      
+  //   })
+  // }
 
   getOrientation(start:Point,end:Point): number{
     const dx = end.getCoordinates()[0] - start.getCoordinates()[0];
@@ -201,8 +266,8 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
           // size:[80,80],
           src: "assets/icons/ghost_line.svg",
           // scale: 1,
-          anchor:[0.5,0.5],
           rotation: -rotation,
+          anchor:[0.5,0.5],
           scale:[svgWidth,1]
         })      
       }))
@@ -211,8 +276,9 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
         image: new Icon({
           opacity: 1,
           // size:[80,80],
-          src: imageSrc,
+          src: "assets/icons/echelons/" + imageSrc + "-item.svg",
           scale: 1,
+          rotation: -rotation,
           anchor:[0.5,0.5]
         })      
       }))
@@ -221,136 +287,180 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     return styles
   }
 
-  
-
-  
   public configureStartText():Style{
-    // const start = new Point(this.getEntityGeometry().getFirstCoordinate());
-    // const end = new Point(this.getEntityGeometry().getCoordinates()[1]);
-    // const rotation = this.getOrientation(end , start);
-    const text: string = this.type + " " + this.name; 
-    return new Style({
-      geometry: function(feature){
-        const start = new Point((<LineString>feature.getGeometry()).getFirstCoordinate());
-        const end = new Point((<EntityLine>feature).getCoordinates()[1]);
-        const rotation = (<EntityLine>feature).getOrientation(end, start);
-        (<EntityLine>feature).startTextStyle.getText().setRotation(-rotation);
-        return new Point((<LineString>feature.getGeometry()).getFirstCoordinate())
-      } ,
-      text:new Text({
+    const text: string = this.lineOptions.typeLine + " " + this.name;
+    const txt = new Text({
         stroke: this.stroke,
-        text: this.type + " " + this.name,
-        // placement: "point",
-        // textAlign: "start",
-        // textBaseline: "middle",
-        offsetX: text.length * 5,
-        // offsetY: 50,
+        text: text,
+        offsetX: 10,
+        textAlign:"start",
         rotateWithView:true,
-        // rotation: -rotation, 
-        // overflow:true,
         padding:[10,10,10,10],
         scale:this.scale
       })
+
+    return new Style({
+      geometry: function(feature:EntityLine){
+        feature.updateData()
+        const text: string = feature.lineOptions.typeLine + " " + feature.name;
+        const start = new Point((<LineString>feature.getGeometry()).getFirstCoordinate());
+        const end = new Point(feature.getCoordinates()[1]);
+        const rotation = feature.getOrientation(end, start);
+        feature.startTextStyle.getText().setRotation(-rotation);
+        feature.startTextStyle.getText().setText(text)
+        // feature.startTextStyle.getText().setOffsetX(text.length * 5)
+        return start
+      } ,
+      text: txt
     });
   }  
 
   public configureEndText():Style{
-
-    const text: string = this.type + " " + this.name; 
-    const style = new Style({
-      geometry: function(feature){
-        const start = new Point((<EntityLine>feature).getPenultimate());
-        const end = new Point((<EntityLine>feature).getEntityGeometry().getLastCoordinate());
-        const rotation = (<EntityLine>feature).getOrientation(end, start);
-        (<EntityLine>feature).endTextStyle.getText().setRotation(-rotation);
-        return new Point((<LineString>feature.getGeometry()).getLastCoordinate());
-      } ,
-      text:new Text({
+    const text: string = this.lineOptions.typeLine + " " + this.name;
+    const txt = new Text({
         stroke: this.stroke,
         text: text,
-        // placement: "point",
-        // textAlign: "start",
-        // textBaseline: "middle",
-        offsetX: text.length * -5,
-        // offsetY: 50,
+        offsetX: -10,
         rotateWithView:true,
-        // rotation: -rotation, 
-        // overflow:true,
+        textAlign:"end",
         padding:[10,10,10,10],
         scale:this.scale
       })
+
+    return new Style({
+      geometry: function(feature:EntityLine){
+        feature.updateData()
+        const text: string = feature.lineOptions.typeLine + " " + feature.name;
+        const start = new Point(feature.getPenultimate());
+        const end = new Point(feature.getEntityGeometry().getLastCoordinate());
+        const rotation = feature.getOrientation(end, start);
+        feature.endTextStyle.getText().setRotation(-rotation);
+        feature.endTextStyle.getText().setText(text)
+        // feature.endTextStyle.getText().setOffsetX(text.length * -5)
+        return end
+      } ,
+      text: txt
     });
-    return style;
   }
 
   public configureEndPurposeText():Style{
     if(this.purpose){
-      const text: string = this.lineOptions.purpose; 
-      const style = new Style({
-        geometry: function(feature){
-          const start = new Point((<EntityLine>feature).getPenultimate());
-          const end = new Point((<EntityLine>feature).getEntityGeometry().getLastCoordinate());
-          const rotation = (<EntityLine>feature).getOrientation(end, start);
-          (<EntityLine>feature).purposeEndStyle.getText().setRotation(-rotation);
-          return new Point((<LineString>feature.getGeometry()).getLastCoordinate());
+      const txt = new Text({
+        stroke: this.stroke,
+        offsetY: -7,
+        offsetX: 10,
+        rotateWithView:true,
+        textAlign:"start",
+        padding:[10,10,10,10],
+        scale:this.scale
+      })
+  
+      return new Style({
+        geometry: function(feature:EntityLine){
+          feature.updateData()
+          const text: string = feature.purpose + " " + feature.coordination;
+          const start = new Point(feature.getPenultimate());
+          const end = new Point(feature.getEntityGeometry().getLastCoordinate());
+          const rotation = feature.getOrientation(end, start);
+          feature.purposeEndStyle.getText().setRotation(-rotation);
+          feature.purposeEndStyle.getText().setText(text)
+          return end
         } ,
-        text:new Text({
-          stroke: this.stroke,
-          text: text,
-          // placement: "point",
-          // textAlign: "start",
-          // textBaseline: "middle",
-          offsetX: text.length * 5,
-          offsetY: -7,
-          rotateWithView:true,
-          // rotation: -rotation, 
-          // overflow:true,
-          padding:[10,10,10,10],
-          scale:this.scale
-        })
+        text: txt
       });
-      return style;
     }
     return null
   }
 
   public configureStartPurposeText():Style{
     if(this.purpose){
-      const text: string = this.lineOptions.purpose; 
-      const style = new Style({
-        geometry: function(feature){
+      const txt = new Text({
+        stroke: this.stroke,
+        offsetY: -7,
+        offsetX: -10,
+        rotateWithView:true,
+        textAlign:"end",
+        padding:[10,10,10,10],
+        scale:this.scale
+      })
+  
+      return new Style({
+        geometry: function(feature:EntityLine){
+          feature.updateData()
+          const text: string = feature.purpose + " " + feature.coordination;
           const start = new Point((<LineString>feature.getGeometry()).getFirstCoordinate());
-          const end = new Point((<EntityLine>feature).getCoordinates()[1]);
-          const rotation = (<EntityLine>feature).getOrientation(end, start);
-          (<EntityLine>feature).purposeStartStyle.getText().setRotation(-rotation);
-          return new Point((<LineString>feature.getGeometry()).getFirstCoordinate())
+          const end = new Point(feature.getCoordinates()[1]);
+          const rotation = feature.getOrientation(end, start);
+          feature.purposeStartStyle.getText().setRotation(-rotation);
+          feature.purposeStartStyle.getText().setText(text)
+          return start
         } ,
-        text:new Text({
-          stroke: this.stroke,
-          text: text,
-          // placement: "point",
-          // textAlign: "start",
-          // textBaseline: "middle",
-          offsetX: text.length * -5,
-          offsetY: -7,
-          rotateWithView:true,
-          // rotation: -rotation, 
-          // overflow:true,
-          padding:[10,10,10,10],
-          scale:this.scale
-        })
+        text: txt
       });
-      return style;
+    }
+    return null    
+  }
+
+
+  public configureEndDateTime():Style{
+    if(this.initialDateTime || this.finalDateTime ){
+      const txt = new Text({
+        stroke: this.stroke,
+        offsetY: 7,
+        offsetX: 10,
+        rotateWithView:true,
+        textAlign:"start",
+        padding:[10,10,10,10],
+        scale:this.scale * 0.7
+      })
+  
+      return new Style({
+        geometry: function(feature:EntityLine){
+          feature.updateData()
+          const text: string = feature.initialDateTime + " " + feature.finalDateTime;
+          const start = new Point(feature.getPenultimate());
+          const end = new Point(feature.getEntityGeometry().getLastCoordinate());
+          const rotation = feature.getOrientation(end, start);
+          feature.dateTimeEndStyle.getText().setRotation(-rotation);
+          feature.dateTimeEndStyle.getText().setText(text)
+          return end
+        } ,
+        text: txt
+      });
     }
     return null
   }
 
+  public configureStartDateTime():Style{
+    if(this.initialDateTime || this.finalDateTime ){
+      const txt = new Text({
+        stroke: this.stroke,
+        offsetY: 7,
+        offsetX: -10,
+        rotateWithView:true,
+        textAlign:"end",
+        padding:[10,10,10,10],
+        scale:this.scale * 0.7
+      })
+  
+      return new Style({
+        geometry: function(feature:EntityLine){
+          feature.updateData()
+          const text: string = feature.initialDateTime + " " + feature.finalDateTime;
+          const start = new Point((<LineString>feature.getGeometry()).getFirstCoordinate());
+          const end = new Point(feature.getCoordinates()[1]);
+          const rotation = feature.getOrientation(end, start);
+          feature.dateTimeStartStyle.getText().setRotation(-rotation);
+          feature.dateTimeStartStyle.getText().setText(text)
+          return start
+        } ,
+        text: txt
+      });
+    }
+    return null
+  }
 
  public getPattern(): Style{
-  // const iconRegistry:MatIconRegistry = AppInjector.get(MatIconRegistry);
-  // const sanitizer:DomSanitizer = AppInjector.get(DomSanitizer);
-  // iconRegistry.addSvgIcon("contact_point", sanitizer.bypassSecurityTrustResourceUrl("assets/icons/points/command/contact_point.svg"))
-
   const pattern:Style = new Style({
     geometry: function(feature) {
       var line = <LineString>feature.getGeometry();
@@ -384,19 +494,19 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   return pattern;
 }
 
-  public getStyle(): Style{
+  public getBasicStyle(): Style{
     this.style = new Style({      
-      text: new Text({
-        text: this.name,
-        placement: this.placement,
-        textAlign: this.textAlign,
-        textBaseline: this.textBaseline,
-        rotateWithView: this.rotateWithView,
-        scale: this.scale,
-        stroke: new Stroke({
-          color: this.textColor
-        })
-      }),
+      // text: new Text({
+      //   text: this.name,
+      //   placement: this.placement,
+      //   textAlign: this.textAlign,
+      //   textBaseline: this.textBaseline,
+      //   rotateWithView: this.rotateWithView,
+      //   scale: this.scale,
+      //   stroke: new Stroke({
+      //     color: this.textColor
+      //   })
+      // }),
       stroke: new Stroke({
         color: this.lineColor,
         width: this.lineWidth,
@@ -449,24 +559,9 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
   // }
   
   public getType(): string {
-    return this.type;
+    return "Línea";
   }
-  public setType(value: string) {
-    this.type = value;
-  }
+  // public setType(value: string) {
+  //   this.type = value;
+  // }
 }
-
-export class LineOptions extends EntityOptions{
-  name?:string;   //T field
-  typeLine?:string; // LL, PL ...
-  purpose?:string;  // RFL...
-  pattern?:Pattern;  // 
-  coordinationMessures?:string;  // p.e. Controlling HQ
-  dateTimeGroupInitial?: string;  //
-  dateTimeGroupFinal?: string;  //
-  lineVisible?: boolean; // Si la línea se ha de ver ()
-  echelon?:string;
-  svgWidth?:number;
-  stroke_dasharray?:[number,number] = [0,0]
-}
-

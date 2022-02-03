@@ -1,3 +1,4 @@
 <div id="entityCard" #entityCard  
-    [ngStyle] = "entityElementStyle" cdkDrag cdkDragBoundary=".app-timeline" cdkDragLockAxis="x" >
+    [ngStyle] = "entityElementStyle" cdkDrag cdkDragBoundary=".app-timeline" cdkDragLockAxis="x" 
+    (contextmenu)="openContextMenu($event)">
 </div>

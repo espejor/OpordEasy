@@ -8,6 +8,7 @@ import { HTTPEntitiesService } from "../services/entities.service";
 import { OperationsService } from "../services/operations.service";
 import { SvgIconsListService } from "../services/svg-icons-list.service";
 import { distanceInPixelBetweenCoordinates } from "../utilities/coordinates-calc";
+import { Globals } from "../utilities/globals";
 import {EntityStakedOrder, entityType } from "./entitiesType";
 
 export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feature{
@@ -21,7 +22,8 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
   entityStakedOrder:EntityStakedOrder;
   public entityOptions:EntityOptions;
   smooth: boolean = true;
-  
+  typeEntity:string
+
   public lineColor: Color = [0,0,0];
   public lineWidth: number = 2;
 
@@ -31,6 +33,33 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
       this.location = this.getCoordinates();
       this._id = id;
       this.entityOptions = entityOptions;
+
+      // this.addEventListener("click", (evt:Event) =>{
+      //   console.log("para")
+      //   return false
+      // })
+      this.on("change", evt =>{
+        const operationOpened = Globals.OPERATION_SVC.activatedOperationsFormOpened
+        if (operationOpened)
+          return false
+        return true
+       })
+      //  this.on("propertychange", evt =>{
+      //   const operationOpened = Globals.OPERATION_SVC.activatedOperationsFormOpened
+      //   if (operationOpened)
+      //     return false
+      //   return true
+      //  })
+    }
+
+  abstract getHTMLCodeForIconTimeline(): string
+  abstract getIdent():string
+  getVerbose():string{
+    return ""
+  }
+  
+  getSvgSvcFieldsOfExtraData():{} {
+    throw new Error('Method not implemented.');
   }
 
   onModifyEnd(evt:ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService) {
@@ -100,6 +129,7 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
 
   abstract getEntityGeometry();
   abstract getCoordinates():Coordinate[] | Coordinate;
+  abstract getType(): string
   getLocation(): Coordinate[] |Coordinate{
     return this.location
   }
@@ -131,7 +161,7 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
   };    
 
   public activateStyle(){
-    this.setStyle(this.getStyle());
+    this.setStyle(this.getBasicStyle());
   }
 
   public getCustomStyle(){
@@ -165,12 +195,18 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
     coords[index] = coordinates
     this.setCoordinates(coords)
   }
+  
 
 
 }
 
 export class EntityOptions{
   attachable?:boolean = false;
+  typeEntity?:string;
+  extraData?;
+  file?
+  type?:string
+  verbose?: string;
   // isEnemy:boolean
   constructor(){
     // this.isEnemy= false;

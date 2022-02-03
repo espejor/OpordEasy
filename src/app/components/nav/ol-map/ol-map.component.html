@@ -23,5 +23,13 @@
     <app-operations></app-operations>
 </div>
 
+<div *ngIf = "operationsService.opordFormOpened">
+    <app-opord></app-opord>
+</div>
+
+<div *ngIf = "bubbleFormOpened" >
+    <app-bubble_feature (onClose)="bubbleClosed($event)" [entity] = "entityToShowInfo" [bubbleState]="bubbleFormOpened" ></app-bubble_feature>
+</div>
+
 <app-ghost-element></app-ghost-element>
 

@@ -1,0 +1,51 @@
+
+
+
+<div class="frame">
+  <div class="title">
+    {{getTypeEntity()}}  </div>
+    <mat-card>
+      <div   *ngFor = "let list of listsToShow ">
+          <mat-form-field>
+              <mat-select placeholder={{list[1].placeHolder}} [(ngModel)] = "list[1].value" (selectionChange) = "updateFeatureWithList($event,list)">
+                <mat-option *ngFor="let option of svgIconsList.getList( list[1].list)" [value]="option.value">
+                  {{option.text}}
+                </mat-option>
+              </mat-select>                
+          </mat-form-field>
+      </div>
+      <div   *ngFor = "let number of numsToShow">
+          <mat-form-field>
+              <mat-label>{{number[1].selectorText}}</mat-label>
+              <input type= "number" matInput #plus placeholder={{number[1].placeHolder}} [(ngModel)] = "number[1].value" (change) = "updateFeatureWithTextNumber($event,number)"/>
+          </mat-form-field>
+      </div>
+      <div>
+        <div *ngIf="coordinatesToShow">Coordenadas
+          <mat-form-field>
+            <mat-label>X: </mat-label>
+            <input matInput type="number" class="coordinate" placeholder="X" [(ngModel)] = "coordinatesToShow[0]" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Y: </mat-label>
+            <input matInput  type="number" class="coordinate" placeholder="Y" [(ngModel)] = "coordinatesToShow[1]" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div   *ngFor = "let field of fieldsToShow">
+          <mat-form-field>
+              <mat-label>{{field[1].selectorText}}</mat-label>
+              <input matInput #plus placeholder={{field[1].placeHolder}} [(ngModel)] = "field[1].value" (change) = "updateFeatureWithTextField($event,field)"/>
+          </mat-form-field>
+      </div>
+  </mat-card>  
+<div>
+  <button mat-icon-button color="warn" aria-label="Eliminar" (click)="deleteEntity()">
+    <mat-icon>delete</mat-icon>
+  </button>
+  <button mat-icon-button color="primary" aria-label="Actualizar"  (click)="updateEntity()">
+    <mat-icon>edit</mat-icon>
+  </button>
+</div>
+
+</div>

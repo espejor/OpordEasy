@@ -11,10 +11,10 @@ import Stroke from "ol/style/Stroke";
 import Style from "ol/style/Style";
 import Text from "ol/style/Text";
 // import { AppInjector } from "../app.module";
-import { PointOptions } from "../models/feature-for-selector";
+import { LineOptions, PointOptions } from "../models/feature-for-selector";
 import { getEntityType } from "./entitiesType";
+import { AreaOptions } from "./entity-area.class";
 import { CircleOptions } from "./entity-circle";
-import { LineOptions } from "./entity-line.class";
 import { MultiPointOptions } from "./entity-multipoint.class";
 import { Entity, EntityOptions, Pattern } from "./entity.class";
 import { EntitySelector } from "./factory-entity-selector";
@@ -77,7 +77,7 @@ export class EntityTask<GeomType extends Geometry = Geometry>{
 
 
 export class TaskOptions extends EntityOptions{
-  options?:PointOptions | LineOptions | MultiPointOptions | CircleOptions
+  options?:PointOptions | LineOptions | MultiPointOptions | CircleOptions |AreaOptions
   name?:string;   //T field
   typeTask?:string; // point, axis, arrow ...
   purpose?:string;  // RFL...

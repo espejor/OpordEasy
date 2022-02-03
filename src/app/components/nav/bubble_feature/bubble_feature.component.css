@@ -1,0 +1,18 @@
+.frame{
+    position: absolute;
+    bottom:100px;
+    right:50px;
+    width:100px;
+    /* height:400px; */
+    z-index: 200;
+    background-color: white;
+    display: table;
+    border-width:1px;
+    border-style: solid;
+    border-color:black;
+    color: black;
+  }
+
+  .coordinate{
+    text-align: end;
+  }

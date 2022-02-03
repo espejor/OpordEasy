@@ -24,6 +24,7 @@ export class TimelineComponent implements OnInit {
 
   drop(event: CdkDragDrop<Entity[]>) {
     moveItemInArray(this.timeline.entities, event.previousIndex, event.currentIndex);
+    this.operationsService.reorderEntitiesInTimeline()
   }
 
 }

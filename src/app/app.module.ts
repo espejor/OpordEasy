@@ -52,6 +52,8 @@ import { AreaSelectorComponent } from './components/area-selector/area-selector.
 import { AreaSelectorDialogLoaderComponent } from './components/area-selector-dialog-loader/area-selector-dialog-loader.component';
 import { TaskSelectorComponent } from './components/task-selector/task-selector.component';
 import { TaskSelectorDialogLoaderComponent } from './components/task-selector-dialog-loader/task-selector-dialog-loader.component';
+import { Bubble_featureComponent } from './components/nav/bubble_feature/bubble_feature.component';
+import { OpordComponent } from './components/opord/opord.component';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -87,7 +89,9 @@ export function HttpLoaderFactory(http:HttpClient){
     AreaSelectorDialogLoaderComponent,
     AreaSelectorComponent,
     TaskSelectorDialogLoaderComponent,
-    TaskSelectorComponent
+    TaskSelectorComponent,
+    Bubble_featureComponent,
+    OpordComponent
   ],
   imports: [
     BrowserModule,

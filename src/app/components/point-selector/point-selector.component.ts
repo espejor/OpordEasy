@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 import { entityType } from 'src/app/entities/entitiesType';
 import { Entity, EntityOptions } from 'src/app/entities/entity.class';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
-import { FeatureForDeploing } from 'src/app/models/feature-for-selector';
+import { FeatureForDeploing, PointOptions, ElementType } from 'src/app/models/feature-for-selector';
 import { EntityLocated } from 'src/app/models/operation';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
@@ -29,6 +29,10 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
   
   public setFeaturesToSelect ;
   public listOfOptions = [];
+  fieldsToShow: PointOptions["extraData"]["textFields"];
+  listsToShow: PointOptions["extraData"]["lists"];
+  numsToShow: PointOptions["extraData"]["numbers"];
+  typeEntity:string
 
   constructor(public svgListOfIcons: SvgGeneralIconsListService, 
     private  entitiesDeployed:EntitiesDeployedService,
@@ -67,6 +71,17 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
   }
 
   loadExtraData(feature:KeyValue<string,any>){
+    if(feature.value.codeForDeploing.extraData){
+      this.fieldsToShow = feature.value.codeForDeploing.extraData.textFields
+      this.listsToShow = feature.value.codeForDeploing.extraData.lists
+      this.numsToShow = feature.value.codeForDeploing.extraData.numbers
+    }else{
+      this.fieldsToShow = undefined
+      this.listsToShow = undefined
+      this.numsToShow = undefined
+    }
+
+
     this.resetAspectSelectors();
     const mapComponent = this.entitiesDeployed.getMapComponent();
     // const coordinates:Coordinate = []; 
@@ -74,11 +89,26 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
     feature.value.classCSS = feature.value.classCSS == "selectorSelected"? "unSelected" : "selectorSelected";
     // this.pointOptions = feature.value
     const point = EntitySelector.getFactory(entityType.point).createEntity(feature.value.codeForDeploing,coordinates);
+    point.entityOptions.typeEntity = feature.value.selectorText
     
     this.entitySelectorService.entitySelected = point
 
   }
-  
+
+
+  updateFeatureWithTextField(event,option){
+    (<PointOptions>this.entitySelectorService.entitySelected.entityOptions).extraData.textFields[option.key].value = event.target.value
+  }
+
+  updateFeatureWithList(event,option){
+    (<PointOptions>this.entitySelectorService.entitySelected.entityOptions).extraData.lists[option.key].value = event.value    
+  }
+
+  updateFeatureWithTextNumber(event,option){
+    (<PointOptions>this.entitySelectorService.entitySelected.entityOptions).extraData.numbers[option.key].value = event.target.value
+  }
+
+
   savePoint(point:Entity<Geometry>):Observable<Object>{    // point.favorite = this.favorite;
     // La guardamos en la BD
     return this.httpEntitiesService.addEntity(point);

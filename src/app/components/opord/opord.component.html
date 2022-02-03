@@ -1,0 +1,188 @@
+
+
+
+<div class="frame">
+
+    <div class="buttons">
+        <button mat-icon-button color="warn" aria-label="Eliminar" (click)="createPDF2()">
+            <mat-icon>picture_as_pdf</mat-icon>
+          </button>
+          <!-- <button mat-icon-button color="primary" aria-label="Actualizar"  (click)="updateEntity()">
+            <mat-icon>edit</mat-icon>
+          </button> -->
+    </div>
+    <div id="pdfDocument" #pdfDocument>
+        <div class="top-references">
+        </div>
+
+        <div class="title grid-container">
+            <div class="grid-item">
+
+            </div>
+            <div  class="grid-item">
+                <h2>ORDEN DE OPERACIONES</h2>
+                <div class="input-field">
+                    <mat-form-field >
+                        <input matInput  type="number" name="order" #name = 'ngModel' 
+                        [(ngModel)] = "operationsService.selectedOperation.order"
+                        placeholder="Número">
+                    </mat-form-field>
+                </div>
+                <div class="input-field">
+                    <mat-form-field >
+                        <input matInput  type="text" name="name" #name = 'ngModel' 
+                        [(ngModel)] = "operationsService.selectedOperation.name"
+                        placeholder="Nombre de la Operación">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="grid-item">
+                <div class="references">
+                    Referencias
+                </div>
+                <div class="huse">
+                    Huso Horario
+                </div>
+                <div class="org-operativa">
+                    Organización operativa
+                </div>
+            </div>
+        </div>
+
+
+        <div class="situation">
+            <h3 class="title1">1.- SITUACIÓN</h3>
+            <div class="input-field " >
+                <mat-form-field class="situation-main">
+                    <textarea class="content" cdkTextareaAutosize matInput placeholder="Explicar brevemente la situación actual..."
+                    [(ngModel)] = "operationsService.selectedOperation.situation"
+                    name="situation"
+                    (mouseover)="situation.state = true"
+                    (mouseout)="situation.state = false"></textarea>
+                </mat-form-field>
+                <div *ngIf="situation.state" class="bubble">
+                    {{situation.text}}
+                </div>
+            </div>
+            <div>
+                <h4 class="title2">a. Enemigo</h4>
+                <div class="input-field " >
+                    <mat-form-field class="situation-main">
+                        <textarea class="content" cdkTextareaAutosize matInput placeholder="Hace referencia a la organización de las fuerzas enemigas..."
+                        [(ngModel)] = "operationsService.selectedOperation.enemy"
+                        name="enemy"
+                        (mouseover)="enemy.state = true"
+                        (mouseout)="enemy.state = false"></textarea>
+                    </mat-form-field>
+                    <div *ngIf="enemy.state" class="bubble">
+                        {{enemy.text}}
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="title2">b. Fuerzas propias</h4>
+                <div class="input-field" >
+                    <mat-form-field class="situation-main">
+                        <textarea class="content" cdkTextareaAutosize matInput placeholder="Contiene el propósito del JU de dos escalones por encima del propio..."
+                            [(ngModel)] = "operationsService.selectedOperation.ourForces"
+                            name="ourForces"
+                            (mouseover)="ourForces.state = true"
+                            (mouseout)="ourForces.state = false"></textarea>
+                    </mat-form-field>
+                    <div *ngIf="ourForces.state" class="bubble">
+                        {{ourForces.text}}
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="title2">c. Agregaciones y segregaciones</h4>
+                <div class="input-field">
+                    <mat-form-field class="situation-main">
+                        <textarea class="content" cdkTextareaAutosize matInput placeholder="No debe ser una repetición de lo ya indicado en el apartado o anexo organización operativa..."
+                        [(ngModel)] = "operationsService.selectedOperation.aggregationsAndSegregations"
+                        name="aggregationsAndSegregations"
+                        (mouseover)="aggregationsAndSegregations.state = true"
+                        (mouseout)="aggregationsAndSegregations.state = false"></textarea>
+                    </mat-form-field>
+                    <div *ngIf="aggregationsAndSegregations.state" class="bubble">
+                        {{aggregationsAndSegregations.text}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mision">
+            <h3 class="title1">2.- MISIÓN</h3>
+            <div class="input-field " >
+                <mat-form-field class="situation-main">
+                    <textarea class="content" cdkTextareaAutosize matInput placeholder="En este apartado se expone la misión asignada a la unidad propia..."
+                    [(ngModel)] = "operationsService.selectedOperation.mission"
+                    name="mission"
+                    (mouseover)="mission.state = true"
+                    (mouseout)="mission.state = false"></textarea>
+                </mat-form-field>
+                <div *ngIf="mission.state" class="bubble">
+                    {{mission.text}}
+                </div>
+            </div>
+        </div>
+        <div class="execution">
+            <h3 class="title1">3.- EJECUCIÓN</h3>
+            <div>
+                <h4 class="title2">PROPÓSITO</h4>
+            </div>
+            <div>
+                <h4 class="title2 letter-paragraph">a. Concepto de la operación</h4>
+            </div>
+            <div>
+                <h4 class="title2 letter-paragraph combat">b. Misiones y cometidos a las unidades de combate</h4>
+                <div *ngFor="let phase of operationsService.selectedOperation.phases">
+                    <h4 class="title2 phase" #phase.name>Fase: {{phase.name}}</h4> 
+                    <div class="content" *ngFor="let timeline of phase.timelines">
+                        <div *ngIf="asUnit(timeline.entities[0]).getCombatFunction() == 'combat'">
+                            <span class="timeline" *ngFor="let entity of timeline.entities;  let i = index">
+                                {{entity.getVerbose()}}
+                                <span *ngIf="i == 0">
+                                    :
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="title2 letter-paragraph support">c. Misiones y cometidos a las unidades de apoyo al combate</h4>
+                <div *ngFor="let phase of operationsService.selectedOperation.phases">
+                    <h4 class="title2 phase">Fase: {{phase.name}}</h4> 
+                    <div class="content" *ngFor="let timeline of phase.timelines">
+                        <div *ngIf="asUnit(timeline.entities[0]).getCombatFunction() == 'support'">
+                            <span class="timeline" *ngFor="let entity of timeline.entities;  let i = index">
+                                {{entity.getVerbose()}}
+                                <span *ngIf="i == 0">
+                                    :
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                <h4 class="title2 letter-paragraph">d. Instrucciones de coordinación</h4>
+                    <!-- </div>
+                </div> -->
+            </div>
+        </div>
+        <div>
+            <h3 class="title1">4.- APOYO LOGÍSTICO</h3>
+            <div>
+                <h4 class="title2 letter-paragraph">a. Concepto del apoyo logístico</h4>
+            </div>
+
+        </div>
+        <div>
+            <h3 class="title1">5.- MANDO Y TRANSMISIONES</h3>
+            <div>
+                <h4 class="title2 letter-paragraph">a. Mando</h4>
+            </div>
+            <div>
+                <h4 class="title2 letter-paragraph">b. Transmisiones</h4>
+            </div>
+        </div>
+    </div>
+</div>

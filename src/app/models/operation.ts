@@ -6,9 +6,17 @@ import { SvgIconsListService } from "../services/svg-icons-list.service";
 export class Operation {
     _id: string;
     name: string;
+    order:number
     updated: number;
     comboEntities: Entity[];
     phases: Phase[]
+    situation:string
+    enemy:string
+    ourForces:string
+    aggregationsAndSegregations:string
+    mission:string
+
+
     // user: string// _id del User
 
     constructor(private svgService?:SvgIconsListService, jsonRecovered?){
@@ -127,6 +135,14 @@ export class Timeline {
             this.entities.push(recoverEntity(this.svgService,jsonEntities[i])); 
         }
     }
+
+    deleteEntity(entity: Entity<import("ol/geom").Geometry>) {
+        this.entities =
+        this.entities.filter(item => {
+          return item._id != entity._id
+        })
+    }
+
     isEmpty():boolean {
       return this.entities.length == 0;
     } 
@@ -139,7 +155,7 @@ export class EntityLocated{
     constructor(entity?:Entity,coordinate?:Coordinate | Coordinate[]){
         if (entity){
             this.entity = entity;
-            this.location = entity.getCoordinates();
+            // this.location = entity.getCoordinates();
         }
         if (coordinate)
             this.location = coordinate;

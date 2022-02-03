@@ -2,9 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Entity } from '../entities/entity.class';
 import { environment } from '../../environments/environment';
-import { Globals } from '../utilities/globals';
-// import Geometry from 'ol/geom/Geometry';
-// import { Entity } from '../entities/entity.class';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +31,7 @@ export class HTTPEntitiesService {
   }
 
   updateEntity(entity: Entity){
-    return this.http.put(this.URL_API + `/${entity._id}`,entity);
+    return this.http.put(this.URL_API + `/${entity._id}`,entity)
   }
 
   updateCoordinates(entity: Entity) {
@@ -44,7 +41,9 @@ export class HTTPEntitiesService {
 
 
   deleteEntity(_id: string){
-    return this.http.delete(this.URL_API + `/${_id}`);
+    return this.http.delete(this.URL_API + `/${_id}`).subscribe((data) => {
+      console.log(data);
+    })
   }
 
   getEntity(_id: string){

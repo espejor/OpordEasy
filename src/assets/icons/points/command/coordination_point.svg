@@ -1,5 +1,5 @@
 <svg width="80" height="80" version='1.1' xmlns="http://www.w3.org/2000/svg">
-  <path fill="transparent" stroke="black" stroke-width="2" 
+  <path fill="#E8E8CE" stroke="black" stroke-width="2" 
   d="
     m40,15 a20,20 0 1 0 1,0z
     m-13,6l28,28m-28,0l28,-28"/>

@@ -1,4 +1,4 @@
-import { Component, OnInit,AfterViewInit,Input,ElementRef, ViewChild, Renderer2 } from '@angular/core';
+import { Component, OnInit,AfterViewInit,Input,ElementRef, ViewChild } from '@angular/core';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
@@ -7,7 +7,6 @@ import XYZ from 'ol/source/XYZ';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import {getTopLeft} from 'ol/extent'
 import * as Proj from 'ol/proj';
-// import {register} from 'ol/proj/proj4';
 import * as proj4x from 'proj4';
 
 import { Coordinate, toStringHDMS } from 'ol/coordinate';
@@ -21,44 +20,20 @@ import {get as getProjection} from 'ol/proj';
 import {getWidth} from 'ol/extent';
 import { Collection, Feature, MapBrowserEvent, MapEvent } from 'ol';
 import Style from 'ol/style/Style';
-import Icon from 'ol/style/Icon';
 import VectorSource from 'ol/source/Vector';
-import IconAnchorUnits from 'ol/style/IconAnchorUnits';
-import Circle from 'ol/style/Circle';
-import Fill from 'ol/style/Fill';
-import Stroke from 'ol/style/Stroke';
 import Modify, { ModifyEvent } from 'ol/interaction/Modify';
 import Snap, { Options } from 'ol/interaction/Snap';
 import Translate, { TranslateEvent } from 'ol/interaction/Translate';
 import Geometry from 'ol/geom/Geometry';
-// import { EntityPoint } from 'src/app/entities/entity-point.class';
-// import LineString from 'ol/geom/LineString';
-// import { EntityArrow } from 'src/app/entities/entity-arrow.class';
-import RegularShape from 'ol/style/RegularShape';
-// import { EntityAxis } from 'src/app/entities/entity-axis.old.class';
 import { Entity } from 'src/app/entities/entity.class';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
-// import { GraticuleUTM } from 'src/app/utilities/graticule';
 import { UtmService } from 'src/app/services/utm.service';
-// import { FloatingMenuComponent } from '../floating-menu/floating-menu.component';
 import { OperationsService } from 'src/app/services/operations.service';
-// import { OperationsComponent } from '../operations/operations.component';
-// import { Pixel } from 'ol/pixel';
-// import Point from 'ol/geom/Point';
-// import { EntityLine } from 'src/app/entities/entity-line.class';
-import { distanceInPixelBetweenCoordinates } from 'src/app/utilities/coordinates-calc';
-// import Draw, { DrawEvent } from 'ol/interaction/Draw';
-// import GeometryType from 'ol/geom/GeometryType';
-// import { getCoordsForArc, getCoordsForArcFrom2Points } from 'src/app/utilities/geometry-calc';
 import { Globals } from 'src/app/utilities/globals';
-import Graticule from "ol-ext/control/Graticule"
 import { GraticuleUTM } from 'src/app/utilities/graticule';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
-import { features } from 'process';
 import { EntityMultiPoint } from 'src/app/entities/entity-multipoint.class';
-import { Condition } from 'selenium-webdriver';
-import { never } from 'ol/events/condition';
-import GeometryType from 'ol/geom/GeometryType';
+import { Bubble_featureComponent } from '../bubble_feature/bubble_feature.component';
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -79,27 +54,18 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   @Input() zoom: number = 13;
   @Input() width: string | number = DEFAULT_WIDTH;
   @Input() height: string | number = DEFAULT_HEIGHT;
-  // @ViewChild(FloatingMenuComponent)  mainMenu: FloatingMenuComponent;
-  // @ViewChild("ghostElement") ghostFeature: ElementRef
-  // @ViewChild(OperationsComponent) operationComponent: OperationsComponent;
 
+  @ViewChild(Bubble_featureComponent) bubbleFeature: Bubble_featureComponent;
 
   public map: Map;
   private mapEl: HTMLElement;
 
+  bubbleFormOpened:boolean
 
   resolutions = [];
   matrixIds = [];
   proj4326 = getProjection('EPSG:4326');
   maxResolution = getWidth(this.proj4326.getExtent()) / 512;
-
-
-  // ----------- Entidades de prueba
-  // entityCircle: EntityPoint;
-  // entityTriangle: EntityPoint;
-  // entityFriendly: EntityPoint;
-  // entityLine: EntityArrow;
-  // entityAxis: EntityAxis;
   
   vertix: Style;
   triangle: Style;
@@ -121,7 +87,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   isMovingCopyFeature: boolean;
   tileGrid:WMTSTileGrid;
   self: this;
-  // svgService: SVGIconsListService;
 
 
   drag:Modify = new Modify({
@@ -133,14 +98,16 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   })
 
 
-  snap:CustomSnap = new CustomSnap({
-    source: this.shapesVectorLayer,
-    // features: this.dragFeatures,
-    pixelTolerance:40
-  })
+  // snap:CustomSnap = new CustomSnap({
+  //   source: this.shapesVectorLayer,
+  //   // features: this.dragFeatures,
+  //   pixelTolerance:40
+  // })
+
   callTimes: number;
   dragSource: VectorSource<Geometry>;
   modify: Modify;
+  entityToShowInfo: Entity<Geometry>;
 
 
   //-------------------------
@@ -160,6 +127,9 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   //   html: 'Teselas de PNOA cedido por © Instituto Geográfico Nacional de España'
   // });
 
+  bubbleClosed(event){
+    this.bubbleFormOpened = false
+  }
 
   ngAfterViewInit(): void {
     // this.setSize;
@@ -281,122 +251,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       matrixIds: this.matrixIds,
     });
 
-
-    // this.entityTriangle = new EntityPoint(this,{
-    //   geometry: new Point(Proj.fromLonLat([this.lon, this.lat])),
-      
-    //   name: 'Base General menacho',
-    //   population: 4000,
-    //   rainfall: 500
-    // })
-
-
-    // this.entityCircle = new EntityPoint(this,{
-    //   geometry: new Point(Proj.fromLonLat([this.lon, this.lat])),
-      
-    //   // name: 'Base General menacho',
-    //   // population: 4000,
-    //   // rainfall: 500
-    // })
-
-
-    // this.entityFriendly = new EntityPoint(this,{
-    //   geometry: new Point(Proj.fromLonLat([this.lon, this.lat])),
-      
-    //   // name: 'Base General menacho',
-    //   // population: 4000,
-    //   // rainfall: 500
-    // })
-
-    //  const line = new Feature({
-    //   geometry: new LineString(coordinates)
-    // })
-
-    // const point = new Feature(new Point(coordinatesShape[0]))
-
-    // this.drag = new Modify({
-    //   features: new Collection([this.entityTriangle,this.entityLine]),
-    //   style: null
-    // })
-    
-    // this.dragFeatures.push(this.entityCircle);
-    // this.dragFeatures.push(this.entityTriangle);
-    // this.dragFeatures.push(this.entityFriendly);
-    // this.dragFeatures.push(line);
-    
-    // this.drag = new Modify({
-    //   features:this.dragFeatures
-    // });
-
-
-    // this.lineStyle = new Style({
-    //   image: new LineString
-    // })
-
-    this.vertix = new Style({
-      image: new Circle({
-        radius: 7,
-        fill: new Fill({color: 'red'}),
-        stroke: new Stroke({
-          color: 'black', width: 2
-        })
-      })
-    })
-
-    this.circle = new Style({
-      image: new Icon({
-        anchor: [0.5,0.5],
-        anchorXUnits: IconAnchorUnits.FRACTION,
-        anchorYUnits: IconAnchorUnits.FRACTION,
-        opacity: 1,
-        scale: 0.5,
-        // size: [24,24],
-        color: 'white',
-        src: 'assets/icons/circle24.svg'
-      })
-    })
-
-    const svg = encodeURIComponent("<svg width='80' height='60' version='1.1' xmlns='http://www.w3.org/2000/svg'> <path d='m0,0h80v60h-80z' stroke-width = '2' stroke = 'black' fill = '#88E0FF' /></svg>");
-
-    this.friendly = new Style({
-      image: new Icon({
-        anchor: [0.5,0.5],
-        anchorXUnits: IconAnchorUnits.FRACTION,
-        anchorYUnits: IconAnchorUnits.FRACTION,
-        opacity: 1,
-        scale: 0.5,
-        // size: [24,24],
-        // color: 'black',
-        src: "data:image/svg+xml;charset=utf-8," + svg
-      })
-    })
-
-
-    this.triangle = new Style({
-      image: new RegularShape({
-        fill: new Fill({color: 'red'}),
-        stroke: new Stroke({color: 'black', width: 2}),
-        points: 3,
-        radius: 10,
-        rotation: 0,
-        angle: 0,
-      })
-    })
-
-
-    this.fromPNG = new Style({
-      image: new Icon({
-        anchor: [0.5,0.5],
-        anchorXUnits: IconAnchorUnits.FRACTION,
-        anchorYUnits: IconAnchorUnits.FRACTION,
-        opacity: 1,
-        // size: [24,24],
-        color: 'blue',
-        src: 'assets/icons/up-arrow.png'
-      })
-    })
-
-
     var entitiesLayer = new VectorLayer({
       source: this.shapesVectorLayer,
       renderOrder:(a:Entity,b:Entity) => {
@@ -495,8 +349,15 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       })
     })
 
+  // Select  interaction
+  // var select = new Select({
+  //   hitTolerance: 5,
+  //   multi: true,
+  //   condition: singleClick
+  // });
+  // this.map.addInteraction(select);
 
-    this.map.addInteraction(this.snap);
+    // this.map.addInteraction(this.snap);
 
 
     this.dragSource = new VectorSource();
@@ -554,7 +415,6 @@ this.map.on("pointermove", function (evt:MapBrowserEvent) {
   }else{
     var entity:Entity;
     var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
-      // feature.onMouseOver(evt);
       entity = feature;
       return true;
     }); 
@@ -567,10 +427,6 @@ this.map.on("pointermove", function (evt:MapBrowserEvent) {
       }
     } else {
       this.getTargetElement().style.cursor = '';
-      // self.onMouseExit(evt);
-      // self.shapesVectorLayer.getFeatures().forEach((feature) => {
-      //   (<Entity>feature).onMouseExit(evt);
-      // })        
     }
   }
 }); // Fin pointermove
@@ -586,13 +442,6 @@ this.map.on("pointermove", function (evt:MapBrowserEvent) {
 
     this.map.addOverlay(this.featureDragging);
 
-    // this.map.on("pointermove",(evt:MapBrowserEvent) => {
-      
-    //   if (this.isMovingCopyFeature){
-    //     featureDragging.setPosition(evt.coordinate);
-    //   }
-    // })
-
     this.map.addEventListener("mousedown",(ev:Event):boolean => {
       return false
     });
@@ -602,43 +451,50 @@ this.map.on("pointermove", function (evt:MapBrowserEvent) {
       console.log("PINCHANDOOOOOOOOOOOOOOOOOOO");
     });
 
-    // this.map.addEventListener("pointermove",(ev:Event):boolean => {
-    //   return false
-    // });
 
-    this.map.on("singleclick", (evt:MapBrowserEvent) =>{
+    this.map.getViewport().addEventListener('contextmenu', (e) =>  {
+      e.preventDefault();
+      
+      var hit = this.map.forEachFeatureAtPixel(this.map.getEventPixel(e), (feature:Entity) => {
+        if(feature._id){
+          this.entityToShowInfo = feature;
+          return true;
+        }
+        return false
+      },{hitTolerance: 10}); 
+      
+      if (hit){
+        this.bubbleFormOpened=true
+      }else{
+        this.bubbleFormOpened=false
+      }
+    })
+
+
+    this.map.on("singleclick",  (evt:MapBrowserEvent) =>{
+      this.bubbleFormOpened=false
       var entity:Entity;
-      var hit = this.map.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
-        // feature.onMouseOver(evt);
-        entity = feature;
-        return true;
-      }); 
+      var hit = this.map.forEachFeatureAtPixel(evt.pixel, (feature:Entity, layer) => {
+        if(feature._id){
+          entity = feature;
+          return true
+        }
+        return false; 
+      },{hitTolerance:10}); 
       if (hit) {
-        // if(!this.isMovingCopyFeature){
-          // this.isMovingCopyFeature = true;
           if(this.operationsService.activatedOperationsFormOpened){
-            // var coordinate = evt.pixel;
-            // var hdms = toStringHDMS(Proj.toLonLat(coordinate));
-            // console.log("Pinchando en :" + hdms + entity)
-            // var svgService = this.svgService;
-            // this.ghostElement.update(evt.pixel,entity)
             this.operationsService.addEntityToTimeline(entity);
-            // this.ghostFeature.nativeElement.left = evt.pixel[0];
-            // this.ghostFeature.nativeElement.top = evt.pixel[1];
-            // this.featureDragging.setPosition(coordinate);
-            evt.stopPropagation()
+            return false
           }
-        // }else{
-          // this.isMovingCopyFeature = false;
-        // }
-        // return true;
       } else {
         this.featureDragging.setPosition(undefined);
-          this.isMovingCopyFeature = false;
+        this.isMovingCopyFeature = false;
+        this.operationsService.activatedOperationsFormOpened = false
+        this.bubbleFormOpened=false
         // closer.blur();
-        // return false;    
+        return true;    
       }
-      
+      return true
     })
 
     this.map.on("dblclick",function (evt:MapBrowserEvent){
@@ -651,12 +507,6 @@ this.map.on("pointermove", function (evt:MapBrowserEvent) {
         // return true;
     })
   } // NgOnInit
-
-
-
-  // on(type: 'mousedown', listener: (evt: BaseEvent) => void): void{
-
-  // }
 
 } // class OlMapComponent
 

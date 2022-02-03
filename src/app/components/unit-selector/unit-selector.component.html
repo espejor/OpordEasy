@@ -40,6 +40,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- AQUÍ LOS DATOS EXTRA -->
                         <ng-template #textOptions>
                             <div class="features-container">
                                 <form>
@@ -53,10 +54,16 @@
                                           </mat-radio-button>
                                       </mat-radio-group>
                                     
-                                    <div  *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
+                                    <!-- <div  *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
                                         <mat-form-field  >
                                             <mat-label>{{feature.value.selectorText}}</mat-label>
                                             <input matInput #plus placeholder={{feature.value.value}} value="" (change) = "updateFeatureWithText($event,feature)">
+                                        </mat-form-field>
+                                    </div> -->                                    
+                                    <div  *ngFor = "let feature of svgListOfIcons.features.extraData.fields.textFields | keyvalue:unsorted" >
+                                        <mat-form-field  >
+                                            <mat-label>{{feature.value["selectorText"]}}</mat-label>
+                                            <input matInput placeholder="{{feature.value['placeHolder']}}" value="" (change) = "updateFeatureWithText($event,feature)">
                                         </mat-form-field>
                                     </div>
                                 </form>

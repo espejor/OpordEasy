@@ -44,8 +44,8 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   // public rec = "rec";
   private unitOptions: UnitOptions = new UnitOptions();
   private path:string = "assets/icons/units"
-  public listOfOptions = {frame:"Marco",main:"Sector Principal",level:"Escalón", section1:"Sector superior",
-    section2:"Sector inferior",extraData:"Campos adicionales"};
+  public listOfOptions = {frame:"Marco",main:"Sector Principal",level:"Escalón", sector1:"Sector superior",
+    sector2:"Sector inferior",extraData:"Campos adicionales"};
   public setFeaturesToSelect = "frame";
   public unitResultIconName = "unit_result"
 
@@ -163,7 +163,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   updateAspectSelectors(){
     this.resetAspectSelectors();
     for (let featuresLabel in this.unitOptions){
-      if (featuresLabel != "attachable" && featuresLabel != "extraData"){
+      if (featuresLabel != "attachable" && featuresLabel != "extraData" && featuresLabel != "extraFeature" ){
         if (this.unitOptions[featuresLabel] != null){ // Inicializado
           if (Array.isArray(this.unitOptions[featuresLabel])){ // es un array
             if(this.unitOptions[featuresLabel].length > 0){
@@ -225,12 +225,14 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
       el.checked = true;
     }
     const txt:string = this.reinforcedOptionSelected == "Reforzada"? "(+)":this.reinforcedOptionSelected == "Reducida"?"(-)":this.reinforcedOptionSelected == "Reforzada Y Reducida"?"(±)":" "
-    const feature = {key:"reinforced",value:{codeForDeploing:{x:165,y:70,visible:true,text:txt,fontSize:"18",indent:"start"}}}
+    const feature = {key:"reinforced",value:{x:165,y:70,visible:true,text:txt,fontSize:"18",indent:"start",offset:[20,-15]}}
     this.updateFeatureWithText(event,feature,txt)
   }
 
   addCG(event){
     this.removeChildElement(this.svg.nativeElement,"cgSymbol")
+    this.unitOptions.extraFeature = this.unitOptions.extraFeature.filter(f => f.key != "foSymbol")
+
     if(event){
       const cg = this.renderer.createElement("path", 'svg');
       const x = 80
@@ -246,15 +248,17 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
       const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m0,60 v60"}};
       const data = {key:"cgSymbol",value:{codeForDeploing: obj}}
 
-      const exist = this.unitOptions.extraData.some(f => f.key == "cgSymbol")
-      if(exist)
-        this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != "cgSymbol")
-      this.unitOptions.extraData.push(data) 
+      // const exist = this.unitOptions.extraData.some(f => f.key == "cgSymbol")
+      // if(exist)
+      //   this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != "cgSymbol")
+      this.unitOptions.extraFeature.push(data) 
     }
   }
 
   addFO(event){
     this.removeChildElement(this.svg.nativeElement,"foSymbol")
+    this.unitOptions.extraFeature = this.unitOptions.extraFeature.filter(f => f.key != "foSymbol")
+
     if(event){
       const fo = this.renderer.createElement("path", 'svg');
       const x = 95
@@ -269,12 +273,8 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
 
       const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m15,0 v-20h50v20"}};
       const data = {key:"foSymbol",value:{codeForDeploing: obj}}
-
-      const exist = this.unitOptions.extraData.some(f => f.key == "foSymbol")
-      if(exist)
-        this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != "foSymbol")
-      this.unitOptions.extraData.push(data) 
-
+      
+      this.unitOptions.extraFeature.push(data) 
     }
   }
 
@@ -283,22 +283,48 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     const text = this.renderer.createElement("text", 'svg');
     const textValue = value?value:(event.target as HTMLInputElement).value
     const txt = this.renderer.createText(textValue)
-    const fontSize = feature.value.codeForDeploing.fontSize?feature.value.codeForDeploing.fontSize:"12"
-    const indent = feature.value.codeForDeploing.indent?feature.value.codeForDeploing.indent:"end"
-    this.renderer.setAttribute(text, "x", feature.value.codeForDeploing.x);
-    this.renderer.setAttribute(text, "y", feature.value.codeForDeploing.y);
+    const fontSize = feature.value.fontSize?feature.value.fontSize:"12"
+    const indent = feature.value.indent?feature.value.indent:"end"
+    this.renderer.setAttribute(text, "x", "" + feature.value.x);
+    this.renderer.setAttribute(text, "y", "" + feature.value.y);
     this.renderer.setAttribute(text, "id", feature.key);
     this.renderer.setAttribute(text, "style", "font: " + fontSize + "px sans-serif; text-anchor: " + indent);
     this.renderer.appendChild(this.svg.nativeElement, text)
     this.renderer.appendChild(text, txt)
 
-    const obj = {visible:feature.value.codeForDeploing.visible, type: "text", x: feature.value.codeForDeploing.x,y: feature.value.codeForDeploing.y,text:txt.data,indent:feature.value.codeForDeploing.indent}
-    const data = {key:feature.key,value:{codeForDeploing: obj}}
+    // const obj = {visible:feature.value.visible, type: "text", x: feature.value.offset[0],y: feature.value.offset[1],text:txt.data,indent:feature.value.indent}
+
     // this.unitOptions.extraData[feature.key] = obj
-    const exist = this.unitOptions.extraData.some(f => f.key == feature.key)
-    if(exist)
-      this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != feature.key)
-    this.unitOptions.extraData.push(data) 
+    // var exist:boolean
+    // if(this.unitOptions.extraData)
+    //   exist = this.unitOptions.extraData.textFields[feature.key] 
+    // if(exist)
+    //   this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != feature.key)
+    const field =  feature.key == "reinforced"? "check": "textFields"
+    if (field == "textFields"){
+      if(this.unitOptions.extraData)
+        this.svgListOfIcons.features.extraData.fields["check"] = this.unitOptions.extraData.fields.check
+      this.svgListOfIcons.features.extraData.fields[field][feature.key].value = textValue
+      this.unitOptions.extraData = this.svgListOfIcons.features.extraData
+    }else{
+      feature.value.value = textValue
+      this.insertInUnitOptions(feature,field)
+    }
+    // if(!this.unitOptions["extraData"]){
+    //   const obj = {[feature.key]:feature.value}
+    //   this.unitOptions["extraData"] = {textFields:obj}
+    // }else
+    //   this.unitOptions["extraData"].textFields[feature.key] = feature.value
+  }
+
+  insertInUnitOptions(feature: any, field: string) {
+    if(!this.unitOptions["extraData"]){
+      const obj = {[feature.key]:feature.value}
+      this.unitOptions["extraData"] = {["fields"]:{[field]:obj}}
+    }else if(!this.unitOptions.extraData.fields[field])
+        this.unitOptions["extraData"].fields[field] = {[feature.key]:feature.value}
+      else
+        this.unitOptions["extraData"].fields[field][feature.key] = feature.value
   }
 
   removeChildElement(parent:any,childId:string){
@@ -337,20 +363,22 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
 
   
   public updateIconTemplate(feature: FeatureForDeploing){
-    const type = feature.value.codeForDeploing.type;
-    const element = this.renderer.createElement(type, 'svg');
+    if(feature.value){
+      const type = feature.value.codeForDeploing.type;
+      const element = this.renderer.createElement(type, 'svg');
 
-    if (type == "path"){
-      const draw = "m" + feature.value.codeForDeploing.x + "," + feature.value.codeForDeploing.y + (feature.value.codeForDeploing.d[this.getD(feature)]);
-      this.renderer.setAttribute(element, "d", draw);
-      this.renderer.setAttribute(element, "stroke-width", feature.value.codeForDeploing.strokeWidth)
-      this.renderer.setAttribute(element, "stroke", feature.value.codeForDeploing.stroke)
-      this.renderer.setAttribute(element, "fill", feature.value.codeForDeploing.fill)
-    }else if (type == "text"){
+      if (type == "path"){
+        const draw = "m" + feature.value.codeForDeploing.x + "," + feature.value.codeForDeploing.y + (feature.value.codeForDeploing.d[this.getD(feature)]);
+        this.renderer.setAttribute(element, "d", draw);
+        this.renderer.setAttribute(element, "stroke-width", feature.value.codeForDeploing.strokeWidth)
+        this.renderer.setAttribute(element, "stroke", feature.value.codeForDeploing.stroke)
+        this.renderer.setAttribute(element, "fill", feature.value.codeForDeploing.fill)
+      }else if (type == "text"){
 
-    }
+      }
 
-    this.renderer.appendChild(this.svg.nativeElement, element)
+      this.renderer.appendChild(this.svg.nativeElement, element)
+    }  
   }  
 
   getD(type:FeatureForDeploing):string{

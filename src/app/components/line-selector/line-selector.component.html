@@ -26,6 +26,27 @@
         </mat-card>  
         <!-- OPCIONES PARA CADA Línea -->
         <mat-card>
+            <div   *ngFor = "let list of listsToShow | keyvalue:unsorted">
+                <mat-form-field>
+                    <mat-select placeholder={{list.value.placeHolder}} (selectionChange) = "updateFeatureWithList($event,list)">
+                      <mat-option *ngFor="let option of svgListOfIcons.getList(list.value.list)" [value]="option.value">
+                        <mat-icon svgIcon="{{option.icon}}" *ngIf= "option.icon" ></mat-icon> {{option.text}}
+                      </mat-option>
+                    </mat-select>                
+                </mat-form-field>
+            </div>
+            <div   *ngFor = "let number of numsToShow | keyvalue:unsorted">
+                <mat-form-field>
+                    <mat-label>{{number.value.selectorText}}</mat-label>
+                    <input type= "number" matInput #plus placeholder={{number.value.placeHolder}} value={{number.value.value}} (change) = "updateFeatureWithTextNumber($event,number)"/>
+                </mat-form-field>
+            </div>
+            <div   *ngFor = "let field of fieldsToShow | keyvalue:unsorted">
+                <mat-form-field>
+                    <mat-label>{{field.value.selectorText}}</mat-label>
+                    <input matInput #plus placeholder={{field.value.placeHolder}} value={{field.value.value}} (change) = "updateFeatureWithTextField($event,field)"/>
+                </mat-form-field>
+            </div>
 
         </mat-card>  
     </section>

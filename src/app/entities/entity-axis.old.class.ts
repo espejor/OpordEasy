@@ -1,23 +1,26 @@
 
-import { Map } from "ol";
 import { Coordinate, distance } from "ol/coordinate";
-import BaseEvent from "ol/events/Event";
 import Geometry from "ol/geom/Geometry";
 import LineString from "ol/geom/LineString";
 import Point from "ol/geom/Point";
 import { TranslateEvent } from "ol/interaction/Translate";
-import { OlMapComponent } from "../components/nav/ol-map/ol-map.component";
-import { getOrientation, getParallelLine, getParallelLineWithEndOffset, getPointToVector, LEFT, middlePoint, RIGHT } from "../utilities/geometry-calc";
+import { LineOptions } from "../models/feature-for-selector";
+import { getOrientation, getParallelLineWithEndOffset, getPointToVector, LEFT, middlePoint, RIGHT } from "../utilities/geometry-calc";
 import { Globals } from "../utilities/globals";
 import { entityType } from "./entitiesType";
 import { EntityBackBone } from "./entity-backbone.class";
 import { EntityComplex } from "./entity-complex.class";
-import { EntityControlPoint } from "./entity-control-point";
-import { EntityLine, LineOptions } from "./entity-line.class";
+import { EntityLine } from "./entity-line.class";
 import { EntityPointOfLabel } from "./entity-point-of-label.class";
 import { EntityPoint } from "./entity-point.class";
 
 export class EntityAxis<GeomType extends Geometry = Geometry>  extends EntityComplex{
+    getHTMLCodeForIconTimeline(): string {
+        throw new Error("Method not implemented.");
+    }
+    getIdent(): string {
+        throw new Error("Method not implemented.");
+    }
     // Entities components
     private backbone:EntityBackBone;
     private rightLine:EntityLine;
@@ -58,14 +61,14 @@ export class EntityAxis<GeomType extends Geometry = Geometry>  extends EntityCom
             geometry: new LineString(getParallelLineWithEndOffset(coordinates,this.WIDTH/2,RIGHT,this.WIDTH))
         })
 
-        this.rightLine.setStyle(this.rightLine.getStyle());
+        this.rightLine.setStyle(this.rightLine.getBasicStyle());
         // mapComponent.shapes.addFeature(this.rightLine);
 
         this.leftLine = new EntityLine(lineOption,{
             geometry: new LineString(getParallelLineWithEndOffset(coordinates,this.WIDTH/2,LEFT,this.WIDTH))
         })
 
-        this.leftLine.setStyle(this.leftLine.getStyle());
+        this.leftLine.setStyle(this.leftLine.getBasicStyle());
         // mapComponent.shapes.addFeature(this.leftLine);
 
         this.tipLine = new EntityLine(lineOption,{
@@ -131,6 +134,9 @@ export class EntityAxis<GeomType extends Geometry = Geometry>  extends EntityCom
     } // constructor
 
 
+    getType(): string {
+        return "Eje de Progresión"
+    }
     private updateShape(newCoordinates:Coordinate[] = this.getCoordinates()):void{
         this.rightLine.setCoordinates(getParallelLineWithEndOffset(newCoordinates,this.WIDTH/2,RIGHT,this.WIDTH));
         this.leftLine.setCoordinates(getParallelLineWithEndOffset(newCoordinates,this.WIDTH/2,LEFT,this.WIDTH));

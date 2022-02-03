@@ -8,9 +8,9 @@ import * as Proj from 'ol/proj';
   providedIn: 'root'
 })
 export class UtmService {
-  proj4 = (proj4x as any).default;
-  converter;
-  zone:number;
+  private proj4 = (proj4x as any).default;
+  private converter;
+  private zone:number;
 
   constructor() { 
     // this.proj4 = (proj4x as any).default;
@@ -18,6 +18,8 @@ export class UtmService {
 
   forward(origin:Coordinate | Extent):Coordinate | Extent{
       if(origin.length == 2){// Coordinate
+        // const originLatLon = Proj.toLonLat(origin);
+        // this.zone = 1 + Math.floor((originLatLon[0] +180)/6);
         return this.translate(origin,"forward")
       }
       if(origin.length == 4){// Extent
@@ -33,7 +35,9 @@ export class UtmService {
 
   inverse(origin:Coordinate | Extent):Coordinate | Extent{
       if(origin.length == 2){// Coordinate
-        return this.translate(origin,"inverse")
+        // const originLatLon = Proj.toLonLat(origin);
+        // this.zone = 1 + Math.floor((originLatLon[0] +180)/6);
+        return this.translate(origin,"inverse")// En formato Lonlat
       }
       if(origin.length == 4){// Extent
         const center = [(origin[0] + origin[2]) / 2,(origin[1] + origin[3]) / 2]

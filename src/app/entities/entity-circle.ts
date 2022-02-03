@@ -70,6 +70,14 @@ export class EntityCircle<GeomType extends Geometry = Geometry> extends EntityLi
     this.setStyle(styleFunction)
   }
 
+
+  getHTMLCodeForIconTimeline(): string {    
+    const file = this.file.file
+    return '<div style="height: 50px;"><img src="' + file + 
+    '" style="vertical-align: top;width: 50px"></div>'
+  }
+
+
   getTipStyles(feature: EntityCircle<Geometry>):Style[] {
     const styles:Style[] = []
     var ubication:Coordinate
