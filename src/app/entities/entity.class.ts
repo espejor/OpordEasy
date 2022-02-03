@@ -160,9 +160,9 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
     console.log("Fin drag");
   };    
 
-  public activateStyle(){
-    this.setStyle(this.getBasicStyle());
-  }
+  // public activateStyle(){
+  //   this.setStyle(this.getBasicStyle());
+  // }
 
   public getCustomStyle(){
     return this.style;
