@@ -1,4 +1,5 @@
     {
     "debug.javascript.usePreview": false,
-    "debug.javascript.autoAttachFilter": "always"
+    "debug.javascript.autoAttachFilter": "always",
+    "json.maxItemsComputed": 6000
 }

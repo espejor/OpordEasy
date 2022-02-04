@@ -54,6 +54,9 @@ import { TaskSelectorComponent } from './components/task-selector/task-selector.
 import { TaskSelectorDialogLoaderComponent } from './components/task-selector-dialog-loader/task-selector-dialog-loader.component';
 import { Bubble_featureComponent } from './components/nav/bubble_feature/bubble_feature.component';
 import { OpordComponent } from './components/opord/opord.component';
+// import { SwiperModule } from 'swiper/angular';
+import { CarouselComponent } from './components/carousel/carousel.component';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -91,7 +94,8 @@ export function HttpLoaderFactory(http:HttpClient){
     TaskSelectorDialogLoaderComponent,
     TaskSelectorComponent,
     Bubble_featureComponent,
-    OpordComponent
+    OpordComponent,
+    CarouselComponent
   ],
   imports: [
     BrowserModule,
@@ -117,6 +121,8 @@ export function HttpLoaderFactory(http:HttpClient){
     MatTabsModule,
     HttpClientModule,
     DragDropModule,
+    NgbModule,
+    // SwiperModule,
     // routing,
     // RouterModule.forRoot(routing),
     TranslateModule.forRoot({

@@ -202,6 +202,13 @@ doc.html(document.body, {
     return bodyContents
   }
 
+  updateOperation(){
+    this.operationsService.updateOperation()
+    .subscribe(data => {
+      console.log(data);
+    });
+  }
+
   loadContentPhase(bodyContents:Content[],styles,combatFunction:string) {
     this.operationsService.selectedOperation.phases.forEach(phase => {
       bodyContents.push({

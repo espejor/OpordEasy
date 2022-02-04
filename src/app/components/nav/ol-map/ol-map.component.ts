@@ -108,6 +108,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   dragSource: VectorSource<Geometry>;
   modify: Modify;
   entityToShowInfo: Entity<Geometry>;
+  tutorialOpened: boolean;
 
 
   //-------------------------
@@ -204,14 +205,18 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     console.log("Moviendo")
   }
 
-  catchEvent(activatedOperationsFormOpened){
-    this.operationsService.activatedOperationsFormOpened = activatedOperationsFormOpened == "activated";
+  catchEvent(dataEvent){
+    this.operationsService.activatedOperationsFormOpened = dataEvent == "activated";
     if(this.operationsService.activatedOperationsFormOpened){
       // deactivate drag
       this.map.removeInteraction(this.drag);
     }else{
       // this.map.addInteraction(this.drag);
     }
+  }
+
+  openTutorial(event){
+    this.tutorialOpened = !this.tutorialOpened
   }
 
   private setSize() {

@@ -23,14 +23,14 @@
                 <h2>ORDEN DE OPERACIONES</h2>
                 <div class="input-field">
                     <mat-form-field >
-                        <input matInput  type="number" name="order" #name = 'ngModel' 
+                        <input (change)="updateOperation()" matInput  type="number" name="order" #name = 'ngModel' 
                         [(ngModel)] = "operationsService.selectedOperation.order"
                         placeholder="Número">
                     </mat-form-field>
                 </div>
                 <div class="input-field">
                     <mat-form-field >
-                        <input matInput  type="text" name="name" #name = 'ngModel' 
+                        <input (change)="updateOperation()" matInput  type="text" name="name" #name = 'ngModel' 
                         [(ngModel)] = "operationsService.selectedOperation.name"
                         placeholder="Nombre de la Operación">
                     </mat-form-field>
@@ -54,7 +54,7 @@
             <h3 class="title1">1.- SITUACIÓN</h3>
             <div class="input-field " >
                 <mat-form-field class="situation-main">
-                    <textarea class="content" cdkTextareaAutosize matInput placeholder="Explicar brevemente la situación actual..."
+                    <textarea (change)="updateOperation()" class="content" cdkTextareaAutosize matInput placeholder="Explicar brevemente la situación actual..."
                     [(ngModel)] = "operationsService.selectedOperation.situation"
                     name="situation"
                     (mouseover)="situation.state = true"

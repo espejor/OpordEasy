@@ -17,7 +17,7 @@
 <!-- </div> -->
 
 <app-floating-buttons></app-floating-buttons>
-<app-floating-menu (emitter) = "catchEvent($event)"></app-floating-menu>
+<app-floating-menu (emitter) = "catchEvent($event)" (emitterTutorial) = "openTutorial($event)"></app-floating-menu>
 
 <div *ngIf = "operationsService.activatedOperationsFormOpened">
     <app-operations></app-operations>
@@ -30,6 +30,6 @@
 <div *ngIf = "bubbleFormOpened" >
     <app-bubble_feature (onClose)="bubbleClosed($event)" [entity] = "entityToShowInfo" [bubbleState]="bubbleFormOpened" ></app-bubble_feature>
 </div>
-
+<app-carousel *ngIf = "tutorialOpened" ></app-carousel>
 <app-ghost-element></app-ghost-element>
 

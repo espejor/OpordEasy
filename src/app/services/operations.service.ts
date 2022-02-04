@@ -518,7 +518,9 @@ updateEntityPositionInOperation(entity: Entity) {
     return this.http.post(this.URL_API,operation);
   }
 
-  updateOperation(operation: Operation){
+  updateOperation(operation?: Operation){
+    if(!operation)
+      operation = this.selectedOperation
     return this.http.put(this.URL_API + `/${operation._id}`,
     {
       "action":"updateOperation",
