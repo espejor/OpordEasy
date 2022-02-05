@@ -139,9 +139,24 @@ operationCtrl.updateOperation = async (req,res) => {
                     
 
             case "updateOperation":
-
             default:
-                response = await OperationModel.updateOne({_id : req.params.id},req.body.operation)
+                query = {
+                    // _id:                ObjectId(req.body.operation._id),
+                    comboEntities:      req.body.operation.comboEntities,
+                    name:               req.body.operation.name ,
+                    phases:             req.body.operation.phases,
+                    situation:          req.body.operation.situation,
+                    updated:            req.body.operation.updated,
+                    mission:            req.body.operation.mission,
+                    order:              req.body.operation.order,
+                    enemy:              req.body.operation.enemy,
+                    ourForces:          req.body.operation.ourForces,
+                    aggregationsAndSegregations: req.body.operation.aggregationsAndSegregations,
+                }
+                
+                response = await OperationModel.updateOne({_id : req.params.id},{
+                    $set : query
+                })
                 console.log(response);
                 
                 break;

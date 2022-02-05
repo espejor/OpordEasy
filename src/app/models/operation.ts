@@ -29,6 +29,12 @@ export class Operation {
         if (jsonRecovered){
             this._id = jsonRecovered._id;
             this.name = jsonRecovered.name;
+            this.situation = jsonRecovered.situation;
+            this.enemy = jsonRecovered.enemy;
+            this.aggregationsAndSegregations = jsonRecovered.aggregationsAndSegregations;
+            this.ourForces = jsonRecovered.ourForces;
+            this.mission = jsonRecovered.mission;
+            this.order = jsonRecovered.order;
             this.updated = jsonRecovered.updated;
             this.phases = this.recoverPhases(jsonRecovered.phases);
             this.comboEntities = this.recoverCombo(jsonRecovered.comboEntities);

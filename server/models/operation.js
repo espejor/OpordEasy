@@ -6,8 +6,14 @@ const { Schema } = mongoose;
 
 // ---------- Schemas
 const OperationSchema = new Schema ({
+    mission: String,
+    order: Number,
+    enemy: String,
+    ourForces: String,
+    // aggregationsAndSegregations: String,
     name: { type: String, required :true},
     updated: { type: Date, default: Date.now },
+    situation: String,
     phases: [{ 
         name: { type: String, required :true},
         timelines:[{

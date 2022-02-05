@@ -258,6 +258,12 @@ export class OperationsService {
     operationForDDBB.updated = this.selectedOperation.updated;
     operationForDDBB.comboEntities = this.preparelistOfEntities(this.selectedOperation.comboEntities);
     operationForDDBB.phases = this.preparePhases(this.selectedOperation.phases);
+    operationForDDBB.situation = this.selectedOperation.situation
+    operationForDDBB.enemy = this.selectedOperation.enemy
+    operationForDDBB.ourForces = this.selectedOperation.ourForces
+    operationForDDBB.order = this.selectedOperation.order
+    operationForDDBB.aggregationsAndSegregations = this.selectedOperation.aggregationsAndSegregations
+    operationForDDBB.mission = this.selectedOperation.mission
     return operationForDDBB;
   }
 

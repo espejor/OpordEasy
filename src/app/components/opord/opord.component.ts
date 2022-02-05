@@ -34,75 +34,75 @@ export class OpordComponent implements OnInit {
   }
 
   
-  createPDF(){
-    var data = document.getElementById('pdfDocument');
-    const pdfDocument = this.pdfDocument.nativeElement;
+//   createPDF(){
+//     var data = document.getElementById('pdfDocument');
+//     const pdfDocument = this.pdfDocument.nativeElement;
    
-    var html = htmlToPdfmake(pdfDocument.innerHTML);
+//     var html = htmlToPdfmake(pdfDocument.innerHTML);
 
-    var doc = new jsPDF();
+//     var doc = new jsPDF();
 
-doc.html(document.body, {
-   callback: function (doc) {
-     doc.save();
-   },
-   x: 10,
-   y: 10
-});
+// doc.html(document.body, {
+//    callback: function (doc) {
+//      doc.save();
+//    },
+//    x: 10,
+//    y: 10
+// });
 
 
 
-      var HTML_Width = pdfDocument.offsetWidth;
-      var HTML_Height = pdfDocument.offsetHeight;
-      var top_left_margin = 15;
-      var bottonMargin = 100;
-      var totalMargin = top_left_margin + bottonMargin
+//       var HTML_Width = pdfDocument.offsetWidth;
+//       var HTML_Height = pdfDocument.offsetHeight;
+//       var top_left_margin = 15;
+//       var bottonMargin = 100;
+//       var totalMargin = top_left_margin + bottonMargin
       
-      var PDF_Width = 595.276; // = 21cm
-      var PDF_Height = 841.8898; // = 29.7cm
-      var canvas_image_width_A4 = (PDF_Width-(2*top_left_margin));
-      var canvas_image_height_A4 = (HTML_Height*((PDF_Width-(2*top_left_margin))/HTML_Width));
-      var totalPDFPages = Math.ceil(canvas_image_height_A4/(PDF_Height-(totalMargin)))-1;
+//       var PDF_Width = 595.276; // = 21cm
+//       var PDF_Height = 841.8898; // = 29.7cm
+//       var canvas_image_width_A4 = (PDF_Width-(2*top_left_margin));
+//       var canvas_image_height_A4 = (HTML_Height*((PDF_Width-(2*top_left_margin))/HTML_Width));
+//       var totalPDFPages = Math.ceil(canvas_image_height_A4/(PDF_Height-(totalMargin)))-1;
       
   
-      html2canvas(pdfDocument,{allowTaint:true}).then(function(canvas) {
-        canvas.getContext('2d');
+//       html2canvas(pdfDocument,{allowTaint:true}).then(function(canvas) {
+//         canvas.getContext('2d');
         
-        canvas.scrollIntoView()
-        console.log(canvas.height+"  "+canvas.width);
-        
-        
-        var imgData = canvas.toDataURL("image/jpeg", 1.0);
-        var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
-        pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width_A4,canvas_image_height_A4);
-          pdf.setFillColor(255,255,255);
-          pdf.rect(0, 0, PDF_Width, top_left_margin, "F");
-          pdf.rect(0, PDF_Height-bottonMargin, PDF_Width, bottonMargin, "F");
+//         canvas.scrollIntoView()
+//         console.log(canvas.height+"  "+canvas.width);
         
         
-        for (var i = 1; i <= totalPDFPages; i++) { 
-          pdf.addPage([PDF_Width, PDF_Height],"p");
-          pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin + totalMargin*(i)),canvas_image_width_A4,canvas_image_height_A4);
-          pdf.setFillColor(255,255,255);
-          pdf.rect(0, 0, PDF_Width, top_left_margin, "F");
-          pdf.rect(0, PDF_Height-bottonMargin, PDF_Width, bottonMargin, "F");
-        }
+//         var imgData = canvas.toDataURL("image/jpeg", 1.0);
+//         var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
+//         pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width_A4,canvas_image_height_A4);
+//           pdf.setFillColor(255,255,255);
+//           pdf.rect(0, 0, PDF_Width, top_left_margin, "F");
+//           pdf.rect(0, PDF_Height-bottonMargin, PDF_Width, bottonMargin, "F");
         
-        pdf.save("HTML-Document.pdf");
-      });
+        
+//         for (var i = 1; i <= totalPDFPages; i++) { 
+//           pdf.addPage([PDF_Width, PDF_Height],"p");
+//           pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin + totalMargin*(i)),canvas_image_width_A4,canvas_image_height_A4);
+//           pdf.setFillColor(255,255,255);
+//           pdf.rect(0, 0, PDF_Width, top_left_margin, "F");
+//           pdf.rect(0, PDF_Height-bottonMargin, PDF_Width, bottonMargin, "F");
+//         }
+        
+//         pdf.save("HTML-Document.pdf");
+//       });
 
-      // var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
-      // // pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width_A4,canvas_image_height_A4);
+//       // var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
+//       // // pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width_A4,canvas_image_height_A4);
       
-      // pdf.html(data,{callback:function(doc){
-      //     doc.save()
-      //   },margin:[top_left_margin, top_left_margin,bottonMargin,top_left_margin],
-      //   width:canvas_image_width_A4,
-      //   html2canvas:{scale:1}
-      // })
+//       // pdf.html(data,{callback:function(doc){
+//       //     doc.save()
+//       //   },margin:[top_left_margin, top_left_margin,bottonMargin,top_left_margin],
+//       //   width:canvas_image_width_A4,
+//       //   html2canvas:{scale:1}
+//       // })
 
 
-  }
+//   }
 
   createPDF2(){
     const contents:Content[] = []

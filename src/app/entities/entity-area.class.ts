@@ -50,7 +50,7 @@ export class EntityArea<GeomType extends Geometry = Geometry> extends Entity {
     this.entityType = entityType.area
     this.areaOptions = areaOptions;
 
-    // this.updateData()
+    this.updateData()
     this.basicAreaStyle = this.getBasicStyle()
     // this.centralIconStyle = this.configureEchelonIcon(feature,areaOptions.echelon,areaOptions.svgWidth);
     // this.startTextStyle = this.configureStartText();
