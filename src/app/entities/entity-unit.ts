@@ -17,15 +17,24 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
   combatFunction: CombatFunction
     // entityOptions: UnitOptions
 
-  constructor(svgService: SVGUnitsIconsListService,entityOptions:UnitOptions,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
-      super(<SVGUnitsIconsListService>svgService,entityOptions,opt_geometryOrProperties,id);
+  constructor(svgService: SVGUnitsIconsListService,unitOptions:UnitOptions,public opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
+      super(<SVGUnitsIconsListService>svgService,unitOptions,opt_geometryOrProperties,id);
       this.entityType = entityType.unit
-      // if (!this.entityOptions.extraData)
-        // this.initExtraData()
       const designationStyle = (feature:EntityUnit) =>{
         const styles:Style[] = []
-        
-        if(feature.entityOptions.extraData && feature.entityOptions.extraData.fields.textFields.designation){
+        if(!feature.entityOptions.extraData){
+          feature.entityOptions.extraData = svgService.features.extraData
+          // <UnitExtraOptions>{
+          //   textFields:{
+          //     designation:{selectorText:"Designación", placeHolder:"Designación", value:"", x:75, y:125, offset:[-20,12] ,visible:true, indent:"end"},
+          //     heighterunit:{selectorText:"GU. Superior", placeHolder:"GU. Superior", value:"", x:165, y:125 , indent:"start"},
+          //     typeEquipment:{selectorText:"Equipamiento", placeHolder:"Equipamiento", value:"", x:75, y:105 , indent:"end" },
+          //     dateTime:{selectorText:"Fecha-Hora", placeHolder:"Fecha-Hora", value:"", x:75, y:65 , indent:"end" }
+          //   }
+          // }
+        }
+
+        if(feature.entityOptions.extraData.fields.textFields.designation.value != ""){
           styles.push(new Style({
             text : new Text({
               text:    feature.entityOptions.extraData.fields.textFields.designation.value,
@@ -36,7 +45,7 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
           }))
         }
         
-        if(feature.entityOptions.extraData && feature.entityOptions.extraData.fields.check){
+        if(feature.entityOptions.extraData.fields.ckeck){
           styles.push(new Style({
             text : new Text({
               text:    feature.entityOptions.extraData.fields.check.reinforced.value,
@@ -69,7 +78,8 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
   getVerbose():string{
     var verbose = ""
     const unitOptions = (<UnitOptions>this.entityOptions)
-    verbose += this.checkVAlternateVerbose("level") + " de "
+    const alternateLevelVerbose = this.checkVAlternateVerbose("level")
+    verbose +=  alternateLevelVerbose == ""? "" : alternateLevelVerbose + " de "
     
     for(let i = 0; i < unitOptions.main.length; i++){
       const feature = unitOptions.main[i]
@@ -80,24 +90,28 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
     return verbose
   }
 
-  private checkVAlternateVerbose(group:string){
+  private checkVAlternateVerbose(data:string){
     const unitOptions = (<UnitOptions>this.entityOptions)
     // const option = unitOptions[group].key
     var value:string = ""
-    if(unitOptions[group].value.alternatesVerbose){
-      for (let i = 0; i< unitOptions[group].value.alternatesVerbose.length; i++){
-        const alternative = unitOptions[group].value.alternatesVerbose[i]
-        if (unitOptions [alternative.group]){
-          const exist = unitOptions [alternative.group].some(option =>{
-            return option.key == alternative.option
-          }) 
-          if (exist){
-            return value != ""? value : alternative.value
+    if(unitOptions[data]){
+      if(unitOptions[data].value.alternatesVerbose){
+        for (let i = 0; i< unitOptions[data].value.alternatesVerbose.length; i++){
+          const alternative = unitOptions[data].value.alternatesVerbose[i]
+          if (unitOptions [alternative.group]){
+            const exist = unitOptions [alternative.group].some(option =>{
+              return option.key == alternative.option
+            }) 
+            if (exist){
+              return value != ""? value : alternative.value
+            }
           }
-        }
-      };
+        };
+      }else{
+        value = unitOptions[data].value.selectorText
+      }
     }
-    return value != ""? value:unitOptions[group].value.selectorText
+    return value
   }
   getHTMLCodeForIconTimeline(): string {
     return this.svgService.createSVGForTimeline(this,0.5)
@@ -109,6 +123,7 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
       return offset[0] + 18 
     return offset[0]
   }
+
   getOffsetY(offset:number[]): number {
     if(this.isCG())
       return offset[1] - 34 
@@ -125,7 +140,10 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
   
   getAnchor(): number[] {
     if (this.isCG())
-      return [0.37,1]
+      if((<UnitOptions>this.entityOptions).frame.key == "friendly")
+        this.anchor = [0.37,1]
+      else
+        this.anchor = [0.5,1]
     return super.getAnchor()
   }
 

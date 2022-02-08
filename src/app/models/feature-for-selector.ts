@@ -12,7 +12,14 @@ export class FeatureForDeploing {
   // public svg_composed?:;
 }
 
-export interface AlternateVerbose{
+export type AlternateVerbose = AlternateVerboseInSVG | AlternateVerboseInProperty
+
+export interface AlternateVerboseInProperty{
+  property:string
+  value:string
+}
+
+export interface AlternateVerboseInSVG{
   group:string,
   option:string,
   value:string

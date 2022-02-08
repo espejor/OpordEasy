@@ -15,6 +15,10 @@ export class Operation {
     ourForces:string
     aggregationsAndSegregations:string
     mission:string
+    coordination:string
+    apolog:string
+    command:string
+    communications:string
 
 
     // user: string// _id del User
@@ -34,6 +38,10 @@ export class Operation {
             this.aggregationsAndSegregations = jsonRecovered.aggregationsAndSegregations;
             this.ourForces = jsonRecovered.ourForces;
             this.mission = jsonRecovered.mission;
+            this.coordination = jsonRecovered.coordination;
+            this.apolog = jsonRecovered.apolog;
+            this.command = jsonRecovered.command;
+            this.communications = jsonRecovered.communications;
             this.order = jsonRecovered.order;
             this.updated = jsonRecovered.updated;
             this.phases = this.recoverPhases(jsonRecovered.phases);

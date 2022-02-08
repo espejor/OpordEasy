@@ -278,6 +278,22 @@ export class OpordComponent implements OnInit {
     state:false,
     text:"En este apartado se expone la misión asignada a la unidad propia o la que se ha desarrollado durante el proceso de planeamiento."
   }
+  coordination: Bubbles ={
+    state:false,
+    text:"Instrucciones aplicables a dos o más elementos de la organización operativa. Normalmente incluye límites, puntos de enlace, posiciones/bases de partida, líneas de partida, hora del ataque y todas aquellas consideradas necesarias para coordinar las actividades de las diferentes unidades y medios subordinados. Se incluye también otra información, como instrucciones para remisión de informes, hora prevista de ejecución y cuándo entra en vigor la orden (si difiere de la indicada en la firma). No se expresa lo que esté contemplado en una NOP/SOP o consista en un procedimiento de rutina. En ocasiones, cuando las instrucciones sean más extensas o complejas, se tratan en un anexo (ROE, medidas para la protección de la fuerza, aspectos relativos a la conservación del medio ambiente, etc.)."
+  }
+  apolog: Bubbles ={
+    state:false,
+    text:"Este párrafo está orientado a informar a los JU de las unidades subordinadas y a sus EM/PLM cómo el JU pretende apoyar la operación desde el punto de vista logístico. Se puede hacer referencia a: prioridades en el apoyo, unidades logísticas del escalón superior que apoyan a la propia unidad, aspectos relativos al apoyo de la nación anfitriona, aspectos no usuales de este apoyo que puedan influir notablemente en la operación, riesgos significativos y a la propia organización del apoyo logístico para toda la operación."
+  }
+  command: Bubbles ={
+    state:false,
+    text:"Este apartado incluye instrucciones relativas a situación y movimiento de los PC."
+  }
+  communications: Bubbles ={
+    state:false,
+    text:"Este apartado incluye instrucciones relativas transmisiones, empleo del espectro electromagnético, reconocimiento e identificación de unidades y medios, palabras clave, lenguaje convenido, etc."
+  }
 }
 
 interface Bubbles{

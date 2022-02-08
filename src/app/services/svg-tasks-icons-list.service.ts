@@ -26,6 +26,64 @@ export class SvgTasksIconsListService extends SvgIconsListService {
           follow_and_assume: {classCSS : "unSelected", selectorText : "Seguir y Asumir", codeForDeploing:{typeTask:"arrow", verbose: "Seguir y Asumir", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/follow_and_assume.svg", scale:1/3}, lineVisible:true, tailSource:"assets/icons/label_tail.svg",tipSource:"assets/icons/double_arrow.svg", stroke_dasharray:[5,5]}},
           // Shapes
           attack_by_fire: {classCSS : "unSelected", selectorText : "Ataque por el fuego", codeForDeploing:{typeTask:"multipoint", verbose:"Ataque por el fuego", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/attack_by_fire.svg", scale:1/3}, options:{numPoints:3,edges:[{shape:{type:TypeShape.STICKLINE,angle:Math.PI/4,direction:Direction.LEFT}, initAnchor:{order:3}, finalAnchor:{order:1}},{shape:{type:TypeShape.STICKLINE,angle:Math.PI/4,direction:Direction.RIGHT}, initAnchor:{order:3}, finalAnchor:{order:2}},{shape:{type:TypeShape.LINE}, initAnchor:{order:3}, finalAnchor:{order:0},}],points:[{order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}},{order:1},{order:2},{order:3,reference:{referenceType:ReferenceType.MIDDLE,referencesPoints:[1,2]}}]}}},
+          support_by_fire: {classCSS : "unSelected", selectorText : "Apoyo por el fuego", codeForDeploing:{typeTask:"multipoint", verbose:"Apoyar por el fuego", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/support_by_fire.svg", scale:1/3}, options:{
+            numPoints:4,
+            edges:[{
+              shape:{
+                type:
+                TypeShape.STICKLINE,
+                angle:Math.PI/4,
+                direction:Direction.LEFT
+              },
+              initAnchor:{
+                order:4
+              }, 
+              finalAnchor:{
+                order:1
+              }
+            },
+            {
+              shape:{
+                type:TypeShape.STICKLINE,
+                angle:Math.PI/4,
+                direction:Direction.RIGHT
+              }, 
+              initAnchor:{
+                order:4
+              }, 
+              finalAnchor:{
+                order:2
+              }
+            },
+            {
+              shape:{
+                type:TypeShape.LINE
+              }, 
+              initAnchor:{order:1}, 
+              finalAnchor:{order:0}
+            },
+            {
+              shape:{
+                type:TypeShape.LINE
+              }, 
+              initAnchor:{order:2}, 
+              finalAnchor:{order:3}
+            }
+          ],
+            
+            points:[{
+              order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}
+            },{
+              order:1
+            },{
+              order:2
+            },{
+              order:3,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}
+            },{
+              order:4,reference:{referenceType:ReferenceType.MIDDLE,referencesPoints:[1,2]}
+            }
+            ]
+          }}},
           block: {classCSS : "unSelected", selectorText : "Bloquear", codeForDeploing:{typeTask:"multipoint", x:this.x, y:this.y, verbose: "Bloquear", fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/block.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.ISOSCELES,referencesPoints:[0,1,2]}],edges:[{shape:{type:TypeShape.LINE}, initAnchor:{order:0}, finalAnchor:{order:1}},{shape:{type:TypeShape.LINE}, text: {text:"B",position:CPosition.CENTER}, initAnchor:{order:2}, finalAnchor:{order:3},}],points:[{order:0},{order:1},{order:2},{order:3,reference:{referenceType:ReferenceType.MIDDLE,referencesPoints:[0,1]}}]}}},
           breach: {classCSS : "unSelected", selectorText : "Brecha", codeForDeploing:{typeTask:"multipoint", verbose: "Brecha", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/breach.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.ISOSCELES,referencesPoints:[0,1,2]}],edges:[{shape:{type:TypeShape.LINE}, initAnchor:{order:0}, finalAnchor:{order:3}},{shape:{type:TypeShape.LINE}, initAnchor:{order:1}, finalAnchor:{order:4}},{shape:{type:TypeShape.LINE}, initAnchor:{order:4}, finalAnchor:{order:3},text:{text:"B",position:CPosition.CENTER}}],points:[{order:0,tip:{src:"assets/icons/tips/tilt_line_left.svg",ubication:CPosition.START}},{order:1,tip:{src:"assets/icons/tips/tilt_line_right.svg",ubication:CPosition.START}},{order:2},{order:3,reference:{referenceType:ReferenceType.LEFT_PERPENDICULAR,referencesPoints:[1,0,0,2]}},{order:4,reference:{referenceType:ReferenceType.RIGHT_PERPENDICULAR,referencesPoints:[0,1,1,2]}}]}}},
           bypass: {classCSS : "unSelected", selectorText : "Desbordar", codeForDeploing:{typeTask:"multipoint", verbose: "Desbordar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/bypass.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.ISOSCELES,referencesPoints:[0,1,2]}],edges:[{shape:{type:TypeShape.LINE}, initAnchor:{order:0}, finalAnchor:{order:3}},{shape:{type:TypeShape.LINE}, initAnchor:{order:1}, finalAnchor:{order:4}},{shape:{type:TypeShape.LINE}, initAnchor:{order:4}, finalAnchor:{order:3},text:{text:"B",position:CPosition.CENTER}}],points:[{order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.START,anchor:[0.5,0.2]}},{order:1,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.START,anchor:[0.5,0.2]}},{order:2},{order:3,reference:{referenceType:ReferenceType.LEFT_PERPENDICULAR,referencesPoints:[1,0,0,2]}},{order:4,reference:{referenceType:ReferenceType.RIGHT_PERPENDICULAR,referencesPoints:[0,1,1,2]}}]}}},

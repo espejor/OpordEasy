@@ -1,25 +1,19 @@
 import { KeyValue } from '@angular/common';
-import { noUndefined } from '@angular/compiler/src/util';
-import { Component, ElementRef, OnInit, ViewChild, Renderer2,AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, ElementRef, OnInit, ViewChild, Renderer2,AfterViewInit, Output, EventEmitter } from '@angular/core';
 import Point from 'ol/geom/Point';
-import { toLonLat } from 'ol/proj';
 import { EntityUnit, UnitOptions } from 'src/app/entities/entity-unit';
-import { Entity, EntityOptions } from 'src/app/entities/entity.class';
+import { Entity } from 'src/app/entities/entity.class';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
 import { FeatureForDeploing, TextFeatureForDeploing } from 'src/app/models/feature-for-selector';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
 import { Coordinate } from 'ol/coordinate';
 import { OperationsService } from 'src/app/services/operations.service';
-import { FavoriteSelectorComponent } from '../nav/favorite-selector/favorite-selector.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { entityType } from 'src/app/entities/entitiesType';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
 import { EntitySelectorService } from 'src/app/services/entity-selector.service';
 import { EntityLocated } from 'src/app/models/operation';
-import { Pixel } from 'ol/pixel';
 import { Selector } from '../selector-base';
 import Draw, { DrawEvent } from 'ol/interaction/Draw';
 import GeometryType from 'ol/geom/GeometryType';
@@ -78,7 +72,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     //Hay que pasar la Feature en formato <key,value>
     this.selectorClass = "unSelected"
     this.resetAspectSelectors();
-    this.addFeature({key :"friendly",value :this.svgListOfIcons.features.frame.friendly});
+    this.addFeatureToModelIcon({key :"friendly",value :this.svgListOfIcons.features.frame.friendly});
   }
 
   
@@ -199,15 +193,15 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     this.goThrougtArray(this.unitOptions);
   }
 
-  goThrougtArray(collection){
-    for(let element in collection) {
+  goThrougtArray(unitOptions){
+    for(let element in unitOptions) {
       if(element != "attachable"){
-        if (Array.isArray(collection[element])) {
-          this.goThrougtArray(collection[element]);
+        if (Array.isArray(unitOptions[element])) {
+          this.goThrougtArray(unitOptions[element]);
         }
         else{
-          if (collection[element] != null)
-            this.updateIconTemplate(collection[element]);
+          if (unitOptions[element] != null)
+            this.updateIconTemplate(unitOptions[element]);
           // else
           //   this.deleteIconTemplate(collection[element])
         }
@@ -235,9 +229,17 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
 
     if(event){
       const cg = this.renderer.createElement("path", 'svg');
-      const x = 80
-      const y = 130
-      const draw = "m" + x + "," + y + " m0,0 v60";
+      var draw
+      if(this.unitOptions.frame.key == "friendly"){
+        const x = 80
+        const y = 130
+        draw = "m" + x + "," + y + " m0,0 v60";
+      }
+      // else{
+      //   const x = 120
+      //   const y = 130
+      //   draw = "m" + x + "," + y + " m0,0 v60"
+      // }
       this.renderer.setAttribute(cg, "d", draw);
       this.renderer.setAttribute(cg, "stroke-width", "2")
       this.renderer.setAttribute(cg, "stroke", "#000")
@@ -245,7 +247,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
       this.renderer.setAttribute(cg, "id", "cgSymbol");
       this.renderer.appendChild(this.svg.nativeElement, cg)
 
-      const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m0,60 v60"}};
+      const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m0,60 v60",enemy:"m40,60 v60"}};
       const data = {key:"cgSymbol",value:{codeForDeploing: obj}}
 
       // const exist = this.unitOptions.extraData.some(f => f.key == "cgSymbol")
@@ -336,7 +338,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     })
   }
 
-  addFeature(feature:KeyValue<string,FeatureForDeploing|TextFeatureForDeploing>){
+  addFeatureToModelIcon(feature:KeyValue<string,FeatureForDeploing|TextFeatureForDeploing>){
     const selected = this.unitOptions[this.setFeaturesToSelect];
     
     if (Array.isArray(selected)){ // buscamos en un array de Features

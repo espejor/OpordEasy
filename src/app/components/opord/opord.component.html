@@ -163,7 +163,20 @@
                     </div>
                 </div>
                 <div>
-                <h4 class="title2 letter-paragraph">d. Instrucciones de coordinación</h4>
+                    <h4 class="title2 letter-paragraph">d. Instrucciones de coordinación</h4>
+                    <div class="input-field">
+                        <mat-form-field class="situation-main">
+                            <textarea class="content" cdkTextareaAutosize matInput placeholder="Instrucciones aplicables a dos o más elementos de la organización operativa..."
+                            [(ngModel)] = "operationsService.selectedOperation.coordination"
+                            name="coordination"
+                            (mouseover)="coordination.state = true"
+                            (mouseout)="coordination.state = false"></textarea>
+                        </mat-form-field>
+                        <div *ngIf="coordination.state" class="bubble">
+                            {{coordination.text}}
+                        </div>
+                    </div>
+                </div>
                     <!-- </div>
                 </div> -->
             </div>
@@ -172,6 +185,18 @@
             <h3 class="title1">4.- APOYO LOGÍSTICO</h3>
             <div>
                 <h4 class="title2 letter-paragraph">a. Concepto del apoyo logístico</h4>
+                <div class="input-field">
+                    <mat-form-field class="situation-main">
+                        <textarea class="content" cdkTextareaAutosize matInput placeholder="Se puede hacer referencia a: prioridades en el apoyo, unidades logísticas del escalón superior..."
+                        [(ngModel)] = "operationsService.selectedOperation.apolog"
+                        name="apolog"
+                        (mouseover)="apolog.state = true"
+                        (mouseout)="apolog.state = false"></textarea>
+                    </mat-form-field>
+                    <div *ngIf="apolog.state" class="bubble">
+                        {{apolog.text}}
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -179,9 +204,33 @@
             <h3 class="title1">5.- MANDO Y TRANSMISIONES</h3>
             <div>
                 <h4 class="title2 letter-paragraph">a. Mando</h4>
+                <div class="input-field">
+                    <mat-form-field class="situation-main">
+                        <textarea class="content" cdkTextareaAutosize matInput placeholder="Este apartado incluye instrucciones relativas a situación y movimiento de los PC..."
+                        [(ngModel)] = "operationsService.selectedOperation.command"
+                        name="command"
+                        (mouseover)="command.state = true"
+                        (mouseout)="command.state = false"></textarea>
+                    </mat-form-field>
+                    <div *ngIf="apolog.state" class="bubble">
+                        {{apolog.text}}
+                    </div>
+                </div>
             </div>
             <div>
                 <h4 class="title2 letter-paragraph">b. Transmisiones</h4>
+                <div class="input-field">
+                    <mat-form-field class="situation-main">
+                        <textarea class="content" cdkTextareaAutosize matInput placeholder="Transmisiones, empleo del espectro electromagnético, reconocimiento e identificación..."
+                        [(ngModel)] = "operationsService.selectedOperation.communications"
+                        name="communications"
+                        (mouseover)="communications.state = true"
+                        (mouseout)="communications.state = false"></textarea>
+                    </mat-form-field>
+                    <div *ngIf="apolog.state" class="bubble">
+                        {{apolog.text}}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -209,7 +209,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     this.operationsService.activatedOperationsFormOpened = dataEvent == "activated";
     if(this.operationsService.activatedOperationsFormOpened){
       // deactivate drag
-      this.map.removeInteraction(this.drag);
+      this.map.removeInteraction(this.modify);
     }else{
       // this.map.addInteraction(this.drag);
     }
@@ -398,7 +398,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
 
     this.drag.on("modifystart",(evt:ModifyEvent) => {
-      console.log("")
       const features: Feature[] = evt.features.getArray()
       features.splice(0,features.length - 1)
     })
@@ -414,27 +413,27 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
 
 var self = this;
-this.map.on("pointermove", function (evt:MapBrowserEvent) {
-  if(this.locatingEntity){
+// this.map.on("pointermove", function (evt:MapBrowserEvent) {
+//   if(this.locatingEntity){
 
-  }else{
-    var entity:Entity;
-    var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
-      entity = feature;
-      return true;
-    }); 
-    if (hit) {
-      this.getTargetElement().style.cursor = 'pointer';
-      try{
-        entity.onMouseOver(evt);
-      }catch{
-        console.log("Feature predefinida");
-      }
-    } else {
-      this.getTargetElement().style.cursor = '';
-    }
-  }
-}); // Fin pointermove
+//   }else{
+//     var entity:Entity;
+//     var hit = this.forEachFeatureAtPixel(evt.pixel, function(feature:Entity, layer) {
+//       entity = feature;
+//       return true;
+//     }); 
+//     if (hit) {
+//       this.getTargetElement().style.cursor = 'pointer';
+//       try{
+//         entity.onMouseOver(evt);
+//       }catch{
+//         console.log("Feature predefinida");
+//       }
+//     } else {
+//       this.getTargetElement().style.cursor = '';
+//     }
+//   }
+// }); // Fin pointermove
 
     var container = document.getElementById ("popup");
     var content = document.getElementById ("popup-content");

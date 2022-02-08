@@ -62,14 +62,6 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
     if(svgService){
       this.encodeSVG(svgService)
       
-      const icon = new Icon({
-        anchor: this.getAnchor(),
-        anchorXUnits: IconAnchorUnits.FRACTION,
-        anchorYUnits: IconAnchorUnits.FRACTION,
-        opacity: 1,
-        scale: this.iconScale,
-        src: this.src
-      })
 
       const offsetX = this.offset? this.offset[0]:0 
       const offsetY = this.offset? this.offset[1]:0 
@@ -88,6 +80,8 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
           offsetY:offsetY
         })
       });
+
+      const icon = this.createIcon()
       
       this.typePointStyle = new Style({
         geometry:(feature:EntityPoint) => {
@@ -95,7 +89,7 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
           feature.typePointStyle.getText().setText(feature.typePoint)
           return feature.getGeometry()
         },
-        image:icon,
+        image:this.createIcon(),
         text:new Text({
           text:this.typePoint,
           scale:this.scale *0.5,
@@ -115,6 +109,17 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
       }
       this.setStyle(stylesFunction);
     }  
+  }
+
+  createIcon():Icon{
+    return new Icon({
+      anchor: this.getAnchor(),
+      anchorXUnits: IconAnchorUnits.FRACTION,
+      anchorYUnits: IconAnchorUnits.FRACTION,
+      opacity: 1,
+      scale: this.iconScale,
+      src: this.src
+    })
   }
 
   getVerbose(): string {

@@ -264,6 +264,10 @@ export class OperationsService {
     operationForDDBB.order = this.selectedOperation.order
     operationForDDBB.aggregationsAndSegregations = this.selectedOperation.aggregationsAndSegregations
     operationForDDBB.mission = this.selectedOperation.mission
+    operationForDDBB.coordination = this.selectedOperation.coordination
+    operationForDDBB.apolog = this.selectedOperation.apolog
+    operationForDDBB.command = this.selectedOperation.command
+    operationForDDBB.communications = this.selectedOperation.communications
     return operationForDDBB;
   }
 

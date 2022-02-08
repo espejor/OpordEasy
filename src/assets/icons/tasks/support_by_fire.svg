@@ -1,0 +1,8 @@
+<svg width="80" height="80" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <path fill="none" stroke-width="3" d="m5,64.4321l10,-10l50,0l10,10" id="svg_1" stroke="#000"/>
+  <line transform="rotate(-7.41568 12.8805 34.3644)" id="svg_2" y2="15.3644" x2="12.88048" y1="53.3644" x1="12.88048" stroke-width="3" stroke="#000" fill="none"/>
+  <path transform="rotate(-8.70886 10.7451 17.9481)" id="svg_5" d="m1.74509,22.44812l9,-9l9,9" stroke-width="3" stroke="#000" fill="none"/>
+  <line transform="rotate(6.74312 66.6925 18.1617)" id="svg_3" y2="15.57794" x2="68.82784" y1="53.57794" x1="68.82784" stroke-width="3" stroke="#000" fill="none"/>
+  <path transform="rotate(9 68.9661 18.1824)" id="svg_4" d="m59.96612,22.68241l9,-9l9,9" stroke-width="3" stroke="#000" fill="none"/>
+
+</svg>

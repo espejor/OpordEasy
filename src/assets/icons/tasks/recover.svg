@@ -1,0 +1,10 @@
+<svg width="80" height="80" version='1.1' xmlns="http://www.w3.org/2000/svg">
+<g id="svg_1" stroke="null">
+<path stroke="black" id="svg_2" fill="none" stroke-width="3" d="m5,20a10,10 1 1 1 0,0.1m20,0a40,40 1 0 1 40,40m-10,-10l10,10l10,-10"/>
+  <rect stroke="#ffffff" fill="#ffffff" x="48.5" y="27" width="10.5" height="11.5" id="svg_1"/>
+  <text stroke="black" font-size="15" y="38" x="48" fill="#black" id="svg_3">R</text>
+  <rect id="svg_4" height="10" width="14" y="15" x="8" stroke="black" fill="#ffffff"/>
+  <line stroke="black" id="svg_5" y2="25" x2="22" y1="15" x1="8" fill="none"/>
+  <line stroke="black" id="svg_6" y2="25" x2="8.5" y1="15.5" x1="22" fill="none"/>
+  </g>
+</svg>

@@ -1,0 +1,6 @@
+<svg width="80" height="80" version='1.1' xmlns="http://www.w3.org/2000/svg">
+<g id="svg_1" stroke="null">
+  <path stroke="black" id="svg_2" fill="none" stroke-width="3" d="m5,10 h50 a20,20 1 1 1 0,40l-5,0m-35,0l-10,0m10,-10l-10,10l10,10"/>
+  <text font-size="14" y="55" x="19" stroke="#000" fill="#000000" id="svg_3">DEM</text>
+  </g>
+</svg>

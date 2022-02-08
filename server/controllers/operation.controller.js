@@ -152,6 +152,11 @@ operationCtrl.updateOperation = async (req,res) => {
                     enemy:              req.body.operation.enemy,
                     ourForces:          req.body.operation.ourForces,
                     aggregationsAndSegregations: req.body.operation.aggregationsAndSegregations,
+                    coordination:       req.body.operation.coordination,
+                    apolog:             req.body.operation.apolog,
+                    command:            req.body.operation.command,
+                    communications:     req.body.operation.communications
+                    
                 }
                 
                 response = await OperationModel.updateOne({_id : req.params.id},{
