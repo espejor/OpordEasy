@@ -38,6 +38,10 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
     // FALTAN FEATURES DE UNIDADES
     // ----------------------
 
+    extraFeature:{
+      cgSymbol:{classCSS : "unSelected", selectorText: "CG/PC", combatFunction:"command",  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m0,60 v60",enemy:"m40,60 v60",neutral:"m40,60 v60",unknown:"m40,60 v60"}}},
+      foSymbol:{classCSS : "unSelected", selectorText: "CG/PLM", combatFunction:"combat",  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"none", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m15,0 v-20h50v20"}}},
+    },
 
     extraData:{
       fields:{  
@@ -48,11 +52,6 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
           dateTime:{selectorText:"Fecha-Hora", placeHolder:"Fecha-Hora", value:"", x:75, y:65 , indent:"end" }
         }
       }
-    },
-
-    extraFeature:{
-      cgSymbol:{classCSS : "unSelected", selectorText: "CG/PLM", combatFunction:"command",  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m80,130 v60",enemy:"m120,130 v60",neutral:"m120,130 v60",unknown:"m120,130 v60"}}},
-      foSymbol:{}
     }
   }
 
@@ -117,8 +116,9 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
   }
 
 
-  protected writeSVGContent(feature,frame:string):string {
+  protected writeSVGContent(feature,frameCollection:string):string {
     const type = feature.value.codeForDeploing.type;
+    const frame = frameCollection? frameCollection:"friendly" 
 
     var svg:string="";
     if (type == "path"){

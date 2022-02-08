@@ -36,7 +36,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   public favorite;
   // public fav = "fav";
   // public rec = "rec";
-  private unitOptions: UnitOptions = new UnitOptions();
+  public unitOptions: UnitOptions = new UnitOptions();
   private path:string = "assets/icons/units"
   public listOfOptions = {frame:"Marco",main:"Sector Principal",level:"Escalón", sector1:"Sector superior",
     sector2:"Sector inferior",extraData:"Campos adicionales"};
@@ -48,6 +48,8 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
 
   reinforcedOptions:string[] = ["Reforzada","Reducida", "Reforzada Y Reducida"]
   reinforcedOptionSelected: null
+  cgSymbolSelected:boolean
+  foSymbolSelected:boolean
 
 
   constructor(public svgListOfIconsService: SVGUnitsIconsListService, 
@@ -57,12 +59,11 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
       private operationsService: OperationsService,
       // private svgService: SVGUnitsIconsListService, 
       private _snackBar: MatSnackBar,
-      private entitySelectorService: EntitySelectorService)
-      {
+      private entitySelectorService: EntitySelectorService){
         super();
         this.svgListOfIcons = svgListOfIconsService;
         this.unitOptions = new UnitOptions();
-    }
+  }
 
   ngOnInit(): void {
   }
@@ -157,12 +158,14 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   updateAspectSelectors(){
     this.resetAspectSelectors();
     for (let featuresLabel in this.unitOptions){
-      if (featuresLabel != "attachable" && featuresLabel != "extraData" && featuresLabel != "extraFeature" ){
+      if (featuresLabel != "attachable" && featuresLabel != "extraData" ){
         if (this.unitOptions[featuresLabel] != null){ // Inicializado
           if (Array.isArray(this.unitOptions[featuresLabel])){ // es un array
             if(this.unitOptions[featuresLabel].length > 0){
               for (let featureInArray in this.unitOptions[featuresLabel]){
                 this.svgListOfIcons.features[featuresLabel][this.unitOptions[featuresLabel][featureInArray].key].classCSS = "selectorSelected"
+                this.cgSymbolSelected = this.svgListOfIcons.features.extraFeature.cgSymbol.classCSS == "selectorSelected"
+                this.foSymbolSelected = this.svgListOfIcons.features.extraFeature.foSymbol.classCSS == "selectorSelected"
               }
             }
           }else{
@@ -339,29 +342,34 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   }
 
   addFeatureToModelIcon(feature:KeyValue<string,FeatureForDeploing|TextFeatureForDeploing>){
-    const selected = this.unitOptions[this.setFeaturesToSelect];
-    
-    if (Array.isArray(selected)){ // buscamos en un array de Features
+    var selected
+    var setFeaturesToSelect = this.setFeaturesToSelect
+    if(this.setFeaturesToSelect != "extraData")
+      selected = this.unitOptions[this.setFeaturesToSelect];
+    else{
+      selected = this.unitOptions.extraFeature
+      setFeaturesToSelect = "extraFeature"
+    }if (Array.isArray(selected)){ // buscamos en un array de Features
       feature.value.classCSS = feature.value.classCSS == "unSelected"? feature.value.classCSS = "selectorSelected": feature.value.classCSS = "unSelected";
       const exist = selected.some(f => f.key == feature.key);
       if (selected.length == 0 || !exist )   // NO existe el elemento
-        this.unitOptions[this.setFeaturesToSelect].push(feature);  // lo agregamos
+        this.unitOptions[setFeaturesToSelect].push(feature);  // lo agregamos
       else  // Existe el elemento -> lo borramos
-        this.unitOptions[this.setFeaturesToSelect] = selected.filter(f => f.key != feature.key)
+        this.unitOptions[setFeaturesToSelect] = selected.filter(f => f.key != feature.key)
     }else // No es un array
       if (selected == null){
         feature.value.classCSS = "selectorSelected"
-        this.unitOptions[this.setFeaturesToSelect] = feature;
+        this.unitOptions[setFeaturesToSelect] = feature;
       }else if(feature.key != selected.key){
         selected.value.classCSS = "unSelected"
         feature.value.classCSS = "selectorSelected"
-        this.unitOptions[this.setFeaturesToSelect] = feature;
+        this.unitOptions[setFeaturesToSelect] = feature;
       }else{
         feature.value.classCSS = "unSelected"
-        this.unitOptions[this.setFeaturesToSelect] = null;
+        this.unitOptions[setFeaturesToSelect] = null;
       }
     this.createSVG();
-  }
+}
 
   
   public updateIconTemplate(feature: FeatureForDeploing){

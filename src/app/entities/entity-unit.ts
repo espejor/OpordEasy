@@ -22,16 +22,8 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
       this.entityType = entityType.unit
       const designationStyle = (feature:EntityUnit) =>{
         const styles:Style[] = []
-        if(!feature.entityOptions.extraData){
+        if(!feature.entityOptions.extraData || !feature.entityOptions.extraData.fields.textFields){
           feature.entityOptions.extraData = svgService.features.extraData
-          // <UnitExtraOptions>{
-          //   textFields:{
-          //     designation:{selectorText:"Designación", placeHolder:"Designación", value:"", x:75, y:125, offset:[-20,12] ,visible:true, indent:"end"},
-          //     heighterunit:{selectorText:"GU. Superior", placeHolder:"GU. Superior", value:"", x:165, y:125 , indent:"start"},
-          //     typeEquipment:{selectorText:"Equipamiento", placeHolder:"Equipamiento", value:"", x:75, y:105 , indent:"end" },
-          //     dateTime:{selectorText:"Fecha-Hora", placeHolder:"Fecha-Hora", value:"", x:75, y:65 , indent:"end" }
-          //   }
-          // }
         }
 
         if(feature.entityOptions.extraData.fields.textFields.designation.value != ""){

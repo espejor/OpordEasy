@@ -111,18 +111,19 @@ export class SvgIconsListService {
     const x = 260 * scale;
     const y = 120 * scale;
     var svg = "<svg   viewBox='0 0 260 140' width= '"+ x + "' height= '" + y + "' version='1.1' xmlns='http://www.w3.org/2000/svg'>";
-    svg += this.compoundSVG(collection,collection.frame);
+    svg += this.compoundSVG(collection,collection.frame?collection.frame.key:undefined);
     return svg += "</svg>";
   }
 
   public createSVGForTimeline(entity:Entity,scale:number = 1):string{
-    const collection = entity.entityOptions
+    const collection:any = entity.entityOptions
+    const frame = collection.frame?collection.frame.key:undefined
     const x = 100 * scale;
     const y = 100 * scale;
     this.iconX = "10";
     this.iconY = "20";
     var svg = "<svg   viewBox='0 0 100 110' width= '"+ x + "' height= '" + y + "' version='1.1' xmlns='http://www.w3.org/2000/svg'>";
-    svg += this.compoundSVG(collection);
+    svg += this.compoundSVG(collection,frame);
     const ident = entity.getIdent()
     if (ident)
       svg += '<text font-size="18" y="100" x="50" text-anchor="middle" stroke-width="1" stroke="#000" fill="#000000">' + ident + '</text>'
@@ -143,7 +144,7 @@ export class SvgIconsListService {
   
   protected  compoundSVG(collection,frameCollection?:string):string{
     var svg:string = " ";
-    const frame = "friendly"
+    const frame = frameCollection
     if(Array.isArray(collection)){
       collection.forEach(svgItem => {
         svg += this.writeSVGContent(svgItem,frame);
@@ -155,7 +156,8 @@ export class SvgIconsListService {
   }
 
       
-  protected writeSVGContent(feature: SVGPathForPoint | TextSVGOptions,frame:string):string {
+  protected writeSVGContent(feature: SVGPathForPoint | TextSVGOptions,frameCollection:string):string {
+    const frame = frameCollection? frameCollection:"friendly" 
     const type = feature.type;
     var svg:string="";
   
@@ -190,7 +192,7 @@ export class SvgIconsListService {
 
   protected getD(type,frame):string{
     if(frame){
-      return type.value.codeForDeploing.d[frame.key] != undefined? frame.key :"friendly"
+      return type.value.codeForDeploing.d[frame] != undefined? frame :"friendly"
     }
     return "friendly";
   }
