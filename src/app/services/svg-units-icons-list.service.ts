@@ -27,7 +27,7 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
       squad: {classCSS : "unSelected", selectorText: "Escuadra",  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m37,-10a3,3 0 1 0 0,-1z"}}},
       section: {classCSS : "unSelected", selectorText: "Pelotón",  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m31,-10a3,3 0 1 0 0,-1z m12,0a3,3 0 1 0 0,-1z"}}},
       platoon: {classCSS : "unSelected", selectorText: "Sección",  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m25,-10a3,3 0 1 0 0,-1z m12,0a3,3 0 1 0 0,-1z m12,0a3,3 0 1 0 0,-1z"}}},
-      company: {classCSS : "unSelected", selectorText: "Compañía", alternatesVerbose:[{group:"main",option:"artillery",value:"Batería"},{group:"main",option:"cavalry",value:"Escuadrón"}],  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m40,-0 v-10"}}},
+      company: {classCSS : "unSelected", selectorText: "Compañía", alternatesVerbose:[{group:"extraFeature",option:"foSymbol",value:"Subgrupo Táctico"},{group:"main",option:"artillery",value:"Batería"},{group:"main",option:"cavalry",value:"Escuadrón"}],  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"black", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m40,-0 v-10"}}},
     },
     sector1:{
       missile:{classCSS : "unSelected", selectorText: "Misiles",  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"none", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m40,20l0,-18m-5,18l0,-13a5,5 1 1 1 10,0l0,13"}}}
@@ -37,12 +37,7 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
     //-----------------------
     // FALTAN FEATURES DE UNIDADES
     // ----------------------
-    // extraData: {
-    //   designation:{selectorText: "Designación",codeForDeploing:{type:"text",x:"75",y:"125",visible:true}},
-    //   heighterUnit:{selectorText: "Unidad Superior",codeForDeploing:{type:"text",x:"165",y:"70",visible:true}},
-    //   typeEquipment:{selectorText: "Tipo de Equipo",codeForDeploing:{type:"text",x:"75",y:"105"}},
-    //   dateTime:{selectorText: "Fecha-Hora",codeForDeploing:{type:"text",x:"75",y:"65"}}
-    // }
+
 
     extraData:{
       fields:{  
@@ -53,8 +48,14 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
           dateTime:{selectorText:"Fecha-Hora", placeHolder:"Fecha-Hora", value:"", x:75, y:65 , indent:"end" }
         }
       }
+    },
+
+    extraFeature:{
+      cgSymbol:{classCSS : "unSelected", selectorText: "CG/PLM", combatFunction:"command",  codeForDeploing:{type:"path", x:this.x, y:this.y, fill:"", stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, d:{friendly:"m80,130 v60",enemy:"m120,130 v60",neutral:"m120,130 v60",unknown:"m120,130 v60"}}},
+      foSymbol:{}
     }
   }
+
 
 
   constructor(public iconRegistry?: MatIconRegistry, public sanitizer?: DomSanitizer) {
@@ -152,8 +153,6 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
 }
 
 export interface UnitExtraOptions extends FeatureForDeploing{
-  // selectorText?:string,
-  // classCSS?:string,
   numbers?:{num?:TextField},
   textFields?:{designation?:TextField,heighterunit?:TextField,dateTime?:TextField,typeEquipment?:TextField},
   lists?:{type?:ListField},

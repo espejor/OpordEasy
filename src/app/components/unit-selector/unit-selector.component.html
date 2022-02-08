@@ -32,9 +32,9 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                        <div *ngIf = "setFeaturesToSelect != 'extraData'; else textOptions" class="features-container">
+                        <div *ngIf = "setFeaturesToSelect != 'extraData' && setFeaturesToSelect != 'extraFeature'; else textOptions" class="features-container">
                             <div  *ngFor = "let feature of svgListOfIcons.features[setFeaturesToSelect] | keyvalue:unsorted">
-                                <div  (click) = "addFeature(feature)" [class] = "feature.value.classCSS">
+                                <div  (click) = "addFeatureToModelIcon(feature)" [class] = "feature.value.classCSS">
                                     <mat-icon svgIcon = "{{feature.key}}" class="icon-selector" ></mat-icon>
                                     <div class="text-selector">{{feature.value.selectorText}}</div>
                                 </div>
