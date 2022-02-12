@@ -35,9 +35,13 @@ export class TaskSelectorComponent extends Selector implements OnInit,AfterViewI
   public setFeaturesToSelect ;
   public listOfOptions = [];
   optionsForDeploying: TaskOptions;
+  
+  fieldsToShow: TaskOptions["extraData"]["textFields"];
+  // listsToShow: TaskOptions["options"]["extraData"]["lists"];
+  // numsToShow: TaskOptions["options"]["extraData"]["numbers"];
 
   constructor(public svgListOfIcons: SvgTasksIconsListService, 
-    private  entitiesDeployed:EntitiesDeployedService,
+    private  entitiesDeployedService:EntitiesDeployedService,
     private entitySelectorService:EntitySelectorService,
     private operationsService:OperationsService,
     private _snackBar: MatSnackBar,
@@ -49,6 +53,9 @@ export class TaskSelectorComponent extends Selector implements OnInit,AfterViewI
     this.setFeaturesToSelect = Object.keys(this.listOfOptions)[0];
   }
 
+  asKeyValue(field):{key:string,value:any}{
+    return {key:field.key,value:field.value}
+  }
   
   ngAfterViewInit(){
     this.resetAspectSelectors();
@@ -70,16 +77,47 @@ export class TaskSelectorComponent extends Selector implements OnInit,AfterViewI
     return options;
   }
 
+  updateFeatureWithTextField(event,option){
+    (<TaskOptions>this.entitySelectorService.entitySelected.entityOptions).extraData.textFields[option.key].value = event.target.value
+  }
+
+  updateFeatureWithList(event,option){
+    (<TaskOptions>this.entitySelectorService.entitySelected.entityOptions).extraData.lists[option.key].value = event.value    
+  }
+
+  updateFeatureWithTextNumber(event,option){
+    (<TaskOptions>this.entitySelectorService.entitySelected.entityOptions).extraData.numbers[option.key].value = event.target.value
+  }
+
+
+
+
   loadExtraData(feature:KeyValue<string,any>){
+    if(feature.value.codeForDeploing.extraData){
+      this.fieldsToShow = feature.value.codeForDeploing.extraData.textFields
+      // this.listsToShow = feature.value.codeForDeploing.options.extraData.lists
+      // this.numsToShow = feature.value.codeForDeploing.options.extraData.numbers
+    }else{
+      this.fieldsToShow = undefined
+      // this.listsToShow = undefined
+      // this.numsToShow = undefined
+    }
+
+
+    this.optionsForDeploying = feature.value.codeForDeploing
     this.resetAspectSelectors();
-    const mapComponent = this.entitiesDeployed.getMapComponent();
+    const mapComponent = this.entitiesDeployedService.getMapComponent();
     // const coordinates:Coordinate = []; 
     const center = mapComponent.map.getView().getCenter();
     const coordinates:Coordinate[] = [];
     coordinates.push([center[0] - 500,center[1]]);
     coordinates.push([center[0] + 500,center[1]]);
     feature.value.classCSS = feature.value.classCSS == "selectorSelected"? "unSelected" : "selectorSelected";
-    this.optionsForDeploying = feature.value.codeForDeploing
+    const task = EntitySelector.getFactory(getEntityType(this.optionsForDeploying.typeTask)).
+                  createEntity(this.optionsForDeploying,coordinates);
+
+
+    this.entitySelectorService.entitySelected = task
   }
   
   saveTask(task:Entity<Geometry>):Observable<Object>{    // task.favorite = this.favorite;
@@ -101,7 +139,7 @@ export class TaskSelectorComponent extends Selector implements OnInit,AfterViewI
     if(this.optionsForDeploying.options && isMultiPointOption(this.optionsForDeploying.options))
       nPoints = this.optionsForDeploying.options.numPoints
 
-    const mapComponent = this.entitiesDeployed.getMapComponent();
+    const mapComponent = this.entitiesDeployedService.getMapComponent();
 
     const draw:Draw = new Draw({
       source:mapComponent.shapesVectorLayer,
@@ -123,21 +161,6 @@ export class TaskSelectorComponent extends Selector implements OnInit,AfterViewI
     })
 
     draw.on("drawend", (evt:DrawEvent) => {
-      // if (evt.feature.getGeometry().getType() == GeometryType.MULTI_POINT){
-      //   points.push((<MultiPoint>evt.feature.getGeometry()).getCoordinates()[0])
-      //   // draw.setProperties({
-      //   //   "style":new Style({
-      //   //     geometry: new Point((<MultiPoint>evt.feature.getGeometry()).getCoordinates()[0]),
-      //   //     image:new Icon({
-      //   //       src:"assets/icons/point.svg"
-      //   //     })
-      //   //   })
-      //   // })
-      //   if(++clicks == (<MultiPointOptions>this.optionsForDeploying.options).numPoints) {
-      //     coordinates = points
-      //   }else 
-      //     return
-      // }
       mapComponent.map.removeInteraction(draw);
       if(!coordinates)
         coordinates = TaskOptions.getCoordinatesByType (this.optionsForDeploying.typeTask,evt.feature)
@@ -154,9 +177,9 @@ export class TaskSelectorComponent extends Selector implements OnInit,AfterViewI
         )
         task._id = (<Entity>data)._id;
         this.entitySelectorService.entitySelected = task;
-        if(this.operationsService.loadEntity(this.entitySelectorService.entitySelected,coordinates)){
+        if(this.operationsService.loadEntityInLayout(this.entitySelectorService.entitySelected,coordinates)){
           const entityLocated:EntityLocated = new EntityLocated(this.entitySelectorService.entitySelected,this.entitySelectorService.entitySelected.getCoordinates())
-          this.entitiesDeployed.addNewEntity(entityLocated);
+          this.entitiesDeployedService.addNewEntityToMap(entityLocated);
           this.entitySelectorService.entitySelected = undefined;
         }
       });

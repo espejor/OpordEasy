@@ -1,7 +1,7 @@
 .frame{
     position: absolute;
-    bottom:100px;
-    right:50px;
+    /* bottom:100px;
+    right:50px; */
     width:100px;
     /* height:400px; */
     z-index: 200;

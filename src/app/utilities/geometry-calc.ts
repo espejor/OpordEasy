@@ -58,20 +58,31 @@ export function getParallelLine(coordinates: Coordinate[],distance:number,side:n
     return parallCoord;
 }
 
-export function getOrientation(pointStar: Coordinate, pointEnd: Coordinate): number {
-    var deltaY = pointEnd[1] - pointStar[1];
-    var deltaX = pointEnd[0] - pointStar[0];
+export function isRight(linePointA:Coordinate,linePointB:Coordinate, pointToCheck:Coordinate):boolean{
+  return ((linePointB[0] - linePointA[0])*(pointToCheck[1] - linePointA[1]) - (linePointB[1] - linePointA[1])*(pointToCheck[0] - linePointA[0])) > 0;
+}
+
+
+export function getOrientation(pointStart: Coordinate, pointEnd: Coordinate): number {
+    var deltaY = pointEnd[1] - pointStart[1];
+    var deltaX = pointEnd[0] - pointStart[0];
     var atan = Math.atan(deltaY / deltaX);
     if (deltaX < 0){    // 2º y 3er cuadrante
-        // if(atan >= 0)   // ATAN positivo
+        // if(atan >= 0)   // ATAN positivo 3º Cuadrante
             atan += Math.PI;
-        // else            // ATAN negativo
-        //     atan += (Math.PI * 2);
+        // else            // ATAN negativo 2º Cuadrante
+        //     atan = -atan + (Math.PI/2);
     }
-    // if (atan < 0)
-    //     atan += (Math.PI * 2);
+    if (atan < 0)
+        atan += (Math.PI * 2);
 
     return atan;
+}
+
+export function getAngle(startPoint:Coordinate,middlePoint:Coordinate,endPoint:Coordinate):number{
+    const directionToStart = getOrientation(middlePoint,startPoint)
+    const directionToEnd = getOrientation(middlePoint,endPoint)
+    return Math.abs(directionToStart - directionToEnd)
 }
 
 export function middlePoint(p1:Coordinate,p2:Coordinate):Coordinate{

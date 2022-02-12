@@ -16,7 +16,7 @@
       <!-- CUERPO WINDOW -->
   <section id="modal-body">
       <!-- OPCIONES de Líneas -->
-      <mat-card>
+      <mat-card class="tasksSymbolsContainer">
           <div   *ngFor = "let feature of svgListOfIcons.features.tasks.selector | keyvalue:unsorted">
               <div  (click) = "loadExtraData(feature)" [class] = "feature.value.classCSS">
                   <mat-icon svgIcon = {{feature.key}} class="icon-selector" ></mat-icon>
@@ -25,9 +25,29 @@
           </div>
       </mat-card>  
       <!-- OPCIONES PARA CADA Línea -->
-      <mat-card>
-
-      </mat-card>  
+        <mat-card class="extradataContainer">
+            <!-- <div   *ngFor = "let list of listsToShow | keyvalue">
+                <mat-form-field>
+                    <mat-select placeholder={{list}} (selectionChange) = "updateFeatureWithList($event,list)">
+                      <mat-option *ngFor="let option of svgListOfIcons.getList(list.value.list)" [value]="option.value">
+                        {{option.text}}
+                      </mat-option>
+                    </mat-select>                
+                </mat-form-field>
+            </div>
+            <div   *ngFor = "let number of numsToShow | keyvalue">
+                <mat-form-field>
+                    <mat-label>{{number.value.selectorText}}</mat-label>
+                    <input type= "number" matInput #plus placeholder={{number.value.placeHolder}} value={{number.value.value}} (change) = "updateFeatureWithTextNumber($event,number)"/>
+                </mat-form-field>
+            </div> -->
+            <div   *ngFor = "let field of fieldsToShow | keyvalue">
+                <mat-form-field>
+                    <mat-label>{{asKeyValue(field).value.selectorText}}</mat-label>
+                    <input matInput #plus placeholder={{asKeyValue(field).value.selectorText}} value={{asKeyValue(field).value.value}} (change) = "updateFeatureWithTextField($event,field)"/>
+                </mat-form-field>
+            </div>
+        </mat-card>  
   </section>
   <!-- BOTONES -->
   <footer id="modal-footer">

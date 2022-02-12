@@ -1,6 +1,6 @@
-<div class="favorites-container">
+<div class="features-container">
     <div *ngFor="let entity of listOfEntities">
-        <div  (click) = "updateModel(entity)">
+        <div  (click) = "updateModel(entity)"  class="unSelected">
             <app-entity-unit-selector-card [entity] = entity></app-entity-unit-selector-card>
         </div>
     </div>

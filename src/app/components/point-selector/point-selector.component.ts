@@ -35,7 +35,7 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
   typeEntity:string
 
   constructor(public svgListOfIcons: SvgGeneralIconsListService, 
-    private  entitiesDeployed:EntitiesDeployedService,
+    private  entitiesDeployedService:EntitiesDeployedService,
     private entitySelectorService:EntitySelectorService,
     private operationsService:OperationsService,
     private _snackBar: MatSnackBar,
@@ -83,7 +83,7 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
 
 
     this.resetAspectSelectors();
-    const mapComponent = this.entitiesDeployed.getMapComponent();
+    const mapComponent = this.entitiesDeployedService.getMapComponent();
     // const coordinates:Coordinate = []; 
     const coordinates = mapComponent.map.getView().getCenter();
     feature.value.classCSS = feature.value.classCSS == "selectorSelected"? "unSelected" : "selectorSelected";
@@ -116,10 +116,10 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
 
 
   insertPoint(event) {
-    // this.entitiesDeployed.saveEntity(entityType.point);
+    // this.entitiesDeployedService.saveEntity(entityType.point);
     // ---todo Intentar referenciar con viewChild o Output/Input 
     
-    const mapComponent = this.entitiesDeployed.getMapComponent();
+    const mapComponent = this.entitiesDeployedService.getMapComponent();
     const draw:Draw = new Draw({
       source:mapComponent.shapesVectorLayer,
       type: GeometryType.POINT
@@ -150,11 +150,11 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
     // if (!coordinates)
     // if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
     // }else 
-      if(this.operationsService.loadEntity(this.entitySelectorService.entitySelected,coordinates)){
+      if(this.operationsService.loadEntityInLayout(this.entitySelectorService.entitySelected,coordinates)){
         const entityLocated:EntityLocated = new EntityLocated(this.entitySelectorService.entitySelected,this.entitySelectorService.entitySelected.getCoordinates())
         // entityLocated.entity = this.entitySelectorService.entitySelected
         // entityLocated.location = this.entitySelectorService.entitySelected.getCoordinates();
-        this.entitiesDeployed.addNewEntity(entityLocated);
+        this.entitiesDeployedService.addNewEntityToMap(entityLocated);
         this.entitySelectorService.entitySelected = undefined;
       }
     });

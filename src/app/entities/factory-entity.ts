@@ -9,6 +9,11 @@ export abstract class EntityFactory<GeomType extends Geometry = Geometry> {
   // método abastracto de creación de subclases
   abstract createEntity(entityOptions?:EntityOptions,coordinates?:Coordinate[] | Coordinate, id?:string):Entity;
   abstract getSVGService():SvgIconsListService;
+
+  // Crea una entidad igual pero con id distinto
+  cloneEntity(entity:Entity){
+    
+  }
 }
 
 export function getOrderFeature(name:string){

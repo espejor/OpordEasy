@@ -144,6 +144,7 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
     return ""
 
   }
+  
   getIdent(): string {
       return this.num?this.num + "":""
   }

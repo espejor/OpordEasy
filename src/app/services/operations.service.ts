@@ -9,7 +9,7 @@ import { EntitiesDeployedService } from './entities-deployed.service';
 import { Coordinate } from 'ol/coordinate';
 import { MatDialog } from '@angular/material/dialog';
 import { NewPhaseDialogComponent } from '../components/nav/ol-map/new-phase-dialog/new-phase-dialog.component';
-import { Globals } from '../utilities/globals';
+// import { Globals } from '../utilities/globals';
 import { findElement } from '../utilities/miscelanea';
 
 @Injectable({
@@ -31,18 +31,18 @@ export class OperationsService {
 
   constructor(private http:HttpClient, 
     private _snackBar: MatSnackBar, 
-    private  entitiesDeployed:EntitiesDeployedService,
+    private  entitiesDeployedService:EntitiesDeployedService,
     public dialog: MatDialog) {    
     const URL_BASE = environment.baseUrl;
     this.URL_API = URL_BASE + 'api/operations'; 
-    Globals.OPERATION_SVC = this
+    // Globals.OPERATION_SVC = this
   }
 
   isOperationLoaded():boolean {
     return this.selectedOperation._id != undefined;
   }
 
-  loadEntity(unit: Entity<Geometry>,coordinates:Coordinate | Coordinate[]):boolean {
+  loadEntityInLayout(unit: Entity<Geometry>,coordinates:Coordinate | Coordinate[]):boolean {
     if(this.isOperationLoaded()){
       this.addEntityToLayout(unit,coordinates);
       return true;
@@ -248,7 +248,7 @@ export class OperationsService {
     //   this.updateLayout();
     //   console.log(data);
     // });
-    // this.entitiesDeployed.entities = this.selectedOperation.phases[this.phaseOrder].layout
+    // this.entitiesDeployedService.entities = this.selectedOperation.phases[this.phaseOrder].layout
   }
 
   prepareOperationForDDBB():any{
@@ -379,7 +379,7 @@ export class OperationsService {
     });
   }
 
-updateEntityPositionInOperation(entity: Entity) {
+  updateEntityPositionInOperation(entity: Entity) {
     const operation = this.selectedOperation
     const location = entity.getCoordinates();
     const entityFound = this.selectedOperation.phases[this.phaseOrder].layout.find((item) =>{
@@ -443,6 +443,12 @@ updateEntityPositionInOperation(entity: Entity) {
     this.deleteEntityFromLayout(entity)
   }
 
+  checkIfEntityIsInLayout(entity:Entity):boolean{
+    return this.selectedOperation.phases[this.phaseOrder].layout.some(entityLocated => {
+      return entityLocated.entity._id == entity._id
+    })
+  }
+
   deleteEntityFromLayout(entity: Entity<Geometry>) {
     // Borrar entidad del layout
     var entityLocated
@@ -464,7 +470,7 @@ updateEntityPositionInOperation(entity: Entity) {
     this.deleteEntityFromCombo(entity)
 
     // Eliminar del Vector de entidades desplegadas
-    this.entitiesDeployed.removeEntity(entityLocated)
+    this.entitiesDeployedService.removeEntityFromMap(entityLocated)
 
     // Modificar la DB
     const object = {
@@ -552,11 +558,13 @@ updateEntityPositionInOperation(entity: Entity) {
   }
 
   updateLayout() {
-    this.entitiesDeployed.resetEntitiesDeployed();
-    for (let entityInlayout of this.selectedOperation.phases[this.phaseOrder].layout){  
-      // const entity = EntitySelector.getFactory(entityInlayout.entityType).
-      //   createEntity(this.svgService,entityInlayout.entityOptions,entityInlayout.location);      
-      this.entitiesDeployed.addNewEntity(entityInlayout)
+    this.entitiesDeployedService.resetEntitiesDeployed();
+    if(this.selectedOperation.phases.length > 0){
+      for (let entityInlayout of this.selectedOperation.phases[this.phaseOrder].layout){  
+        // const entity = EntitySelector.getFactory(entityInlayout.entityType).
+        //   createEntity(this.svgService,entityInlayout.entityOptions,entityInlayout.location);      
+        this.entitiesDeployedService.addNewEntityToMap(entityInlayout)
+      }
     }
   }
 

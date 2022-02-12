@@ -28,7 +28,7 @@
 </div>
 
 <div *ngIf = "bubbleFormOpened" >
-    <app-bubble_feature (onClose)="bubbleClosed($event)" [entity] = "entityToShowInfo" [bubbleState]="bubbleFormOpened" ></app-bubble_feature>
+    <app-bubble_feature (onClose)="bubbleClosed($event)" [pixel] = "pixelForInfo" [entity] = "entityToShowInfo" [bubbleState]="bubbleFormOpened" ></app-bubble_feature>
 </div>
 <app-carousel *ngIf = "tutorialOpened" ></app-carousel>
 <app-ghost-element></app-ghost-element>

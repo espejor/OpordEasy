@@ -26,64 +26,8 @@ export class SvgTasksIconsListService extends SvgIconsListService {
           follow_and_assume: {classCSS : "unSelected", selectorText : "Seguir y Asumir", codeForDeploing:{typeTask:"arrow", verbose: "Seguir y Asumir", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/follow_and_assume.svg", scale:1/3}, lineVisible:true, tailSource:"assets/icons/label_tail.svg",tipSource:"assets/icons/double_arrow.svg", stroke_dasharray:[5,5]}},
           // Shapes
           attack_by_fire: {classCSS : "unSelected", selectorText : "Ataque por el fuego", codeForDeploing:{typeTask:"multipoint", verbose:"Ataque por el fuego", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/attack_by_fire.svg", scale:1/3}, options:{numPoints:3,edges:[{shape:{type:TypeShape.STICKLINE,angle:Math.PI/4,direction:Direction.LEFT}, initAnchor:{order:3}, finalAnchor:{order:1}},{shape:{type:TypeShape.STICKLINE,angle:Math.PI/4,direction:Direction.RIGHT}, initAnchor:{order:3}, finalAnchor:{order:2}},{shape:{type:TypeShape.LINE}, initAnchor:{order:3}, finalAnchor:{order:0},}],points:[{order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}},{order:1},{order:2},{order:3,reference:{referenceType:ReferenceType.MIDDLE,referencesPoints:[1,2]}}]}}},
-          support_by_fire: {classCSS : "unSelected", selectorText : "Apoyo por el fuego", codeForDeploing:{typeTask:"multipoint", verbose:"Apoyar por el fuego", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/support_by_fire.svg", scale:1/3}, options:{
-            numPoints:4,
-            edges:[{
-              shape:{
-                type:
-                TypeShape.STICKLINE,
-                angle:Math.PI/4,
-                direction:Direction.LEFT
-              },
-              initAnchor:{
-                order:4
-              }, 
-              finalAnchor:{
-                order:1
-              }
-            },
-            {
-              shape:{
-                type:TypeShape.STICKLINE,
-                angle:Math.PI/4,
-                direction:Direction.RIGHT
-              }, 
-              initAnchor:{
-                order:4
-              }, 
-              finalAnchor:{
-                order:2
-              }
-            },
-            {
-              shape:{
-                type:TypeShape.LINE
-              }, 
-              initAnchor:{order:1}, 
-              finalAnchor:{order:0}
-            },
-            {
-              shape:{
-                type:TypeShape.LINE
-              }, 
-              initAnchor:{order:2}, 
-              finalAnchor:{order:3}
-            }
-          ],
-            
-            points:[{
-              order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}
-            },{
-              order:1
-            },{
-              order:2
-            },{
-              order:3,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}
-            },{
-              order:4,reference:{referenceType:ReferenceType.MIDDLE,referencesPoints:[1,2]}
-            }
-            ]
-          }}},
+          support_by_fire: {classCSS : "unSelected", selectorText : "Apoyo por el fuego", codeForDeploing:{typeTask:"multipoint", verbose:"Apoyar por el fuego", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/support_by_fire.svg", scale:1/3}, options:{numPoints:4,edges:[{shape:{type:TypeShape.STICKLINE,angle:Math.PI/4,direction:Direction.LEFT},initAnchor:{order:4}, finalAnchor:{order:1}},{shape:{type:TypeShape.STICKLINE,angle:Math.PI/4,direction:Direction.RIGHT},initAnchor:{order:4},finalAnchor:{order:2}},{shape:{type:TypeShape.LINE},initAnchor:{order:1},finalAnchor:{order:0}},{shape:{type:TypeShape.LINE},initAnchor:{order:2},finalAnchor:{order:3}}],points:[{order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}},{order:1},{order:2},{order:3,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}},{order:4,reference:{referenceType:ReferenceType.MIDDLE,referencesPoints:[1,2]}}]}}},
+
           block: {classCSS : "unSelected", selectorText : "Bloquear", codeForDeploing:{typeTask:"multipoint", x:this.x, y:this.y, verbose: "Bloquear", fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/block.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.ISOSCELES,referencesPoints:[0,1,2]}],edges:[{shape:{type:TypeShape.LINE}, initAnchor:{order:0}, finalAnchor:{order:1}},{shape:{type:TypeShape.LINE}, text: {text:"B",position:CPosition.CENTER}, initAnchor:{order:2}, finalAnchor:{order:3},}],points:[{order:0},{order:1},{order:2},{order:3,reference:{referenceType:ReferenceType.MIDDLE,referencesPoints:[0,1]}}]}}},
           breach: {classCSS : "unSelected", selectorText : "Brecha", codeForDeploing:{typeTask:"multipoint", verbose: "Brecha", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/breach.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.ISOSCELES,referencesPoints:[0,1,2]}],edges:[{shape:{type:TypeShape.LINE}, initAnchor:{order:0}, finalAnchor:{order:3}},{shape:{type:TypeShape.LINE}, initAnchor:{order:1}, finalAnchor:{order:4}},{shape:{type:TypeShape.LINE}, initAnchor:{order:4}, finalAnchor:{order:3},text:{text:"B",position:CPosition.CENTER}}],points:[{order:0,tip:{src:"assets/icons/tips/tilt_line_left.svg",ubication:CPosition.START}},{order:1,tip:{src:"assets/icons/tips/tilt_line_right.svg",ubication:CPosition.START}},{order:2},{order:3,reference:{referenceType:ReferenceType.LEFT_PERPENDICULAR,referencesPoints:[1,0,0,2]}},{order:4,reference:{referenceType:ReferenceType.RIGHT_PERPENDICULAR,referencesPoints:[0,1,1,2]}}]}}},
           bypass: {classCSS : "unSelected", selectorText : "Desbordar", codeForDeploing:{typeTask:"multipoint", verbose: "Desbordar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/bypass.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.ISOSCELES,referencesPoints:[0,1,2]}],edges:[{shape:{type:TypeShape.LINE}, initAnchor:{order:0}, finalAnchor:{order:3}},{shape:{type:TypeShape.LINE}, initAnchor:{order:1}, finalAnchor:{order:4}},{shape:{type:TypeShape.LINE}, initAnchor:{order:4}, finalAnchor:{order:3},text:{text:"B",position:CPosition.CENTER}}],points:[{order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.START,anchor:[0.5,0.2]}},{order:1,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.START,anchor:[0.5,0.2]}},{order:2},{order:3,reference:{referenceType:ReferenceType.LEFT_PERPENDICULAR,referencesPoints:[1,0,0,2]}},{order:4,reference:{referenceType:ReferenceType.RIGHT_PERPENDICULAR,referencesPoints:[0,1,1,2]}}]}}},
@@ -100,14 +44,15 @@ export class SvgTasksIconsListService extends SvgIconsListService {
           locate: {classCSS : "unSelected", selectorText : "Localizar", codeForDeploing:{typeTask:"circle", verbose: "Localizar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/locate.svg", scale:1/3}, options:{center:{},radius:0,arc:7*Math.PI/4,text:{text:"LOC",position:CPosition.CENTER},tips:[{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.START,anchor:[0.5,0.2]},{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}]}}},
           control: {classCSS : "unSelected", selectorText : "Controlar", codeForDeploing:{typeTask:"circle", verbose: "Controlar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/control.svg", scale:1/3}, options:{center:{},radius:0,arc:7*Math.PI/4,text:{text:"C",position:CPosition.CENTER},tips:[{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.START,anchor:[0.5,0.2]},{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}]}}},
             
-          delay: {classCSS : "unSelected", selectorText : "Retardar", codeForDeploing:{typeTask:"multipoint", verbose: "Retardar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/delay.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.RIGHT_TRIANGLE,referencesPoints:[0,1,2]}],edges:[{shape:{type:TypeShape.LINE}, initAnchor:{order:1}, finalAnchor:{order:0}},{shape:{type:TypeShape.ARC,angle:Math.PI,direction:Direction.LEFT}, initAnchor:{order:1}, finalAnchor:{order:2}}],points:[{order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}},{order:1},{order:2}]}}},
+          delay: {classCSS : "unSelected", selectorText : "Retardar", codeForDeploing:{typeTask:"multipoint", verbose: "Retardar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth,extraData:{textFields:{dateTime:{selectorText:"Grupo Fecha-Hora",placeHolder:"Grupo Fecha-Hora",value:"",visible:true,position:{referenceType:ReferenceType.OFFSET,referencesPoints:[0,1,3],offset:{typeOffset:TypeOffset.POLAR,angle:Math.PI/2,distance:50}}}}}, file:{file:"assets/icons/tasks/delay.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.RIGHT_TRIANGLE,referencesPoints:[0,1,2]}],edges:[{shape:{type:TypeShape.LINE},text:{text:"D",position:CPosition.CENTER,rotation:Math.PI}, initAnchor:{order:1}, finalAnchor:{order:0}},{shape:{type:TypeShape.ARC,angle:Math.PI,direction:Direction.LEFT}, initAnchor:{order:1}, finalAnchor:{order:2}}],points:[{order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}},{order:1},{order:2},{order:3,reference:{referenceType:ReferenceType.MIDDLE,referencesPoints:[0,1]}}]}}},
           demostrate: {classCSS : "unSelected", selectorText : "Demostración", codeForDeploing:{typeTask:"multipoint", verbose: "Demostración", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/demostrate.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.RIGHT_TRIANGLE,referencesPoints:[0,1,2]}],edges:[{shape:{type:TypeShape.LINE}, initAnchor:{order:1}, finalAnchor:{order:0},text:{text:"DEM",position:CPosition.CENTER,rotation:Math.PI}},{shape:{type:TypeShape.ARC,angle:Math.PI,direction:Direction.LEFT}, initAnchor:{order:1}, finalAnchor:{order:2}},{shape:{type:TypeShape.LINE},initAnchor:{order:2},finalAnchor:{order:3}}],points:[{order:0,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}},{order:1},{order:2},{order:3,reference:{referenceType:ReferenceType.LEFT_PERPENDICULAR,referencesPoints:[2,1,2,0]}}]}}},
           
-          recover: {classCSS : "unSelected", selectorText : "Recuperar", codeForDeploing:{typeTask:"multipoint", verbose: "Recuperar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/recover.svg", scale:1/3}, options:{numPoints:3,edges:[{shape:{type:TypeShape.ARC,angle:Math.PI/2,direction:Direction.RIGHT}, initAnchor:{order:0}, finalAnchor:{order:2},text:{text:"R",position:CPosition.CENTER}}],points:[{order:0,tip:{src:"assets/icons/tips/circle.svg",ubication:CPosition.START,anchor:[0.5,0.5]}},{order:1},{order:2,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}}]}}},
+          recover: {classCSS : "unSelected", selectorText : "Recuperar", codeForDeploing:{typeTask:"multipoint", verbose: "Recuperar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/recover.svg", scale:1/3}, options:{numPoints:3,edges:[{shape:{type:TypeShape.ARC,angle:Math.PI/2,direction:Direction.RIGHT,haveDirectionPoint:true,directionPoint:{order:1}}, initAnchor:{order:0}, finalAnchor:{order:2},text:{text:"R",position:CPosition.CENTER}}],points:[{order:0,tip:{src:"assets/icons/tips/circle.svg",ubication:CPosition.START,anchor:[0.5,0.5]}},{order:1},{order:2,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2],rotation:-Math.PI/2}}]}}},
           
           infiltrate: {classCSS : "unSelected", selectorText : "Infiltrar", codeForDeploing:{typeTask:"multipoint", verbose: "Infiltrar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/infiltrate.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.IN_LINE,referencesPoints:[0,1,2]},{constraintType:ConstraintType.EQUAL,referencesPoints:[1,2,1,0]}],edges:[{text:{text:"IN",position:CPosition.CENTER},shape:{type:TypeShape.LINE}, initAnchor:{order:0}, finalAnchor:{order:3}},{shape:{type:TypeShape.ARC,angle:Math.PI/2,direction:Direction.RIGHT}, initAnchor:{order:3}, finalAnchor:{order:1}},{shape:{type:TypeShape.ARC,angle:Math.PI/2,direction:Direction.LEFT}, initAnchor:{order:1}, finalAnchor:{order:4}},{shape:{type:TypeShape.LINE}, initAnchor:{order:4}, finalAnchor:{order:2}}],points:[{order:0},{order:1}, {order:2,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}},{order:3,reference:{referenceType:ReferenceType.OFFSET,referencesPoints:[0,1,0],offset:{typeOffset:TypeOffset.POLAR, angle:Math.PI/18,distance:{referenceType:ReferenceType.PROPORTIONAL,proportion:{operation:Operation.MULT,referencePoints:[0,1],proportion:0.811}}}}},{order:4,reference:{referenceType:ReferenceType.OFFSET,referencesPoints:[2,1,2],offset:{typeOffset:TypeOffset.POLAR, angle:Math.PI/18,distance:{referenceType:ReferenceType.PROPORTIONAL,proportion:{operation:Operation.MULT,referencePoints:[0,1],proportion:0.811}}}}}]}}},
           exfiltrate: {classCSS : "unSelected", selectorText : "Exfiltrar", codeForDeploing:{typeTask:"multipoint", verbose: "Exfiltrar", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/exfiltrate.svg", scale:1/3}, options:{numPoints:3,mainConstraints:[{constraintType:ConstraintType.IN_LINE,referencesPoints:[0,1,2]},{constraintType:ConstraintType.EQUAL,referencesPoints:[1,2,1,0]}],edges:[{text:{text:"EX",position:CPosition.CENTER,rotation:Math.PI},shape:{type:TypeShape.LINE}, initAnchor:{order:0}, finalAnchor:{order:3}},{shape:{type:TypeShape.ARC,angle:Math.PI/2,direction:Direction.RIGHT}, initAnchor:{order:3}, finalAnchor:{order:1}},{shape:{type:TypeShape.ARC,angle:Math.PI/2,direction:Direction.LEFT}, initAnchor:{order:1}, finalAnchor:{order:4}},{shape:{type:TypeShape.LINE}, initAnchor:{order:4}, finalAnchor:{order:2}}],points:[{order:0},{order:1}, {order:2,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2]}},{order:3,reference:{referenceType:ReferenceType.OFFSET,referencesPoints:[0,1,0],offset:{typeOffset:TypeOffset.POLAR, angle:Math.PI/18,distance:{referenceType:ReferenceType.PROPORTIONAL,proportion:{operation:Operation.MULT,referencePoints:[0,1],proportion:0.811}}}}},{order:4,reference:{referenceType:ReferenceType.OFFSET,referencesPoints:[2,1,2],offset:{typeOffset:TypeOffset.POLAR, angle:Math.PI/18,distance:{referenceType:ReferenceType.PROPORTIONAL,proportion:{operation:Operation.MULT,referencePoints:[0,1],proportion:0.811}}}}}]}}},
-            
+          envelope: {classCSS : "unSelected", selectorText : "Envolver", codeForDeploing:{typeTask:"multipoint", verbose: "Envolver", x:this.x, y:this.y, fill:this.TRANSPARENT, stroke:this.generalStrokeColor, strokeWidth:this.generalStrokeWidth, file:{file:"assets/icons/tasks/envelope.svg", scale:1/3}, options:{numPoints:4,mainConstraints:[{constraintType:ConstraintType.IN_LINE,referencesPoints:[0,1,3]}],edges:[{text:{text:"E",position:CPosition.CENTER},shape:{type:TypeShape.LINE}, initAnchor:{order:0}, finalAnchor:{order:1}},{shape:{type:TypeShape.ARC,angle:Math.PI,haveDirectionPoint:true,directionPoint:{order:2}}, initAnchor:{order:1}, finalAnchor:{order:3}}],points:[{order:0},{order:1},{order:2}, {order:3,tip:{src:"assets/icons/tips/up-arrow.svg",ubication:CPosition.END,anchor:[0.5,0.2],rotation:-Math.PI/2}}]}}},
+          
         }
     }
   }

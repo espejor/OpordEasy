@@ -12,7 +12,7 @@ mat-dialog-container{
 #modal-content-wrapper{
     display: flex;
     flex-direction: column;
-    height: 90%;
+    height: 100%;
     overflow: hidden;
 }    
 
@@ -57,14 +57,14 @@ mat-card{
 .unit-result{
     background-color: darkseagreen;
     height: "300px";
-    width: 40%;
+    width: 30%;
     display: flex;
     align-content: space-between;
 }
 
 .unit-selector{
     height: "300px";
-    width: 60%;
+    width: 70%;
     
 }
 
@@ -82,7 +82,7 @@ mat-card{
     display: inline-grid;
 } */
 
-.selector, .selectorSelected{
+.selector, .selectorSelected, .unSelected{
     color: black;
     width: 90px;
     height: 100px;
@@ -145,4 +145,19 @@ app-favorite-selector{
     overflow: hidden;
     display: flex;
     flex-direction: column;
+}
+
+.mat-radio-button {
+    /* display: inline-block;
+    -webkit-tap-highlight-color: transparent;
+    outline: 0; */
+    padding: 0.2em;
+}
+
+.mat-checkbox {
+   padding: 0.2em;
+}
+
+#radioGroup{
+    display: grid;
 }

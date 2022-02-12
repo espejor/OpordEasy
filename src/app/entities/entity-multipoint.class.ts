@@ -10,15 +10,17 @@ import ImageStyle from "ol/style/Image";
 import { Coordinate, distance, equals } from "ol/coordinate";
 import { entityType } from "./entitiesType";
 import Icon from "ol/style/Icon";
-import { TaskOptions } from "./entity-task.class";
+import { EntityTask, TaskOptions } from "./entity-task.class";
 import { LineString } from "ol/geom";
-import { distanceFromPointToLine, getCoordsForArcFrom2Points, getOrientation, getPerpendicularPoint, getPointToVector, middlePoint } from "../utilities/geometry-calc";
+import { distanceFromPointToLine, getCoordsForArcFrom2Points, getOrientation, getPerpendicularPoint, getPointToVector, isRight, middlePoint } from "../utilities/geometry-calc";
 import { EntityLine } from "./entity-line.class";
 import { Map, Collection } from "ol";
 import { ModifyEvent } from "ol/interaction/Modify";
 import { HTTPEntitiesService } from "../services/entities.service";
 import { OperationsService } from "../services/operations.service";
 import { SvgTasksIconsListService } from "../services/svg-tasks-icons-list.service";
+import { TextField } from "../models/feature-for-selector";
+import { EntityPoint } from "./entity-point.class";
 
 export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends EntityLine{
   public image: ImageStyle;
@@ -37,6 +39,9 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
   public rotateWithView = false;
   multiPointOptions: MultiPointOptions;
   points: PointLike[];
+  taskOptions: TaskOptions;
+  dateTime: any;
+  dateTimeStyle: Style;
 
   constructor(taskOptions:TaskOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
     super(taskOptions,opt_geometryOrProperties,id);
@@ -46,9 +51,11 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
     this.setStyle()
 
     if (taskOptions){
+      this.taskOptions = taskOptions
       this.multiPointOptions = <MultiPointOptions>taskOptions.options
       this.numPoints = this.multiPointOptions.numPoints
       this.points = this.multiPointOptions.points
+      this.dateTime = this.taskOptions.extraData?this.taskOptions.extraData.textFields.dateTime:null
       // this.file = this.file.file
     }
 
@@ -69,11 +76,14 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
       this.multiPointOptions.points.forEach((value,index) => {
         if ((<VirtualPoint>value).reference){
           // this.resolveConstraint((<VirtualPoint>value).constraint)value.order = index
-          value.coordinate = this.resolveReferenceToCoordinate((<VirtualPoint>value))
+          value.coordinate = this.resolveReferenceToCoordinate(((<VirtualPoint>value).reference))
         }
       })
       const styles:Style[] = []
       const points = feature.multiPointOptions.points;
+
+      
+      this.dateTimeStyle = this.configureDateTime();
 
       // //***************   Quitar ***********************/
       // styles.push(this.getMainStyle())
@@ -104,6 +114,7 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
 
 
       });
+      if (this.dateTimeStyle) styles.push(this.dateTimeStyle)
       // this.fixUbicationRealPoints()
       // this.applyConstraints()
       return styles
@@ -112,6 +123,40 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
     this.setStyle(styleFunction)
   }
   
+  public configureDateTime():Style{
+    var location:Coordinate;
+    if(this.dateTime){
+      if (this.dateTime.position){
+        location = this.resolveReferenceToCoordinate(this.dateTime.position)
+      }
+      const txt = new Text({
+        stroke: this.stroke,
+        // offsetY: 7,
+        // offsetX: 10,
+        rotateWithView:true,
+        textAlign:"center",
+        padding:[10,10,10,10],
+        scale:this.scale * 0.7,
+        text:this.dateTime.value
+      })
+  
+      return new Style({
+        geometry: function(feature:EntityMultiPoint){
+          // feature.updateData()
+          // const text: string = feature.dateTime ;
+          const point = new Point(location?location:feature.getCoordinates()[0]);
+          const end = new Point(feature.getEntityGeometry().getCoordinates()[1]);
+          const start = new Point(feature.getEntityGeometry().getCoordinates()[0]);
+          const rotation = feature.getOrientation(start, end);
+          feature.dateTimeStyle.getText().setRotation(-rotation);
+          // feature.dateTimeEndStyle.getText().setText(text)
+          return point
+        } ,
+        text: txt
+      });
+    }
+    return null
+  }
   
   getSvgSvcFieldsOfExtraData(){
     return null
@@ -158,20 +203,31 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
         if(constraint.constraintType == ConstraintType.EQUAL)
           this.transformToEqual(constraint)
         if(constraint.constraintType == ConstraintType.IN_LINE)
-          this.transformToInLine()
+          this.transformToInLine(constraint)
       })
     }
   }
   
-  transformToInLine() {
-    const coords : Coordinate[] = this.getCoordinates()
+  transformToInLine(constraint:Constraint) {
+    var inLineCoords : Coordinate[] = []
+    constraint.referencesPoints.forEach(i => {
+      inLineCoords.push(this.getCoordinates()[i])
+    })
     const or = getOrientation(this.getCoordinates()[0],this.getCoordinates()[1])
-    for (let i = 2; i < this.getCoordinates().length; i++) {
-      const d = distance(coords[i-1],coords[i])
-      coords[i] = getPointToVector(coords[i-1],or,d);
+    for (let i = 2; i < inLineCoords.length; i++) {
+      const d = distance(inLineCoords[i-1],inLineCoords[i])
+      inLineCoords[i] = getPointToVector(inLineCoords[i-1],or,d);
     }
+    var finalCoords:Coordinate[] = [];
+    this.getCoordinates().forEach( (coordinate,index) => {
+      if (constraint.referencesPoints.includes(index)){
+        finalCoords[index] = inLineCoords[constraint.referencesPoints.indexOf(index)]
+      }else{
+        finalCoords[index] = coordinate
+      }
+    });
 
-    (<LineString>this.getGeometry()).setFlatCoordinates((<LineString>this.getGeometry()).getLayout(), this.transformToFlatCoordinates(coords))
+    (<LineString>this.getGeometry()).setFlatCoordinates((<LineString>this.getGeometry()).getLayout(), this.transformToFlatCoordinates(finalCoords))
   }
 
   transformToEqual(constraint:Constraint) {
@@ -214,8 +270,7 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
     return [(c1[0] + c2[0])/2,(c1[1] + c2[1])/2]
   }
 
-  resolveReferenceToCoordinate(point: VirtualPoint): Coordinate {
-    const reference:Reference = point.reference
+  resolveReferenceToCoordinate(reference: Reference): Coordinate {
     var coordinate:Coordinate
     const coords:Coordinate[] = []
     if (reference.referencesPoints){
@@ -297,6 +352,9 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
           break;
         case Operation.SUM:
           value = messure + proportion
+          break;
+        case Operation.DIV:
+          value = messure / proportion
           break;
         
       }
@@ -454,10 +512,23 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
     const text = edge.text
     const finalTip:Tip = (<CPoint>this.points[edge.finalAnchor.order]).tip;
     const initTip:Tip = (<CPoint>this.points[edge.initAnchor.order]).tip;
-    const from = (<Arc>edge.shape).direction == Direction.LEFT? edge.initAnchor.coordinate:edge.finalAnchor.coordinate
-    const to = (<Arc>edge.shape).direction == Direction.LEFT? edge.finalAnchor.coordinate:edge.initAnchor.coordinate
-    const line = new LineString(getCoordsForArcFrom2Points(from,to,(<Arc>edge.shape).angle))
+    var directionPoint:Coordinate
+    var direction:Direction = (<Arc>edge.shape).direction
+    if((<Arc>edge.shape).directionPoint){
+      direction = this.calculateDirectionOfArc(edge)
+    }
+    const from = direction == Direction.LEFT? edge.initAnchor.coordinate:edge.finalAnchor.coordinate
+    const to = direction == Direction.LEFT? edge.finalAnchor.coordinate:edge.initAnchor.coordinate
+    var line = new LineString(getCoordsForArcFrom2Points(from,to,(<Arc>edge.shape).angle))
     const centerLine = line.getCoordinateAt(0.5)
+    if((<Arc>edge.shape).directionPoint){
+      const index = (<Arc>edge.shape).directionPoint.order
+      const flatCoordinates = (<LineString>this.getGeometry()).getFlatCoordinates()
+      flatCoordinates[index * 2] = centerLine[0];
+      flatCoordinates[(index * 2) + 1] = centerLine[1];
+      (<LineString>this.getGeometry()).setFlatCoordinates((<LineString>this.getGeometry()).getLayout(),flatCoordinates)
+      // this.setCoordinate(index,directionPoint)
+    }
     const basicStyle = new Style({
       geometry: line,
       stroke: new Stroke({
@@ -482,11 +553,13 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
 
     if(finalTip){
       const ubication = finalTip.ubication
-      const l = line.getCoordinates().length
-      const from = ubication == CPosition.END? line.getCoordinates()[l - 2]: line.getLastCoordinate() 
-      const to = ubication == CPosition.END? line.getLastCoordinate() : line.getCoordinates()[l - 2]
+      const newLine = direction == Direction.LEFT? line: this.lineReverse(line)
+      const l = newLine.getCoordinates().length
+      const from = ubication == CPosition.END? newLine.getCoordinates()[l - 2]: newLine.getLastCoordinate() 
+      const to = ubication == CPosition.END? newLine.getLastCoordinate() : newLine.getCoordinates()[l - 2]
       const or = getOrientation(from,to)
-      const tipStl = this.tipStyle(edge,finalTip,or+ Math.PI/2)
+      const rotation = finalTip.rotation?finalTip.rotation:0
+      const tipStl = this.tipStyle(edge,finalTip,or+ Math.PI/2 + rotation)
       styles.push(tipStl)       
     }
     if(initTip){
@@ -494,6 +567,21 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
     }
 
     return styles
+  }
+
+  lineReverse(line: LineString): LineString {
+    const newLine:LineString = line.clone()
+    const coords = newLine.getCoordinates().reverse()
+    newLine.setCoordinates(coords)
+    return newLine
+  }
+
+  calculateDirectionOfArc(edge:Edge): Direction {
+    const initPoint:Coordinate = edge.initAnchor.coordinate;
+    const finalPoint:Coordinate = edge.finalAnchor.coordinate;
+    (<Arc>edge.shape).directionPoint.coordinate = this.getCoordinate((<Arc>edge.shape).directionPoint.order)
+    const directionPoint = (<Arc>edge.shape).directionPoint.coordinate
+    return isRight(initPoint,finalPoint, directionPoint)? Direction.RIGHT : Direction.LEFT
   }
 
   getLocation(): Coordinate{
@@ -540,7 +628,8 @@ export enum ReferenceType {
   INITIAL = "initial",
   FINAL = "final",
   OFFSET = "offset",
-  PROPORTIONAL = "PROPORTIONAL"
+  PROPORTIONAL = "PROPORTIONAL",
+  CALCUL = "calcul"
 }
 
 
@@ -557,6 +646,7 @@ export interface MainPoint{
   coordinate?: Coordinate,
   order:number,
   constraint?:Constraint,
+  reference?:Reference,
   tip?: Tip
 }
 
@@ -577,6 +667,8 @@ export interface Reference{
   offset?: Offset,
   proportion?:Proportion
 }
+
+
 
 export enum Operation { SUM, MULT, DIV, REST} 
 
@@ -619,7 +711,8 @@ export interface CPoint extends MainPoint{
 export interface Tip{
   src: string,
   ubication: CPosition,
-  anchor?:number[]
+  anchor?:number[],
+  rotation?:number
 }
 
 export interface Edge {
@@ -670,7 +763,9 @@ export enum Direction {
 export interface Arc {
   type: TypeShape.ARC
   angle: number,
-  direction: Direction
+  direction?: Direction,
+  haveDirectionPoint?:boolean,
+  directionPoint?:PointLike
 }
 
 export interface Line{

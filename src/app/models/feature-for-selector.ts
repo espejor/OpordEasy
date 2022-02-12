@@ -1,4 +1,5 @@
 import { AreaOptions } from "../entities/entity-area.class";
+import { Reference } from "../entities/entity-multipoint.class";
 import { TaskOptions } from "../entities/entity-task.class";
 import { EntityOptions, Pattern } from "../entities/entity.class";
 
@@ -107,7 +108,8 @@ export interface TextField{
   offset?:[number,number],
   fontSize?:number,
   indent?:"start" | "end",
-  visible?:boolean
+  visible?:boolean,
+  position?:Reference
 }
 
 

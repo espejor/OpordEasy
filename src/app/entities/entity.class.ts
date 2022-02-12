@@ -8,7 +8,7 @@ import { HTTPEntitiesService } from "../services/entities.service";
 import { OperationsService } from "../services/operations.service";
 import { SvgIconsListService } from "../services/svg-icons-list.service";
 import { distanceInPixelBetweenCoordinates } from "../utilities/coordinates-calc";
-import { Globals } from "../utilities/globals";
+// import { Globals } from "../utilities/globals";
 import {EntityStakedOrder, entityType } from "./entitiesType";
 
 export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feature{
@@ -38,12 +38,12 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
       //   console.log("para")
       //   return false
       // })
-      this.on("change", evt =>{
-        const operationOpened = Globals.OPERATION_SVC.activatedOperationsFormOpened
-        if (operationOpened)
-          return false
-        return true
-       })
+      // this.on("change", evt =>{
+      //   // const operationOpened = Globals.OPERATION_SVC.activatedOperationsFormOpened
+      //   // if (operationOpened)
+      //   //   return false
+      //   // return true
+      //  })
       //  this.on("propertychange", evt =>{
       //   const operationOpened = Globals.OPERATION_SVC.activatedOperationsFormOpened
       //   if (operationOpened)
@@ -52,7 +52,7 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
       //  })
     }
 
-  abstract getHTMLCodeForIconTimeline(): string
+  public abstract getHTMLCodeForIconTimeline(scale?): string
   abstract getIdent():string
   getVerbose():string{
     return ""

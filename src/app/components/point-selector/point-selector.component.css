@@ -15,10 +15,10 @@ mat-card{
     flex-wrap: wrap;
     width: "300px";
 }
-.unit-result{
+/* .unit-result{
     background-color: darkgray;
     height: "300px";
-}
+} */
 
 .selector, .selectorSelected, .unSelected{
     color: black;

@@ -198,13 +198,8 @@ export class SvgIconsListService {
   }
 
 
-  public createSVGForCard(entity: Entity,scale:number = 1): string {
-  //   if(entity instanceof EntityUnit)
-  //     return this.createSVGForTimeline(entity,scale);
-  //   else{
-        return entity.getHTMLCodeForIconTimeline() 
-    // }  
-    // return null
+  public createSVGForCard(entity:Entity,scale:number = 1): string {
+    return entity.getHTMLCodeForIconTimeline(scale) 
   }
 
   // createSVGFromFileForTimeline(entity: Entity, scale: number): string {

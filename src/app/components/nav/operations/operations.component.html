@@ -23,6 +23,11 @@
                         [(ngModel)] = "operationsService.selectedOperation.name"
                         placeholder="Nombre de la Operación">
                     </mat-form-field>
+                    <div class="delete-button">
+                        <button mat-icon-button color="red" class="icon-button" (click) = "deleteOperation(operationForm)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div> 
                 </div>
                 <!-- --------- Vista de Fase seleccionada ----------- -->
                 <app-phase></app-phase>

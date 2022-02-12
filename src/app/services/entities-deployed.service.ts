@@ -39,7 +39,7 @@ export class EntitiesDeployedService {
     return this.olMapComponent;
   }
 
-  addNewEntity(entityLocated: EntityLocated, coordinates?:Coordinate[] | Coordinate) {
+  addNewEntityToMap(entityLocated: EntityLocated, coordinates?:Coordinate[] | Coordinate) {
     if (coordinates)
       entityLocated.location = coordinates;    
 
@@ -47,7 +47,7 @@ export class EntitiesDeployedService {
     this.olMapComponent.shapesFeatures.push(entityLocated.entity);
   }
 
-  removeEntity(entityLocated: EntityLocated){
+  removeEntityFromMap(entityLocated: EntityLocated){
     this.olMapComponent.shapesFeatures.remove(entityLocated.entity)
   }
 
@@ -56,34 +56,4 @@ export class EntitiesDeployedService {
     this.olMapComponent.dragFeatures.clear();
     // this.olMapComponent.snap.clearFeatures()
   }  
-
-  updateMap(){
-  }
-
-
-  // saveEntity(entityType:entityType){
-  //   // -------- provisional
-  //   // operation.user = "Pepe"
-        
-  //   const mapComponent = this.getMapComponent();
-  //   // // const coordinates:Coordinate = []; 
-  //   const coordinates = mapComponent.map.getView().getCenter();
-  //   // this.listOfUnitsCreated.push(this.unitOptions);
-  //   const unit = EntitySelector.getFactory(entityType).createEntity(this.svgListOfIconsService, this.unitOptions,coordinates);
-  //   unit.favorite = this.favorite;
-  //   // La guardamos en la BD
-  //   this.httpEntitiesService.addEntity(unit).subscribe(
-  //     data => {
-  //     this._snackBar.open(
-  //       "Se ha guardado la nueva Unidad en la Base de datos",
-  //       "Cerrar",
-  //       {duration : 3000}
-  //     )
-  //     unit._id = (<Entity>data)._id;
-  //     this.entitySelectorService.entitySelected = unit;
-  //     if (andInsert)
-  //       this.insertUnit(event);
-  //   });
-  // }
-
 }

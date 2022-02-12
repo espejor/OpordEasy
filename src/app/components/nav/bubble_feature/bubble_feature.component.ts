@@ -8,6 +8,7 @@ import { UtmService } from 'src/app/services/utm.service';
 import * as Proj from 'ol/proj';
 import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
 import { SvgIconsListService } from 'src/app/services/svg-icons-list.service';
+import { Pixel } from 'ol/pixel';
 
 @Component({
   selector: 'app-bubble_feature',
@@ -15,6 +16,7 @@ import { SvgIconsListService } from 'src/app/services/svg-icons-list.service';
   styleUrls: ['./bubble_feature.component.css']
 })
 export class Bubble_featureComponent implements OnInit,AfterViewInit,OnChanges {
+  @Input() pixel:Pixel
   @Input() entity:Entity
   @Input() bubbleState:boolean
   @Output() onClose: EventEmitter<boolean> = new EventEmitter();
@@ -24,7 +26,7 @@ export class Bubble_featureComponent implements OnInit,AfterViewInit,OnChanges {
   }
 
   typeEntity: string;
-  entitiesDeployedSvc:EntitiesDeployedService
+  entitiesDeployedServiceSvc:EntitiesDeployedService
   operationsService: OperationsService;
   entitiesService: HTTPEntitiesService;
   entityOptions:EntityOptions
@@ -36,10 +38,10 @@ export class Bubble_featureComponent implements OnInit,AfterViewInit,OnChanges {
   coordinatesToShow: Coordinate;
   utmService: UtmService;
 
-  constructor(entitiesDeployedSvc:EntitiesDeployedService,operationsService:OperationsService,
+  constructor(entitiesDeployedServiceSvc:EntitiesDeployedService,operationsService:OperationsService,
               entitiesService:HTTPEntitiesService,utmService:UtmService,
               public svgUnit:SVGUnitsIconsListService,public svgIconsList:SvgIconsListService) {
-    this.entitiesDeployedSvc = entitiesDeployedSvc
+    this.entitiesDeployedServiceSvc = entitiesDeployedServiceSvc
     this.operationsService = operationsService
     this.entitiesService = entitiesService
     this.utmService = utmService
@@ -110,7 +112,7 @@ export class Bubble_featureComponent implements OnInit,AfterViewInit,OnChanges {
       }
     }
     this.operationsService.updateEntityInOperation(this.entity)
-    const response = this.entitiesDeployedSvc.updateEntity(this.entity)
+    const response = this.entitiesDeployedServiceSvc.updateEntity(this.entity)
     if (response != -1)
       this.entitiesService.updateEntity(this.entity).subscribe((data) => {
         console.log(data);
@@ -149,7 +151,7 @@ export class Bubble_featureComponent implements OnInit,AfterViewInit,OnChanges {
         if(options.extraData.lists.type){
           const list = options.extraData.lists.type.list
           const shortValue = options.extraData.lists.type.value
-          return this.entitiesDeployedSvc.svgListOfIconsService.getTypeFromShortType(shortValue,list)
+          return this.entitiesDeployedServiceSvc.svgListOfIconsService.getTypeFromShortType(shortValue,list)
         }
     // if(options.verbose)
         return this.entity.getVerbose()

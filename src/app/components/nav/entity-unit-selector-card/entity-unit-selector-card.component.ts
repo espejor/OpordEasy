@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { EntityUnit } from 'src/app/entities/entity-unit';
 import { Entity } from 'src/app/entities/entity.class';
 import { SVGUnitsIconsListService } from 'src/app/services/svg-units-icons-list.service';
 
@@ -24,7 +25,7 @@ export class EntityUnitSelectorCardComponent implements OnInit {
   }
 
   ngAfterViewInit():void{
-    // this.entityCard.nativeElement.innerHTML = this.svgService.createSVGForCard(this.entity,this.size); 
+    this.entityCard.nativeElement.innerHTML = this.svgService.createSVGForCard(<EntityUnit>this.entity,this.size); 
   }
 
 }

@@ -95,19 +95,21 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
               return option.key == alternative.option
             }) 
             if (exist){
-              return value != ""? value : alternative.value
+              value = value != ""? value : alternative.value
             }
           }
         };
-      }else{
-        value = unitOptions[data].value.selectorText
       }
+      value = value != ""? value : unitOptions[data].value.selectorText
+      
     }
     return value
-  }
-  getHTMLCodeForIconTimeline(): string {
-    return this.svgService.createSVGForTimeline(this,0.5)
-  }
+  };
+
+
+  getHTMLCodeForIconTimeline(scale = 0.5): string {
+    return this.svgService.createSVGForTimeline(this,scale)
+  };
 
   
   getOffsetX(offset:number[]): number {

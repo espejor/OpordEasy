@@ -34,6 +34,7 @@ import { GraticuleUTM } from 'src/app/utilities/graticule';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
 import { EntityMultiPoint } from 'src/app/entities/entity-multipoint.class';
 import { Bubble_featureComponent } from '../bubble_feature/bubble_feature.component';
+import { Pixel } from 'ol/pixel';
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -109,17 +110,18 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   modify: Modify;
   entityToShowInfo: Entity<Geometry>;
   tutorialOpened: boolean;
+  pixelForInfo: Pixel;
 
 
   //-------------------------
 
   constructor(private elementRef: ElementRef, 
-    public entitiesDeployedService: EntitiesDeployedService,
+    public entitiesDeployedServiceService: EntitiesDeployedService,
     private utmService:UtmService,
     // private renderer: Renderer2,
     public operationsService:OperationsService,
     public entitiesService:HTTPEntitiesService) {
-    entitiesDeployedService.setMapComponent(this);
+    entitiesDeployedServiceService.setMapComponent(this);
     this.self = this;
     
     // this.svgService = _svgService;
@@ -458,10 +460,12 @@ var self = this;
 
     this.map.getViewport().addEventListener('contextmenu', (e) =>  {
       e.preventDefault();
+      const pixel = this.map.getEventPixel(e)
       
-      var hit = this.map.forEachFeatureAtPixel(this.map.getEventPixel(e), (feature:Entity) => {
+      var hit = this.map.forEachFeatureAtPixel(pixel, (feature:Entity) => {
         if(feature._id){
           this.entityToShowInfo = feature;
+          this.pixelForInfo = pixel
           return true;
         }
         return false

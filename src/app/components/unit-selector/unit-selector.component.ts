@@ -31,7 +31,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
   // @Input() dialog;
 
   public svgListOfIcons: SVGUnitsIconsListService
-  // public entitiesDeployed: EntitiesDeployedService
+  // public entitiesDeployedService: EntitiesDeployedService
   public selectorClass;
   public favorite;
   // public fav = "fav";
@@ -53,7 +53,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
 
 
   constructor(public svgListOfIconsService: SVGUnitsIconsListService, 
-      private  entitiesDeployed:EntitiesDeployedService,
+      private  entitiesDeployedService:EntitiesDeployedService,
       private renderer: Renderer2,
       private httpEntitiesService:HTTPEntitiesService,
       private operationsService: OperationsService,
@@ -82,12 +82,34 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     return this.createSVG.bind(this);
   }
   
-  insertUnit(coordinates?:Coordinate[]){
-    const mapComponent = this.entitiesDeployed.getMapComponent();
+  checkAndInsertUnitInMap(coordinates?:Coordinate[]){
+    if (this.checkIfUnitIsDeployed()){
+      const snackRef = this._snackBar.open(
+        "Ya existe esa Unidad desplegada En esta Operación.\n¿Desea incluirla de todas formas?\n" + 
+        "Recuerde que si va a incluir esta Unidad como copia de una ya desplegada sería conveniente " + 
+        "cambiarle la Designación",
+        "Incluir",
+        {
+          duration:15000,
+          panelClass: ['mat-toolbar', 'mat-warn']
+        });
+      snackRef.onAction().subscribe(() =>{
+        this.saveUnit(true)
+        // const unit = EntitySelector.getFactory(entityType.unit).createEntity()
+        // this.insertUnitInMap()
+      })
+    }else{
+      this.insertUnitInMap()
+    }
+  }
+
+  insertUnitInMap(){    
+    const mapComponent = this.entitiesDeployedService.getMapComponent();
     // const pixel:Pixel = [event.x,event.y];
     // if (!coordinates)
       // coordinates = mapComponent.map.getCoordinateFromPixel(pixel);
-    if(this.entitySelectorService.entitySelected == undefined){
+    // if(this.entitySelectorService.entitySelected == undefined){
+    // if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
       const draw:Draw = new Draw({
         source:mapComponent.shapesVectorLayer,
         type: GeometryType.POINT
@@ -101,19 +123,25 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
         coords = (<Point>evt.feature.getGeometry()).getCoordinates()
         this.deployUnit(coords);
       })
-    }else{
-      this.deployUnit(coordinates)
-    }
+    // }else{
+    //   this.deployUnit(this.entitySelectorService.entitySelected.getCoordinates())
+    // }
+  }
+
+  checkIfUnitIsDeployed() {
+    if(this.entitySelectorService.entitySelected == undefined) // Si no se ha grabado
+      return false
+    return this.operationsService.checkIfEntityIsInLayout(this.entitySelectorService.entitySelected) // check si ya está en el mapa
   }
 
   deployUnit(coordinates){
     if(this.entitySelectorService.entitySelected == undefined){ // Si no se ha grabado
       this.saveUnit(true,coordinates)
-    }else if(this.operationsService.loadEntity(this.entitySelectorService.entitySelected,coordinates)){
+    }else if(this.operationsService.loadEntityInLayout(this.entitySelectorService.entitySelected,coordinates)){
       const entityLocated:EntityLocated = new EntityLocated(this.entitySelectorService.entitySelected,this.entitySelectorService.entitySelected.getCoordinates())
       // entityLocated.entity = this.entitySelectorService.entitySelected
       // entityLocated.location = this.entitySelectorService.entitySelected.getCoordinates();
-      this.entitiesDeployed.addNewEntity(entityLocated);
+      this.entitiesDeployedService.addNewEntityToMap(entityLocated);
       this.entitySelectorService.entitySelected = undefined;
     }
 
@@ -121,10 +149,10 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
 
 
   saveUnit(andInsert = false,coordinates?){
-    // this.entitiesDeployed.saveEntity(entityType.unit);
+    // this.entitiesDeployedService.saveEntity(entityType.unit);
     // ---todo Intentar referenciar con viewChild o Output/Input 
     
-    const mapComponent = this.entitiesDeployed.getMapComponent();
+    const mapComponent = this.entitiesDeployedService.getMapComponent();
     // // const coordinates:Coordinate = []; 
     if(!coordinates)
       coordinates = mapComponent.map.getView().getCenter();
@@ -142,7 +170,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
       unit._id = (<Entity>data)._id;
       this.entitySelectorService.entitySelected = unit;
       if (andInsert)
-        this.insertUnit(coordinates);
+        this.insertUnitInMap();
     });
   }
 
@@ -204,12 +232,30 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
         }
         else{
           if (unitOptions[element] != null)
-            this.updateIconTemplate(unitOptions[element]);
+            if (element == "extraData"){
+              this.updateFeatureWithTextFromFavorites(unitOptions[element])
+            }else
+              this.updateIconTemplate(unitOptions[element]);
           // else
           //   this.deleteIconTemplate(collection[element])
         }
       }
     };
+  }
+
+  updateFeatureWithTextFromFavorites(unitOption: any, ) {
+    for (let textField in unitOption.fields.textFields){
+      const keyValueFeature = {key:textField, value:unitOption.fields.textFields[textField]}
+      this.updateFeatureWithText(null,keyValueFeature,unitOption.fields.textFields[textField].value)
+    };
+  }
+
+  keyValueConvert(obj){
+    return Object.keys(obj).map(function(key){
+      let v = {key:key,value: obj[key]};
+      // do something with person
+      return v;
+    })
   }
 
   checkState(event, el) {
@@ -226,67 +272,67 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     this.updateFeatureWithText(event,feature,txt)
   }
 
-  addCG(event){
-    this.removeChildElement(this.svg.nativeElement,"cgSymbol")
-    this.unitOptions.extraFeature = this.unitOptions.extraFeature.filter(f => f.key != "foSymbol")
+  // addCG(event){
+  //   this.removeChildElement(this.svg.nativeElement,"cgSymbol")
+  //   this.unitOptions.extraFeature = this.unitOptions.extraFeature.filter(f => f.key != "foSymbol")
 
-    if(event){
-      const cg = this.renderer.createElement("path", 'svg');
-      var draw
-      if(this.unitOptions.frame.key == "friendly"){
-        const x = 80
-        const y = 130
-        draw = "m" + x + "," + y + " m0,0 v60";
-      }
-      // else{
-      //   const x = 120
-      //   const y = 130
-      //   draw = "m" + x + "," + y + " m0,0 v60"
-      // }
-      this.renderer.setAttribute(cg, "d", draw);
-      this.renderer.setAttribute(cg, "stroke-width", "2")
-      this.renderer.setAttribute(cg, "stroke", "#000")
-      this.renderer.setAttribute(cg, "fill", "#00000001")
-      this.renderer.setAttribute(cg, "id", "cgSymbol");
-      this.renderer.appendChild(this.svg.nativeElement, cg)
+  //   if(event){
+  //     const cg = this.renderer.createElement("path", 'svg');
+  //     var draw
+  //     if(this.unitOptions.frame.key == "friendly"){
+  //       const x = 80
+  //       const y = 130
+  //       draw = "m" + x + "," + y + " m0,0 v60";
+  //     }
+  //     // else{
+  //     //   const x = 120
+  //     //   const y = 130
+  //     //   draw = "m" + x + "," + y + " m0,0 v60"
+  //     // }
+  //     this.renderer.setAttribute(cg, "d", draw);
+  //     this.renderer.setAttribute(cg, "stroke-width", "2")
+  //     this.renderer.setAttribute(cg, "stroke", "#000")
+  //     this.renderer.setAttribute(cg, "fill", "#00000001")
+  //     this.renderer.setAttribute(cg, "id", "cgSymbol");
+  //     this.renderer.appendChild(this.svg.nativeElement, cg)
 
-      const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m0,60 v60",enemy:"m40,60 v60"}};
-      const data = {key:"cgSymbol",value:{codeForDeploing: obj}}
+  //     const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m0,60 v60",enemy:"m40,60 v60"}};
+  //     const data = {key:"cgSymbol",value:{codeForDeploing: obj}}
 
-      // const exist = this.unitOptions.extraData.some(f => f.key == "cgSymbol")
-      // if(exist)
-      //   this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != "cgSymbol")
-      this.unitOptions.extraFeature.push(data) 
-    }
-  }
+  //     // const exist = this.unitOptions.extraData.some(f => f.key == "cgSymbol")
+  //     // if(exist)
+  //     //   this.unitOptions.extraData = this.unitOptions.extraData.filter(f => f.key != "cgSymbol")
+  //     this.unitOptions.extraFeature.push(data) 
+  //   }
+  // }
 
-  addFO(event){
-    this.removeChildElement(this.svg.nativeElement,"foSymbol")
-    this.unitOptions.extraFeature = this.unitOptions.extraFeature.filter(f => f.key != "foSymbol")
+  // addFO(event){
+  //   this.removeChildElement(this.svg.nativeElement,"foSymbol")
+  //   this.unitOptions.extraFeature = this.unitOptions.extraFeature.filter(f => f.key != "foSymbol")
 
-    if(event){
-      const fo = this.renderer.createElement("path", 'svg');
-      const x = 95
-      const y = 70
-      const draw = "m" + x + "," + y + " m0,0 v-20h50v20";
-      this.renderer.setAttribute(fo, "d", draw);
-      this.renderer.setAttribute(fo, "stroke-width", "2")
-      this.renderer.setAttribute(fo, "stroke", "#000")
-      this.renderer.setAttribute(fo, "fill", "#00000001")
-      this.renderer.setAttribute(fo, "id", "foSymbol");
-      this.renderer.appendChild(this.svg.nativeElement, fo)
+  //   if(event){
+  //     const fo = this.renderer.createElement("path", 'svg');
+  //     const x = 95
+  //     const y = 70
+  //     const draw = "m" + x + "," + y + " m0,0 v-20h50v20";
+  //     this.renderer.setAttribute(fo, "d", draw);
+  //     this.renderer.setAttribute(fo, "stroke-width", "2")
+  //     this.renderer.setAttribute(fo, "stroke", "#000")
+  //     this.renderer.setAttribute(fo, "fill", "#00000001")
+  //     this.renderer.setAttribute(fo, "id", "foSymbol");
+  //     this.renderer.appendChild(this.svg.nativeElement, fo)
 
-      const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m15,0 v-20h50v20"}};
-      const data = {key:"foSymbol",value:{codeForDeploing: obj}}
+  //     const obj = {type:"path", x:"0", y: "0", fill:"#00000001", stroke: "#000", strokeWidth:"2", d:{friendly:"m15,0 v-20h50v20"}};
+  //     const data = {key:"foSymbol",value:{codeForDeploing: obj}}
       
-      this.unitOptions.extraFeature.push(data) 
-    }
-  }
+  //     this.unitOptions.extraFeature.push(data) 
+  //   }
+  // }
 
   updateFeatureWithText(event:Event,feature,value?:string){
     this.removeChildElement(this.svg.nativeElement,feature.key)
     const text = this.renderer.createElement("text", 'svg');
-    const textValue = value?value:(event.target as HTMLInputElement).value
+    const textValue = value?value: event?(event.target as HTMLInputElement).value:""
     const txt = this.renderer.createText(textValue)
     const fontSize = feature.value.fontSize?feature.value.fontSize:"12"
     const indent = feature.value.indent?feature.value.indent:"end"
@@ -315,11 +361,6 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
       feature.value.value = textValue
       this.insertInUnitOptions(feature,field)
     }
-    // if(!this.unitOptions["extraData"]){
-    //   const obj = {[feature.key]:feature.value}
-    //   this.unitOptions["extraData"] = {textFields:obj}
-    // }else
-    //   this.unitOptions["extraData"].textFields[feature.key] = feature.value
   }
 
   insertInUnitOptions(feature: any, field: string) {

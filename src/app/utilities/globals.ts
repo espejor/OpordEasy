@@ -9,5 +9,5 @@ export const Globals = Object({
     SHAPES_VECTOR_LAYER:VectorSource,
     DRAG_SOURCE: VectorSource,
     MODIFY:Modify,
-    OPERATION_SVC:OperationsService
+    // OPERATION_SVC:OperationsService
 })

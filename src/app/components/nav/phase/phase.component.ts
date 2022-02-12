@@ -10,13 +10,13 @@ import { OperationsService } from 'src/app/services/operations.service';
 export class PhaseComponent implements OnInit {
 
   constructor(public operationsService:OperationsService,
-    private entitiesDeployed:EntitiesDeployedService) { }
+    private entitiesDeployedService:EntitiesDeployedService) { }
 
   ngOnInit(): void {
   }
 
   loadLayout(){
-    this.entitiesDeployed.entities = 
+    this.entitiesDeployedService.entities = 
       this.operationsService.selectedOperation.phases[this.operationsService.phaseOrder].layout;
   }
 
