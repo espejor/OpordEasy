@@ -57,6 +57,7 @@ import { OpordComponent } from './components/opord/opord.component';
 // import { SwiperModule } from 'swiper/angular';
 import { CarouselComponent } from './components/carousel/carousel.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { TooltipComponent } from './components/tooltip/tooltip.component';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -95,7 +96,8 @@ export function HttpLoaderFactory(http:HttpClient){
     TaskSelectorComponent,
     Bubble_featureComponent,
     OpordComponent,
-    CarouselComponent
+    CarouselComponent,
+    TooltipComponent
   ],
   imports: [
     BrowserModule,

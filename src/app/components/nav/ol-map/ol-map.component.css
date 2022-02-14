@@ -83,3 +83,10 @@
     color: transparent;
     content: "x";
 }
+
+.tooltip{
+    position:absolute;
+    left:500px;
+    top:100px;
+    color:black
+}

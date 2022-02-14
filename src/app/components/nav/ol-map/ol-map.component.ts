@@ -35,6 +35,12 @@ import { HTTPEntitiesService } from 'src/app/services/entities.service';
 import { EntityMultiPoint } from 'src/app/entities/entity-multipoint.class';
 import { Bubble_featureComponent } from '../bubble_feature/bubble_feature.component';
 import { Pixel } from 'ol/pixel';
+import Draw, { DrawEvent } from 'ol/interaction/Draw';
+import GeometryType from 'ol/geom/GeometryType';
+import { Fill, Stroke } from 'ol/style';
+import CircleStyle from 'ol/style/Circle';
+import { LineString } from 'ol/geom';
+import {getLength} from 'ol/sphere';
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -111,6 +117,10 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   entityToShowInfo: Entity<Geometry>;
   tutorialOpened: boolean;
   pixelForInfo: Pixel;
+  measureToolOpened: boolean;
+  measure: number;
+  tooltipPixel: Pixel = [];
+  tooltipMeasure: string;
 
 
   //-------------------------
@@ -123,8 +133,6 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     public entitiesService:HTTPEntitiesService) {
     entitiesDeployedServiceService.setMapComponent(this);
     this.self = this;
-    
-    // this.svgService = _svgService;
   }
   // attribution = new Attribution({
   //   html: 'Teselas de PNOA cedido por © Instituto Geográfico Nacional de España'
@@ -219,6 +227,64 @@ export class OlMapComponent implements OnInit,AfterViewInit {
 
   openTutorial(event){
     this.tutorialOpened = !this.tutorialOpened
+  }
+
+  openMeasureTool(event){
+    this.measure = 0
+    const draw = new Draw({
+      source: new VectorSource(),
+      type: GeometryType.LINE_STRING,
+      style: new Style({
+        fill: new Fill ({
+          color: 'rgba(255, 255, 255, 0.2)',
+        }),
+        stroke: new Stroke({
+          color: 'rgba(0, 0, 0, 0.5)',
+          lineDash: [10, 10],
+          width: 2,
+        }),
+        image: new CircleStyle({
+          radius: 5,
+          stroke: new Stroke({
+            color: 'rgba(0, 0, 0, 0.7)',
+          }),
+          fill: new Fill({
+            color: 'rgba(255, 255, 255, 0.2)',
+          }),
+        }),
+      }),
+    });
+
+    draw.on("drawstart",(evt:DrawEvent) => {
+      const measureLine:Feature = evt.feature
+      this.measureToolOpened = true
+
+      measureLine.getGeometry().on("change", evt =>{
+        const tooltipCoordinate = (<LineString>measureLine.getGeometry()).getLastCoordinate()
+        this.tooltipPixel = this.map.getPixelFromCoordinate(tooltipCoordinate)
+        this.tooltipMeasure = this.formatToolTipMeasure(evt.target)
+      })
+
+    })
+
+    draw.on("drawend",(evt:DrawEvent) => {
+      this.measureToolOpened = false
+      this.map.removeInteraction(draw)
+    })
+
+    this.map.addInteraction(draw);
+
+  }
+
+  formatToolTipMeasure(measureLine): string {
+    const length = getLength(measureLine);
+    var output;
+    if (length > 100) {
+      output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
+    } else {
+      output = Math.round(length * 100) / 100 + ' ' + 'm';
+    }
+    return output;
   }
 
   private setSize() {

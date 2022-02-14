@@ -161,29 +161,31 @@ export class OperationsService {
     const operation = this.selectedOperation;
     if(operation){
       const phases = operation.phases;
-      const name = phases[i].name
       if(phases.length > 0){    // Si hay más de una fase
-        if (!phases[i].isEmpty()){
-          const snackRef = this._snackBar.open(
-            `¿Está seguro de que quiere eliminar la Fase: ${name}?`,
-            "Eliminar Fase",
-            {
-              duration:5000,
-              panelClass: ['mat-toolbar', 'mat-warn']
-            });
-          snackRef.onAction().subscribe(() =>{
+        const name = phases[i].name
+        if(name != ""){
+          if (!phases[i].isEmpty()){
+            const snackRef = this._snackBar.open(
+              `¿Está seguro de que quiere eliminar la Fase: ${name}?`,
+              "Eliminar Fase",
+              {
+                duration:5000,
+                panelClass: ['mat-toolbar', 'mat-warn']
+              });
+            snackRef.onAction().subscribe(() =>{
+              operation.deletePhase(i);
+              this.updateOperation(this.selectedOperation).subscribe(result =>{
+                this._snackBar.open(`Se ha eliminado la Fase ${name}`,"",{duration:3000})
+              })
+              this.updatePhaseActive();
+            })
+          }else{
             operation.deletePhase(i);
             this.updateOperation(this.selectedOperation).subscribe(result =>{
               this._snackBar.open(`Se ha eliminado la Fase ${name}`,"",{duration:3000})
             })
             this.updatePhaseActive();
-          })
-        }else{
-          operation.deletePhase(i);
-          this.updateOperation(this.selectedOperation).subscribe(result =>{
-            this._snackBar.open(`Se ha eliminado la Fase ${name}`,"",{duration:3000})
-          })
-          this.updatePhaseActive();
+          }
         }
       }
     }

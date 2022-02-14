@@ -1,4 +1,4 @@
-<div class = "fase_view" >
+<div class = "fase_view" *ngIf="operationsService.selectedOperation.name != ''" >
     <div class="phase_manager">
         <div class="phase-selector">
             <button mat-icon-button aria-label="Fase anterior" (click) = "operationsService.previousPhase()">
@@ -15,7 +15,7 @@
             </button>
         </div>
         <div class="delete-button">
-            <button mat-icon-button color="red" class="icon-button" (click) = "deletePhase(operationsService.phaseOrder)">
+            <button mat-icon-button color="warn" class="icon-button" (click) = "deletePhase(operationsService.phaseOrder)">
                 <mat-icon>delete</mat-icon>
             </button>
         </div>    
@@ -34,7 +34,7 @@
                 <app-timeline [timeline] = "timeline" class= "app-timeline" ></app-timeline>
 
                 <div class="delete-button">
-                    <button mat-icon-button class="icon-button" (click) = "deleteTimeline(i)">
+                    <button mat-icon-button color="warn" class="icon-button" (click) = "deleteTimeline(i)">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </div>
