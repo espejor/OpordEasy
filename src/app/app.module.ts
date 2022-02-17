@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -24,7 +24,7 @@ import { OlMapComponent } from './components/nav/ol-map/ol-map.component';
 import { HeaderComponent } from './components/header/header.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TranslationComponent } from './components/translation/translation.component';
 import { OperationsComponent } from './components/nav/operations/operations.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -58,6 +58,10 @@ import { OpordComponent } from './components/opord/opord.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { TooltipComponent } from './components/tooltip/tooltip.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { AuthInterceptorService } from './services/auth-interceptor.service';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -97,7 +101,10 @@ export function HttpLoaderFactory(http:HttpClient){
     Bubble_featureComponent,
     OpordComponent,
     CarouselComponent,
-    TooltipComponent
+    TooltipComponent,
+    LoginComponent,
+    RegisterComponent,
+    UserProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -105,6 +112,7 @@ export function HttpLoaderFactory(http:HttpClient){
     BrowserAnimationsModule,
     LayoutModule,
     FormsModule,
+    ReactiveFormsModule,
     MatMenuModule,
     MatToolbarModule,
     MatButtonModule,
@@ -150,7 +158,13 @@ export function HttpLoaderFactory(http:HttpClient){
     MatSliderModule
   ],
   providers: [
-    GlobalsService
+    GlobalsService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptorService,
+      multi:true
+    }
+    // multi: true
   //   {
   //   provide: MatSnackBar,
   //   useValue: {}

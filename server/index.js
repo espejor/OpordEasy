@@ -1,3 +1,5 @@
+require("./config/config")
+
 const express = require ('express');
 const morgan = require ('morgan');
 const app = express();
@@ -7,6 +9,7 @@ const path = require('path');
 
 const operationsRoutes = require('./routes/operations.routes');
 const entitiesRoutes = require('./routes/entities.routes');
+const usersRoutes = require('./routes/users.routes');
 
 // --------- Settings
 // Setting PORTs
@@ -26,6 +29,7 @@ app.use (cors());
 // --------- Routes
 app.use('/api/operations',operationsRoutes)
 app.use('/api/entities',entitiesRoutes)
+app.use('/api/users',usersRoutes)
 
 // Serve only the static files form the dist directory
 app.use(express.static(__dirname + '../dist'));

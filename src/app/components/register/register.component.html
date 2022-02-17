@@ -1,0 +1,55 @@
+<div class="register">
+    <form [formGroup]="registerForm" class="custom-form" method="post">
+      <h1>Register</h1>
+      <div layout="row">      
+            <input
+            flex
+                type="text"
+                formControlName="firstName"
+                placeholder="Nombre"
+                required="required"
+            />
+            <input
+            flex
+                type= "text"
+                formControlName="lastName"
+                placeholder="Apellidos"
+                required="required"
+            />
+      </div>
+
+      
+      <div layout="row">      
+        <input
+            flex 
+            type="text"
+            formControlName="userName"
+            placeholder="Usuario"
+            required="required"
+        />
+        <input
+        flex
+            type="email"
+            formControlName="email"
+            placeholder="Email"
+            required="required"
+        />
+      </div>
+      <div *ngIf="email.errors?.email" class="error">
+        Email no válido.
+      </div> 
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Password"
+        required="required"
+      />
+      <input
+        type="password"
+        formControlName="repassword"
+        placeholder="Repeat the password"
+        required="required"
+      />
+      <button type="submit" (click)="registerUser()">Register</button>
+    </form>
+  </div>

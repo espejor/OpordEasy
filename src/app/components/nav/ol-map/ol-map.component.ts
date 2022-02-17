@@ -221,7 +221,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       // deactivate drag
       this.map.removeInteraction(this.modify);
     }else{
-      // this.map.addInteraction(this.drag);
+      this.map.addInteraction(this.modify);
     }
   }
 
