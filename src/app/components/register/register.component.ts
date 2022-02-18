@@ -33,6 +33,7 @@ export class RegisterComponent implements OnInit {
     return this.registerForm.get('email');
 } 
 
+
   registerUser(){
     if(this.registerForm.get("password").value == "" || this.registerForm.get("repassword").value == ""){
       console.error("El PSW está vacío");
@@ -52,7 +53,8 @@ export class RegisterComponent implements OnInit {
         }
       },
       error =>{
-            console.error(error)
+          // this.router.navigate(['login']);    
+          console.error(error)
       }
     )
   }

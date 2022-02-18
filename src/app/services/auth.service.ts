@@ -15,6 +15,7 @@ export class AuthService {
   URL_API = this.URL_BASE + 'api/users'; 
   headers = new HttpHeaders().set('Content-Type', 'application/json');
   currentUser = null;
+  private _snackBar: any;
 
   constructor(private http: HttpClient, public router: Router) {}
 
@@ -67,12 +68,28 @@ export class AuthService {
     var msg;
     if (error.error instanceof ErrorEvent) 
       msg = error.error.message;
-    else if(error.error){
-      msg = error
+    else if(error.error.code == 11000){
+      this.showNoticeToNavigate()
+      // msg = error
+      return null
     }else
       msg = `Error Code: $error.statusnMessage: $error.message`;
     
+      console.log(error)
     return throwError(msg);
+  }
+  
+  showNoticeToNavigate() {
+    const snackRef = this._snackBar.open(
+      "Ya existe registrado un usuario con ese correo electrónico. ¿Desea hacer un LOGIN?",
+      "Ir a LOGIN",
+      {
+        duration:5000,
+        panelClass: ['mat-toolbar', 'mat-warn']
+      });
+    snackRef.onAction().subscribe(() =>{
+      this.router.navigate(['login']);    
+    })
   }
 
 

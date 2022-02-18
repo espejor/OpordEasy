@@ -1,11 +1,10 @@
-import { Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+// import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -24,12 +23,13 @@ import { OlMapComponent } from './components/nav/ol-map/ol-map.component';
 import { HeaderComponent } from './components/header/header.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+// import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TranslationComponent } from './components/translation/translation.component';
 import { OperationsComponent } from './components/nav/operations/operations.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule }  from '@angular/material/select';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { UnitSelectorComponent } from './components/unit-selector/unit-selector.component';
 import { UnitSelectorDialogLoaderComponent } from './components/unit-selector-dialog-loader/unit-selector-dialog-loader.component';
 import { PointSelectorDialogLoaderComponent } from './components/point-selector-dialog-loader/point-selector-dialog-loader.component';
@@ -62,6 +62,10 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -110,6 +114,7 @@ export function HttpLoaderFactory(http:HttpClient){
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    FlexLayoutModule,
     LayoutModule,
     FormsModule,
     ReactiveFormsModule,
@@ -129,6 +134,7 @@ export function HttpLoaderFactory(http:HttpClient){
     MatSnackBarModule,
     MatSelectModule,
     MatTabsModule,
+    MatGridListModule,
     HttpClientModule,
     DragDropModule,
     NgbModule,

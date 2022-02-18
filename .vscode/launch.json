@@ -4,12 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        // {
-        //     "name": "Attach",
-        //     "request": "attach",
-        //     "type": "node",
-        //     // "program": "${workspaceFolder}/server/index.js"
-        // },
         
         {
             "type": "pwa-msedge",
@@ -17,18 +11,23 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "name": "Launch Chrome against localhost",
+            "name": "Attach to Edge",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}"
         },
           {
-              "name": "Attach",
-              "port": 9229,
-              "request": "attach",
-              "skipFiles": [
-                  "<node_internals>/**"
-              ],
-              "type": "pwa-node"
+            "name": "Attach to Chrome",
+            "port": 9229,
+            "request": "launch",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-chrome",
+            "outFiles": ["${workspaceFolder}/bin/**/*.js"],
+            "trace": true,
+            "sourceMaps": true
           },
         //   {
         //       "console": "integratedTerminal",

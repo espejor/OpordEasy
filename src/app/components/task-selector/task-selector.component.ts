@@ -1,6 +1,7 @@
 import { KeyValue } from '@angular/common';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AnyARecord } from 'node:dns';
 import { Map, MapBrowserEvent, MapBrowserEventHandler } from 'ol';
 import { Coordinate } from 'ol/coordinate';
 import { MultiPoint, Point } from 'ol/geom';
@@ -33,7 +34,7 @@ import { Selector } from '../selector-base';
 })
 export class TaskSelectorComponent extends Selector implements OnInit,AfterViewInit {
   public setFeaturesToSelect ;
-  public listOfOptions = [];
+  public listOfOptions:any[] = [];
   optionsForDeploying: TaskOptions;
   
   fieldsToShow: TaskOptions["extraData"]["textFields"];
