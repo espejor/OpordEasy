@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const {Globals} = require ('../src/app/')
+// import Globals from '../../src/app/utilities/globals'
 
-// const ALREADY_REGITERED = "alreadyRegistered" 
+const ALREADY_REGITERED = "alreadyRegistered" 
 
 // var uniqueValidator = require('mongoose-unique-validator');
 
@@ -28,7 +28,7 @@ const UserSchema = new Schema ({
             }
             return true;
             },
-            type:Globals.ALREADY_REGITERED,
+            type:ALREADY_REGITERED,
             message: props => 'El correo <' + props.value + '> ya existe en la BD'
         }
     }, 

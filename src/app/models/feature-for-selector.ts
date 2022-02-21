@@ -45,7 +45,7 @@ export interface TextSVGOptions{
 }
 
 export class PointOptions extends EntityOptions{
-    type: string;
+    override type: string;
     x: string;
     y:string;
     visible?:boolean = false;
@@ -55,12 +55,12 @@ export class PointOptions extends EntityOptions{
     text?:string;
     font?:string;
     font_Family?:string;
-    attachable? = true;
-    extraData? :{ textFields?:{unit?:TextField,dateTime?:TextField,info?:TextField},
+    override attachable? = true;
+    override extraData? :{ textFields?:{unit?:TextField,dateTime?:TextField,info?:TextField},
                   lists?:{type?:ListFieldString},
                   numbers?:{num?:TextField}} 
     
-    file?:{
+    override file?:{
       file:string,
       scale:number,
       anchor?:[number,number]
@@ -73,7 +73,7 @@ export class LineOptions extends EntityOptions{
   lineVisible?: boolean; // Si la línea se ha de ver ()
   svgWidth?:number; 
   stroke_dasharray?:[number,number] = [0,0]
-  extraData? :{ textFields?:{name?:TextField,initDateTime?:TextField,finalDateTime?:TextField,coordination?:TextField},
+  override extraData? :{ textFields?:{name?:TextField,initDateTime?:TextField,finalDateTime?:TextField,coordination?:TextField},
                 lists?:{purpose?:ListFieldString,echelon?:ListFieldString},
                 numbers?:{num?:TextField}} 
 }
@@ -123,7 +123,7 @@ export class SVGPathForPoint extends PointOptions{
 }
 
 export class SVGText extends PointOptions{
-  text:string
+  override text:string
 }
 
 // export class PropertiesForLine extends PropertiesForDeploing{

@@ -7,7 +7,7 @@ import { EntityLine } from "./entity-line.class";
 export class EntityBackBone<GeomType extends Geometry = Geometry> extends EntityLine{
     // public features:Feature[]
 
-    constructor(features: Feature[],opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
+    constructor(features: Feature<Geometry>[],opt_geometryOrProperties?: GeomType | { [key: string]: any }) {
         super(new LineOptions(),opt_geometryOrProperties,"");
         // this.features = features;
       }

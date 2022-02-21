@@ -1,18 +1,26 @@
 <div class="register">
     <form [formGroup]="registerForm" class="custom-form" method="post">
-      <h1>Registro</h1>
-      <mat-grid-list cols="2"  rowHeight="3rem">    
-        <mat-grid-tile> 
-          <mat-form-field>
-            <input matInput
-                type="text"
-                formControlName="firstName"
-                placeholder="Nombre"
-                required="required"
-            />
-          </mat-form-field>
-        </mat-grid-tile>
-        <mat-grid-tile> 
+      <div *ngIf = "isLoggedIn(); else register">
+        <h1>Perfil de Usuario</h1>
+      </div>
+      <ng-template #register>
+        <h1>Registro</h1>
+      </ng-template>
+      <mat-grid-list cols="2"  rowHeight="4rem">    
+        <div *ngFor = "let field of registerFormData">
+          <mat-grid-tile> 
+            <mat-form-field>
+              <input matInput
+                  type= {{field.type}}
+                  formControlName= {{field.formControlName}}
+                  placeholder= {{field.placeHolder}}
+                  required= {{field.required}}
+                  value = {{getValue(field.formControlName).value}}
+              />
+            </mat-form-field>
+          </mat-grid-tile>
+        </div>
+        <!-- <mat-grid-tile> 
           <mat-form-field> 
           <input matInput
               type= "text"
@@ -39,14 +47,11 @@
               formControlName="email"
               placeholder="Email"
               required="required"
-          />
+          /> 
         </mat-form-field>
       </mat-grid-tile>
       <mat-grid-tile> 
         <mat-form-field>  
-        <div *ngIf="email.errors?.email" class="error">
-          Email no válido.
-        </div> 
           <input matInput
             type="password"
             formControlName="password"
@@ -64,10 +69,19 @@
             required="required"
           />
         </mat-form-field>
+      </mat-grid-tile> -->
+      <mat-grid-tile class="buttons">
+        <button *ngIf = "isLoggedIn(); else linkLogin" class= "button" mat-button color="primary" type="submit" (click)="logout()">Logout</button>
+      <ng-template #linkLogin>
+        <button class= "button" mat-button color="primary" type="submit" (click)="login()">Login</button>
+      </ng-template>
       </mat-grid-tile>
-      <mat-grid-tile colspan="2">
+      <mat-grid-tile>
         <button class= "button" mat-button color="primary" type="submit" (click)="registerUser()">Register</button>
       </mat-grid-tile>
-      </mat-grid-list>
+  </mat-grid-list>
+      <div *ngIf="email.errors?.email" class="error">
+        Email no válido.
+      </div>
     </form>
   </div>

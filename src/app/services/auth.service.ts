@@ -27,13 +27,17 @@ export class AuthService {
       )
   }
 
-  login(user: User){ 
+  login(user: any){ 
     return this.http.post<any>(this.URL_API + /login/, user)
       .subscribe((res: any) => {
         localStorage.setItem('access_token', res.token)
-        this.getUserProfile(res._id).subscribe((res) => {
+        localStorage.setItem('userId', res.user._id)
+        console.log("TOKEN GUARDADO")
+        this.getUserProfile(res.user._id).subscribe((res) => {
+        console.log("USUARIO RECARGADO")
           this.currentUser = res;
-          this.router.navigate(['/' + res.msg._id]);
+          // this.router.navigate(['/' + res.msg._id]);
+          this.router.navigate(['']);
         })
       })
   }
@@ -43,25 +47,31 @@ export class AuthService {
     return localStorage.getItem('access_token');
   }
 
-  get isLoggedIn(): boolean{ 
-    let authToken = localStorage.getItem('access_token');
+  getUserId(){ 
+    return localStorage.getItem('userId');
+  }
+
+  isLoggedIn(): boolean{ 
+    const authToken = localStorage.getItem('access_token');
     return (authToken !== null);
   }
 
   doLogout() {
-    let removeToken = localStorage.removeItem('access_token');
-    if (removeToken == null) 
+    const removeToken = localStorage.removeItem('access_token');
+    if (removeToken == null) {
+      localStorage.removeItem('userId');
       this.router.navigate(['login']);
+    }
   }
 
     
   getUserProfile(id): Observable<any>{ 
-    let api = this.URL_API + "/id";
+    const api = this.URL_API + "/" + id;
     return this.http.get(api,  {headers: this.headers} )
-    .pipe(
-      map((res: Response) =>{} ),
-      catchError(this.handleError)
-    )
+    // .pipe(
+    //   map((res: Response) =>{} ),
+    //   catchError(this.handleError)
+    // )
   }
 
   handleError(error: HttpErrorResponse){ 
@@ -69,28 +79,16 @@ export class AuthService {
     if (error.error instanceof ErrorEvent) 
       msg = error.error.message;
     else if(error.error.code == 11000){
-      this.showNoticeToNavigate()
-      // msg = error
+      // this.showNoticeToNavigate()
+      msg = error
       return null
     }else
       msg = `Error Code: $error.statusnMessage: $error.message`;
     
       console.log(error)
-    return throwError(msg);
+    return throwError(error);
   }
-  
-  showNoticeToNavigate() {
-    const snackRef = this._snackBar.open(
-      "Ya existe registrado un usuario con ese correo electrónico. ¿Desea hacer un LOGIN?",
-      "Ir a LOGIN",
-      {
-        duration:5000,
-        panelClass: ['mat-toolbar', 'mat-warn']
-      });
-    snackRef.onAction().subscribe(() =>{
-      this.router.navigate(['login']);    
-    })
-  }
+
 
 
 

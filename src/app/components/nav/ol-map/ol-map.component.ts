@@ -41,6 +41,8 @@ import { Fill, Stroke } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import { LineString } from 'ol/geom';
 import {getLength} from 'ol/sphere';
+import { FeatureLike } from 'ol/Feature';
+import { Router } from '@angular/router';
 
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
@@ -121,6 +123,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
   measure: number;
   tooltipPixel: Pixel = [];
   tooltipMeasure: string;
+  
 
 
   //-------------------------
@@ -130,7 +133,8 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     private utmService:UtmService,
     // private renderer: Renderer2,
     public operationsService:OperationsService,
-    public entitiesService:HTTPEntitiesService) {
+    public entitiesService:HTTPEntitiesService,
+    public router: Router) {
     entitiesDeployedServiceService.setMapComponent(this);
     this.self = this;
   }
@@ -256,7 +260,7 @@ export class OlMapComponent implements OnInit,AfterViewInit {
     });
 
     draw.on("drawstart",(evt:DrawEvent) => {
-      const measureLine:Feature = evt.feature
+      const measureLine:Feature<Geometry> = evt.feature
       this.measureToolOpened = true
 
       measureLine.getGeometry().on("change", evt =>{
@@ -459,14 +463,14 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       });
       if (features.length > 0 && features[0] != this.dragSource.getFeatures()[0]) {
         this.dragSource.clear();
-        const feature = <Feature>features[0]
+        const feature = <Feature<Geometry>>features[0]
         this.dragSource.addFeature(feature);          
       }
     });
 
 
     this.drag.on("modifystart",(evt:ModifyEvent) => {
-      const features: Feature[] = evt.features.getArray()
+      const features: FeatureLike[] = evt.features.getArray()
       features.splice(0,features.length - 1)
     })
 
@@ -519,9 +523,9 @@ var self = this;
     });
 
 
-    this.map.on("mousedown",(evt:MapBrowserEvent)=> {
-      console.log("PINCHANDOOOOOOOOOOOOOOOOOOO");
-    });
+    // this.map.on("mousedown",(evt)=> {
+    //   console.log("PINCHANDOOOOOOOOOOOOOOOOOOO");
+    // });
 
 
     this.map.getViewport().addEventListener('contextmenu', (e) =>  {
@@ -545,7 +549,7 @@ var self = this;
     })
 
 
-    this.map.on("singleclick",  (evt:MapBrowserEvent) =>{
+    this.map.on("singleclick",  (evt) =>{
       this.bubbleFormOpened=false
       var entity:Entity;
       var hit = this.map.forEachFeatureAtPixel(evt.pixel, (feature:Entity, layer) => {
@@ -565,13 +569,15 @@ var self = this;
         this.isMovingCopyFeature = false;
         this.operationsService.activatedOperationsFormOpened = false
         this.bubbleFormOpened=false
+        
+        this.router.navigate([''])
         // closer.blur();
         return true;    
       }
       return true
     })
 
-    this.map.on("dblclick",function (evt:MapBrowserEvent){
+    this.map.on("dblclick",function (evt){
         var coordinate = evt.coordinate;
         var hdms = toStringHDMS(Proj.toLonLat(coordinate));
         console.log("doble click en :" + hdms)
@@ -601,12 +607,12 @@ export class CustomSnap extends Snap{
   constructor(opt_options?: Options){
     super(opt_options)
   }
-  addFeature(feature:Feature<Geometry>, opt_listen?: boolean):void{
+  override addFeature(feature:Feature<Geometry>, opt_listen?: boolean):void{
     super.addFeature(feature,opt_listen);
     if(!this.features.includes(feature))
       this.features.push (feature)
   }
-  removeFeature(feature:Feature<Geometry>, opt_listen?: boolean):void{
+  override removeFeature(feature:Feature<Geometry>, opt_listen?: boolean):void{
     super.removeFeature(feature,opt_listen);
     if(this.features.includes(feature))
       this.features = this.features.filter(item => item != feature);

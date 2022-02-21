@@ -1,6 +1,5 @@
 import { Feature } from "ol";
-import { coordinateRelationship, Extent } from "ol/extent";
-import Geometry from "ol/geom/Geometry";
+import { Extent } from "ol/extent";
 import LineString from "ol/geom/LineString";
 import Map from "ol/Map";
 import Stroke from "ol/style/Stroke";
@@ -11,6 +10,7 @@ import Text from "ol/style/Text";
 import Fill from "ol/style/Fill";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
+import { Geometry } from "ol/geom";
 
 export class GraticuleUTM{
     extends: Extent;
@@ -18,8 +18,8 @@ export class GraticuleUTM{
     extendsUTM: Extent;
     horizontalLines:  Feature<LineString>[] = [];
     graticule: Feature<LineString>[];
-    graticuleLayer: VectorLayer;
-    vectorLines: VectorSource;
+    graticuleLayer: VectorLayer<VectorSource<any>>;
+    vectorLines: VectorSource<Geometry>;
     constructor(private map:Map,private utmService?:UtmService ){
         this.vectorLines = new VectorSource();
         this.graticuleLayer = new VectorLayer({ source:this.vectorLines})
@@ -28,7 +28,7 @@ export class GraticuleUTM{
         map.on("moveend",() => drawGraticuleFnt(this));
     }
 
-    getGraticuleLayer():VectorLayer{
+    getGraticuleLayer():VectorLayer<VectorSource<any>>{
       return this.graticuleLayer;
     }
 

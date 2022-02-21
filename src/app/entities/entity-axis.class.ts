@@ -1,4 +1,4 @@
-import { Collection, Map } from "ol";
+import { Collection, Feature, Map } from "ol";
 import { Coordinate, distance } from "ol/coordinate";
 import BaseEvent from "ol/events/Event";
 import { LineString } from "ol/geom";
@@ -122,18 +122,18 @@ export class EntityAxis<GeomType extends Geometry = Geometry> extends EntityLine
     this.locateControlPoint()
   }
 
-  getHTMLCodeForIconTimeline(): string {
+  override getHTMLCodeForIconTimeline(): string {
     const file = this.file.file
     return '<div style="height: 50px;"><img src="' + file + 
     '" style="vertical-align: top;width: 50px"></div>'
   }
 
     
-  getType(): string {
+  override getType(): string {
     return ("Eje de Progresión");
   }
 
-  onModifyEnd(evt:ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService) {
+  override onModifyEnd(evt:ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService) {
     super.onModifyEnd(evt,map,shapesFeatures,operationsService,entitiesService);
     this.changingAxisGeometry = false     
   }
@@ -142,7 +142,7 @@ export class EntityAxis<GeomType extends Geometry = Geometry> extends EntityLine
 
   calculateNewWidth(evt:BaseEvent): number {
     const tipPoint = this.getEntityGeometry().getLastCoordinate()
-    const controlPointLocation = (<Point>evt.target.getGeometry()).getCoordinates()
+    const controlPointLocation = (<Point>(<Feature<Geometry>>evt.target).getGeometry()).getCoordinates()
     return distance(tipPoint,controlPointLocation) * Math.sin(this.tipAngle / 2)
   }
 
@@ -220,7 +220,7 @@ export class EntityAxis<GeomType extends Geometry = Geometry> extends EntityLine
         tip.push(getPointToVector(entity.lastPointRightLine,angle + Math.PI/2,entity.WIDTH/entity.DIVISOR));
         tip.push((<LineString>feature.getGeometry()).getLastCoordinate());
         entity.widthControlPointCoord = getPointToVector(entity.lastPointLeftLine,angle - Math.PI/2,entity.WIDTH/entity.DIVISOR);
-        const vectorSource:VectorSource = Globals.SHAPES_VECTOR_LAYER
+        const vectorSource:VectorSource<Geometry> = Globals.SHAPES_VECTOR_LAYER
         if(!vectorSource.hasFeature(entity.widthControlPointEntity))
           vectorSource.addFeature(entity.widthControlPointEntity);
         tip.push(entity.widthControlPointCoord);

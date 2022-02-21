@@ -64,8 +64,8 @@ export class PointSelectorComponent extends Selector implements OnInit,AfterView
 
   fillArrayOfOptions(): any[] {
     const options:any[] = []
-    for(const property in this.svgListOfIcons.features.points) {
-      options[property] = this.svgListOfIcons.features.points[property].text;
+    for(const property in this.svgListOfIcons.features['points']) {
+      options[property] = this.svgListOfIcons.features['points'][property].text;
     };
     return options;
   }

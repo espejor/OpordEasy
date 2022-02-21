@@ -24,19 +24,19 @@ import { EntityPoint } from "./entity-point.class";
 
 export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends EntityLine{
   public image: ImageStyle;
-  public lineColor: Color = [0,0,0];
-  public lineWidth: number = 2;
-  location: Coordinate
+  public override lineColor: Color = [0,0,0];
+  public override lineWidth: number = 2;
+  override location: Coordinate
   numPoints:number
 
   // features of text
-  public name: string = "";
-  public textColor: Color = [255,255,255];
+  public override name: string = "";
+  public override textColor: Color = [255,255,255];
   // private placement = "point";
-  public textAlign = "center";
-  public textBaseline = "middle";
-  public scale = 1.5;
-  public rotateWithView = false;
+  public override textAlign = "center";
+  public override textBaseline = "middle";
+  public override scale = 1.5;
+  public override rotateWithView = false;
   multiPointOptions: MultiPointOptions;
   points: PointLike[];
   taskOptions: TaskOptions;
@@ -158,23 +158,23 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
     return null
   }
   
-  getSvgSvcFieldsOfExtraData(){
+  override getSvgSvcFieldsOfExtraData(){
     return null
   }
 
-  onModifyEnd(evt: ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService): void {
+  override onModifyEnd(evt: ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService): void {
     this.setCoordinates(this.getCoordinates())
     super.onModifyEnd(evt,map,shapesFeatures,operationsService,entitiesService)
   }
 
 
-  getHTMLCodeForIconTimeline(): string {    
+  override getHTMLCodeForIconTimeline(): string {    
     const file = this.file.file
     return '<div style="height: 50px;"><img src="' + file + 
     '" style="vertical-align: top;width: 50px"></div>'
   }
 
-  getType(): string {
+  override getType(): string {
     return ("Tarea");
   }
 
@@ -584,7 +584,7 @@ export class EntityMultiPoint<GeomType extends Geometry = Geometry> extends Enti
     return isRight(initPoint,finalPoint, directionPoint)? Direction.RIGHT : Direction.LEFT
   }
 
-  getLocation(): Coordinate{
+  override getLocation(): Coordinate{
     return <Coordinate>this.location
   }
 

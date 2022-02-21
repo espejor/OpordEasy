@@ -18,9 +18,16 @@ userCtrl.getUsers = async (req,res) => {
     res.json(users);
 }
 
+userCtrl.getUser = async (req,res) => {
+  const user = await UserModel.findById(req.params.id);
+  res.json (user);
+}
+
+
 userCtrl.login = async (req,res) => {
     const user = await UserModel.findOne({ email: req.body.email }, (erro, userDB)=>{
         if (erro) {
+          console.log("-------- LOGIN ERROR")
           return res.status(500).json({
              ok: false,
              err: erro
@@ -28,6 +35,7 @@ userCtrl.login = async (req,res) => {
        }
     // Verifica que exista un usuario con el mail escrita por el usuario.
       if (!userDB) {
+        console.log("-------- USER ERROR")
          return res.status(400).json({
            ok: false,
            err: {
@@ -37,6 +45,8 @@ userCtrl.login = async (req,res) => {
       }
     // Valida que la contraseña escrita por el usuario, sea la almacenada en la db
       if (! bcrypt.compareSync(req.body.password, userDB.password)){
+        console.log("-------- PSW ERROR")
+
          return res.status(400).json({
             ok: false,
             err: {
@@ -45,6 +55,8 @@ userCtrl.login = async (req,res) => {
          });
       }
     // Genera el token de autenticación
+    console.log("-------- LOGIN OK")
+
        let token = jwt.sign({
               user: userDB,
            }, process.env.SEED_AUTENTICACION, {
@@ -55,7 +67,7 @@ userCtrl.login = async (req,res) => {
            user: userDB,
            token,
        })
-    })
+    }).clone().catch(function(err){ console.log(err)})
 }
 
 
@@ -79,7 +91,7 @@ userCtrl.register = async (req,res) => {
         return res.status(400).json({
            ok: false,
            err,
-           message:err.message
+           message:err
         });
       }
       res.json({

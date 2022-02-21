@@ -1,14 +1,10 @@
 import { KeyValue } from '@angular/common';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AnyARecord } from 'node:dns';
-import { Map, MapBrowserEvent, MapBrowserEventHandler } from 'ol';
+import { Map } from 'ol';
 import { Coordinate } from 'ol/coordinate';
-import { MultiPoint, Point } from 'ol/geom';
 import Geometry from 'ol/geom/Geometry';
-import GeometryType from 'ol/geom/GeometryType';
 import Draw, { DrawEvent } from 'ol/interaction/Draw';
-import { Fill, Icon, Stroke, Style } from 'ol/style';
 import { Observable } from 'rxjs';
 import { getEntityType } from 'src/app/entities/entitiesType';
 import { AreaOptions } from 'src/app/entities/entity-area.class';

@@ -57,7 +57,7 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
 
 
 
-  constructor(public iconRegistry?: MatIconRegistry, public sanitizer?: DomSanitizer) {
+  constructor(public override iconRegistry?: MatIconRegistry, public override sanitizer?: DomSanitizer) {
     super();
     // this.updateIconTemplate();
     if(iconRegistry && sanitizer){
@@ -70,7 +70,7 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
   }
 
     
-  protected  compoundSVG(collection,frameCollection):string{
+  protected override  compoundSVG(collection,frameCollection):string{
     var svg:string = " ";
     const frame = frameCollection;
     
@@ -116,7 +116,7 @@ export class SVGUnitsIconsListService extends SvgIconsListService{
   }
 
 
-  protected writeSVGContent(feature,frameCollection:string):string {
+  protected override writeSVGContent(feature,frameCollection:string):string {
     const type = feature.value.codeForDeploing.type;
     const frame = frameCollection? frameCollection:"friendly" 
 

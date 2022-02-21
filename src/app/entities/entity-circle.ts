@@ -15,7 +15,7 @@ export class EntityCircle<GeomType extends Geometry = Geometry> extends EntityLi
   center: Coordinate;
   radius: number;
   angle: number;
-  pattern: any;
+  override pattern: any;
   arc: number;
   rotation:number;
   segments:number = 20;
@@ -71,7 +71,7 @@ export class EntityCircle<GeomType extends Geometry = Geometry> extends EntityLi
   }
 
 
-  getHTMLCodeForIconTimeline(): string {    
+  override getHTMLCodeForIconTimeline(): string {    
     const file = this.file.file
     return '<div style="height: 50px;"><img src="' + file + 
     '" style="vertical-align: top;width: 50px"></div>'

@@ -57,7 +57,7 @@ export class Bubble_featureComponent implements OnInit,AfterViewInit,OnChanges {
       // const lists = this.loadLists(extraData.lists)
       this.listsToShow = extraData.lists?Object.entries(extraData.lists):null
       if(this.typeEntity == "Unidad")
-        this.fieldsToShow = extraData.fields.textFields?Object.entries(extraData.fields.textFields):this.svgUnit.features.extraData.fields.textFields
+        this.fieldsToShow = extraData.fields.textFields?Object.entries(extraData.fields.textFields):this.svgUnit.features['extraData']['fields'].textFields
       else
         this.fieldsToShow = extraData.textFields?Object.entries(extraData.textFields):null
       

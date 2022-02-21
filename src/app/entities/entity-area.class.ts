@@ -26,11 +26,11 @@ export class EntityArea<GeomType extends Geometry = Geometry> extends Entity {
   name: string;
   basicAreaStyle: Style;
   purposeStyle: Style;
-  styles: (feature: Feature) => Style[];
+  styles: (feature: Feature<Geometry>) => Style[];
   pattern: Pattern;
   anchor: number[];
-  lineColor: any;
-  lineWidth: any;
+  override lineColor: any;
+  override lineWidth: any;
   lineJoin: any;
   placement: string;
   textAlign: string;
@@ -60,7 +60,7 @@ export class EntityArea<GeomType extends Geometry = Geometry> extends Entity {
     // this.pointStyle = this.getPoint()
     // this.trianglePatternStyles = this.createTrianglePattern();
     const entity = this;
-    var stylesFunction = function(feature:Feature){
+    var stylesFunction = function(feature:Feature<Geometry>){
       entity.updateData()
         const styles: Style[] = []
         if (areaOptions.lineVisible)
@@ -96,13 +96,13 @@ export class EntityArea<GeomType extends Geometry = Geometry> extends Entity {
       }
   }
 
-  getVerbose(): string {
+  override getVerbose(): string {
     var verbose = this.areaOptions.extraData.lists.type?this.areaOptions.extraData.lists.type.value:this.areaOptions.typeArea 
     verbose +=  " " + this.getIdent()
     return verbose
   }
 
-  getSvgSvcFieldsOfExtraData():{}{
+  override getSvgSvcFieldsOfExtraData():{}{
     return null
   }
   
@@ -240,21 +240,21 @@ getType(): string {
 }
 
 
-  setFlatCoordinatesfromLocation(coordinates?: Coordinate[] | Coordinate) {
+  override setFlatCoordinatesfromLocation(coordinates?: Coordinate[] | Coordinate) {
     if(coordinates)
       this.location = coordinates
     this.setCoordinates(this.location);
   }
 
   
-  setCoordinates(coordinates: Coordinate[] | Coordinate) {
+  override setCoordinates(coordinates: Coordinate[] | Coordinate) {
     var newCoords:Coordinate[][] = [];
     newCoords[0] = <Coordinate[]>coordinates;
     this.getEntityGeometry().setCoordinates(newCoords);
   }
 
     
-  createPattern(feature:Feature):Style[] {
+  createPattern(feature:Feature<Geometry>):Style[] {
     const entity = this;
     var stylesList:Style[] = [];
     // const wide = 20; // pixels
@@ -327,7 +327,7 @@ getType(): string {
         return this.style;
     }
         
-    public configureEchelonIcon(feature:Feature,imageSrc:string,svgWidth:number):Style[]{
+    public configureEchelonIcon(feature:Feature<Geometry>,imageSrc:string,svgWidth:number):Style[]{
         var styles:Style[] = [];
         const from = (<Polygon>feature.getGeometry()).getFirstCoordinate()
         const to = (<Polygon>feature.getGeometry()).getCoordinates()[0][1]
@@ -424,6 +424,6 @@ export class AreaOptions extends EntityOptions{
     lineVisible?: boolean; // Si la línea se ha de ver ()
     // echelon?:string;
     svgWidth?:number
-    extraData? :{ textFields?:{name?:TextField,initDateTime?:TextField,finalDateTime?:TextField,info?:TextField},
+    override extraData? :{ textFields?:{name?:TextField,initDateTime?:TextField,finalDateTime?:TextField,info?:TextField},
                   lists?:{type?:ListFieldString,echelon?:ListFieldString}} 
   }

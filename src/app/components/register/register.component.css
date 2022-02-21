@@ -5,6 +5,7 @@
   top: 20%;
   left: 25%;
   width: 50%;
+  height: 60%;
   box-shadow: 10px 10px 10px lightgrey;
 }
 form h1{
@@ -16,4 +17,12 @@ form h1{
   background: lightgray;
   /* bottom: 0.5rem;
   left: 1rem; */
+}
+.error{
+  color: red;
+  text-align: center;
+}
+
+::ng-deep .warning{
+  background: 'yellow';
 }

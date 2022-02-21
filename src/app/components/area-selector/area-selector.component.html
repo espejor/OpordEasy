@@ -17,7 +17,7 @@
   <section id="modal-body">
       <!-- OPCIONES de Líneas -->
       <mat-card>
-          <div   *ngFor = "let feature of svgListOfIcons.features.areas[setFeaturesToSelect].selector | keyvalue:unsorted">
+          <div   *ngFor = "let feature of svgListOfIcons.features['areas'][setFeaturesToSelect].selector | keyvalue:unsorted">
               <div  (click) = "loadExtraData(feature)" [class] = "feature.value.classCSS">
                   <mat-icon svgIcon = {{feature.key}} class="icon-selector" ></mat-icon>
                   <div class="text-selector">{{feature.value.selectorText}}</div>
@@ -52,9 +52,9 @@
       </mat-card>  
   </section>
   <!-- BOTONES -->
-  <footer id="modal-footer">
-      <button mat-dialog-close mat-raised-button class= 'button-modal' id="modal-cancel-button" >Cancelar</button>
-      <button mat-dialog-close mat-raised-button class= 'button-modal' id="modal-action-button" (click)=insertArea($event) >Crear</button>
+  <footer id="area-modal-footer">
+      <button mat-dialog-close mat-raised-button class= 'button-modal' id="area-modal-cancel-button" >Cancelar</button>
+      <button mat-dialog-close mat-raised-button class= 'button-modal' id="area-modal-action-button" (click)=insertArea($event) >Crear</button>
   </footer>
 </div>
 

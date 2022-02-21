@@ -44,16 +44,16 @@
                         <ng-template #extraOptions>
                                 <div class="features-container">
                                     <form>
-                                        <mat-checkbox  name="foSymbol" [(ngModel)]="foSymbolSelected"   class="example-margin"(change)="addFeatureToModelIcon({key:'foSymbol',value:svgListOfIcons.features.extraFeature.foSymbol})">Fuerza Operativa</mat-checkbox>
+                                        <mat-checkbox  name="foSymbol" [(ngModel)]="foSymbolSelected"   class="example-margin"(change)="addFeatureToModelIcon({key:'foSymbol',value:svgListOfIcons.features['extraFeature']['foSymbol']})">Fuerza Operativa</mat-checkbox>
                                         <br/>
-                                        <mat-checkbox name="cgSymbol" [(ngModel)]="cgSymbolSelected"  class="example-margin" (change)="addFeatureToModelIcon({key:'cgSymbol',value:svgListOfIcons.features.extraFeature.cgSymbol})">CG/PC</mat-checkbox>
+                                        <mat-checkbox name="cgSymbol" [(ngModel)]="cgSymbolSelected"  class="example-margin" (change)="addFeatureToModelIcon({key:'cgSymbol',value:svgListOfIcons.features['extraFeature']['cgSymbol']})">CG/PC</mat-checkbox>
                                         <br/>
                                         <mat-radio-group id="radioGroup" name="reinforced" aria-label="¿Reforzada?" [(ngModel)]="reinforcedOptionSelected">
                                             <mat-radio-button #button  *ngFor="let option of reinforcedOptions" [value]="option" (click)="checkState($event, button)">
                                                 {{option}}
                                             </mat-radio-button>
                                         </mat-radio-group>
-                                        <div  *ngFor = "let feature of svgListOfIcons.features.extraData.fields.textFields | keyvalue:unsorted" >
+                                        <div  *ngFor = "let feature of svgListOfIcons.features['extraData']['fields'].textFields | keyvalue:unsorted" >
                                             <mat-form-field  >
                                                 <mat-label>{{feature.value["selectorText"]}}</mat-label>
                                                 <input matInput placeholder="{{feature.value['placeHolder']}}" value="" (change) = "updateFeatureWithText($event,feature)">
@@ -63,14 +63,14 @@
                                 </div>
                         </ng-template>
                         <!-- BOTONES -->
-                        <footer id="modal-footer">         
+                        <footer id="unit-modal-footer">         
                             <div id="favorite">
                                 <mat-checkbox class="favorite"
                                 [(ngModel)]="favorite">
                                     Agregar a Favorito
                                 </mat-checkbox>
                             </div>               
-                            <button mat-raised-button class= 'button-modal' id="modal-action-button" (click)=saveUnit() >Crear</button>
+                            <button mat-raised-button class= 'button-modal' id="unit-modal-action-button" (click)=saveUnit() >Crear</button>
                         </footer> 
                     <!-- </div> -->
                 </mat-tab>
@@ -83,8 +83,7 @@
             </mat-tab-group>
         </div> 
     </section>
-
-    <footer id="modal-footer">               
-        <button mat-dialog-close mat-raised-button class= 'button-modal' id="modal-action-button" (click)=checkAndInsertUnitInMap() >Insertar</button>
+    <footer id="unit-modal-footer2">               
+        <button mat-dialog-close mat-raised-button class= 'button-modal' id="unot-modal-action-button2" (click)=checkAndInsertUnitInMap() >Insertar</button>
     </footer> 
 </div>

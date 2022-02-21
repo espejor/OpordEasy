@@ -11,7 +11,7 @@ import { distanceInPixelBetweenCoordinates } from "../utilities/coordinates-calc
 // import { Globals } from "../utilities/globals";
 import {EntityStakedOrder, entityType } from "./entitiesType";
 
-export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feature{
+export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feature<Geometry>{
   _id: string;
   dateCreation:number;
   favorite: boolean;
@@ -146,9 +146,8 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
     );
   }
 
-  public onMouseOver(ev:MapBrowserEvent){
+  public onMouseOver(ev){
     console.log("Entrando en entidad");
-    
   };    
   public onMouseExit(ev):void{};    
   public onMouseDown(ev):void{

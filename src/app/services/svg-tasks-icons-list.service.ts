@@ -57,7 +57,7 @@ export class SvgTasksIconsListService extends SvgIconsListService {
     }
   }
 
-  constructor(public iconRegistry?: MatIconRegistry, public sanitizer?: DomSanitizer) { 
+  constructor(public override iconRegistry?: MatIconRegistry, public override sanitizer?: DomSanitizer) { 
     super()
     // this.updateIconTemplate();
     if(iconRegistry && sanitizer){

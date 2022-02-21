@@ -75,7 +75,7 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     // this.trianglePatternStyles = this.createTrianglePattern();
     const entity = this;
 
-    var stylesFunction = function(feature:Feature){
+    var stylesFunction = function(feature:Feature<Geometry>){
       const styles: Style[] = []
       if(entity.echelon)
         styles.push(...entity.configureCentralIcon(feature,entity.echelon,lineOptions.svgWidth));
@@ -124,7 +124,7 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     return this.name != ""?this.name:this.order?this.order:""    
   }
 
-  getVerbose(): string {
+  override getVerbose(): string {
     if(this.lineOptions.verbose)
       return this.lineOptions.verbose
     if(this.lineOptions.extraData){
@@ -162,7 +162,7 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     }
   }
 
-  createPattern(feature:Feature,shapes?:number):Style[] {
+  createPattern(feature:Feature<Geometry>,shapes?:number):Style[] {
     const entity = this;
     var stylesList:Style[] = [];
     const map = Globals.MAP;
@@ -254,7 +254,7 @@ export class EntityLine<GeomType extends Geometry = Geometry> extends Entity{
     return Math.atan2(dy, dx);
   }
 
-  public configureCentralIcon(feature:Feature,imageSrc:string,svgWidth:number):Style[]{
+  public configureCentralIcon(feature:Feature<Geometry>,imageSrc:string,svgWidth:number):Style[]{
     var styles:Style[] = [];
     (<LineString>feature.getGeometry()).forEachSegment((from,to) => {
       const centre = [(from[0] + to[0])/2,(from[1] + to[1])/2]

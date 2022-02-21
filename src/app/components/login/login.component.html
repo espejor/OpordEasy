@@ -16,5 +16,10 @@
         required="required"
       />
       <button type="submit" (click)="login()">Log in</button>
+              
+      <div *ngIf = "!isLoggedIn()">
+        <br>
+        <a routerLink="/register/">No tengo cuenta</a>
+      </div>
     </form>
   </div>

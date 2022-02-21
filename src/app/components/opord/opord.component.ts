@@ -2,13 +2,13 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { EntityUnit } from 'src/app/entities/entity-unit';
 import { Entity } from 'src/app/entities/entity.class';
 import { OperationsService } from 'src/app/services/operations.service';
-import jsPDF from 'jspdf';
-import htmlToPdfmake from 'html-to-pdfmake';
-import html2canvas from 'html2canvas';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { Content, ContentText, Style, TDocumentDefinitions } from 'pdfmake/interfaces';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// import jsPDF from 'jspdf';
+// import htmlToPdfmake from 'html-to-pdfmake';
+// import html2canvas from 'html2canvas';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+import { Content, Style, TDocumentDefinitions } from 'pdfmake/interfaces';
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 // import pdfMake from 'pdfmake/build/pdfmake';
 // import pdfFonts from 'pdfmake/build/vfs_fonts';
 
@@ -134,7 +134,7 @@ export class OpordComponent implements OnInit {
       }
     };
 
-    pdfMake.createPdf(documentDefinition).open();
+    pdfMake.createPdf(documentDefinition,{},{},pdfFonts.pdfMake.vfs).open();
   }
 
   arrayContentsOfBody(arrayDocumentHTML):Content[] {

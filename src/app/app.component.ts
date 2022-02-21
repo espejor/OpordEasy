@@ -8,13 +8,13 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor (private translate:TranslateService,private matIconRegistry: MatIconRegistry){
-    this.setAppLanguage();
+  constructor (){
+    // this.setAppLanguage();
   }
-  setAppLanguage() {
-    this.translate.setDefaultLang('en');
-    this.translate.use(this.translate.getBrowserLang());
-  }
+  // setAppLanguage() {
+  //   this.translate.setDefaultLang('en');
+  //   this.translate.use(<string>this.translate.getBrowserLang());
+  // }
 
   title = 'OpordEasyApp'; 
   showFiller = false;

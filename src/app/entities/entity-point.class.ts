@@ -4,7 +4,6 @@ import Text from "ol/style/Text";
 import { Color } from "ol/color";
 import Point from "ol/geom/Point";
 import Stroke from "ol/style/Stroke";
-import Fill from "ol/style/Fill";
 import { Entity, EntityOptions } from "./entity.class";
 import ImageStyle from "ol/style/Image";
 import { Coordinate } from "ol/coordinate";
@@ -12,16 +11,13 @@ import { entityType } from "./entitiesType";
 import { SvgIconsListService } from "../services/svg-icons-list.service";
 import IconAnchorUnits from "ol/style/IconAnchorUnits";
 import Icon from "ol/style/Icon";
-import { FeatureForDeploing, PointOptions } from "../models/feature-for-selector";
-import { features } from "process";
-import { SvgGeneralIconsListService } from "../services/svg-general-icons-list.service";
-import { Feature } from "ol";
+import { PointOptions } from "../models/feature-for-selector";
 
 export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
   public image: ImageStyle;
-  public lineColor: Color = [0,0,0];
-  public lineWidth: number = 2;
-  location: Coordinate
+  public override lineColor: Color = [0,0,0];
+  public override lineWidth: number = 2;
+  override location: Coordinate
 
   // features of text
   public name: string = "";
@@ -46,7 +42,7 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
   iconScale: number;
   typeDeploy: string;
 
-  constructor(public svgService: SvgIconsListService,entityOptions:EntityOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
+  constructor(public override svgService: SvgIconsListService,entityOptions:EntityOptions,opt_geometryOrProperties?: GeomType | { [key: string]: any },id?:string) {
     super(entityOptions,svgService,opt_geometryOrProperties,id);
     this.entityType = entityType.point
     this.src = ""
@@ -122,11 +118,11 @@ export class EntityPoint<GeomType extends Geometry = Geometry> extends Entity{
     })
   }
 
-  getVerbose(): string {
+  override getVerbose(): string {
       return this.entityOptions.verbose?this.entityOptions.verbose:this.entityOptions.typeEntity
   }
 
-  getSvgSvcFieldsOfExtraData(){
+  override getSvgSvcFieldsOfExtraData(){
     return null
   }
 
@@ -189,7 +185,7 @@ getAnchor(){
   return this.anchor
 }
 
-setCoordinates(coordinates: Coordinate): void {
+  override setCoordinates(coordinates: Coordinate): void {
     super.setCoordinates(coordinates)
 }
 
@@ -201,7 +197,7 @@ setCoordinates(coordinates: Coordinate): void {
     return this.getEntityGeometry().getCoordinates();
   }
 
-  getLocation(): Coordinate{
+  override getLocation(): Coordinate{
     return <Coordinate>this.location
   }
 

@@ -73,7 +73,7 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     //Hay que pasar la Feature en formato <key,value>
     this.selectorClass = "unSelected"
     this.resetAspectSelectors();
-    this.addFeatureToModelIcon({key :"friendly",value :this.svgListOfIcons.features.frame.friendly});
+    this.addFeatureToModelIcon({key :"friendly",value :this.svgListOfIcons.features['frame']['friendly']});
   }
 
   
@@ -192,8 +192,8 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
             if(this.unitOptions[featuresLabel].length > 0){
               for (let featureInArray in this.unitOptions[featuresLabel]){
                 this.svgListOfIcons.features[featuresLabel][this.unitOptions[featuresLabel][featureInArray].key].classCSS = "selectorSelected"
-                this.cgSymbolSelected = this.svgListOfIcons.features.extraFeature.cgSymbol.classCSS == "selectorSelected"
-                this.foSymbolSelected = this.svgListOfIcons.features.extraFeature.foSymbol.classCSS == "selectorSelected"
+                this.cgSymbolSelected = this.svgListOfIcons.features['extraFeature']['cgSymbol'].classCSS == "selectorSelected"
+                this.foSymbolSelected = this.svgListOfIcons.features['extraFeature']['foSymbol'].classCSS == "selectorSelected"
               }
             }
           }else{
@@ -354,9 +354,9 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     const field =  feature.key == "reinforced"? "check": "textFields"
     if (field == "textFields"){
       if(this.unitOptions.extraData)
-        this.svgListOfIcons.features.extraData.fields["check"] = this.unitOptions.extraData.fields.check
-      this.svgListOfIcons.features.extraData.fields[field][feature.key].value = textValue
-      this.unitOptions.extraData = this.svgListOfIcons.features.extraData
+        this.svgListOfIcons.features['extraData']['fields']["check"] = this.unitOptions.extraData['fields'].check
+      this.svgListOfIcons.features['extraData']['fields'][field][feature.key].value = textValue
+      this.unitOptions.extraData = this.svgListOfIcons.features['extraData']
     }else{
       feature.value.value = textValue
       this.insertInUnitOptions(feature,field)
@@ -367,10 +367,10 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
     if(!this.unitOptions["extraData"]){
       const obj = {[feature.key]:feature.value}
       this.unitOptions["extraData"] = {["fields"]:{[field]:obj}}
-    }else if(!this.unitOptions.extraData.fields[field])
-        this.unitOptions["extraData"].fields[field] = {[feature.key]:feature.value}
+    }else if(!this.unitOptions.extraData['fields'][field])
+        this.unitOptions["extraData"]['fields'][field] = {[feature.key]:feature.value}
       else
-        this.unitOptions["extraData"].fields[field][feature.key] = feature.value
+        this.unitOptions["extraData"]['fields'][field][feature.key] = feature.value
   }
 
   removeChildElement(parent:any,childId:string){
@@ -414,16 +414,16 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
 
   
   public updateIconTemplate(feature: FeatureForDeploing){
-    if(feature.value){
-      const type = feature.value.codeForDeploing.type;
+    if(feature['value']){
+      const type = feature['value'].codeForDeploing.type;
       const element = this.renderer.createElement(type, 'svg');
 
       if (type == "path"){
-        const draw = "m" + feature.value.codeForDeploing.x + "," + feature.value.codeForDeploing.y + (feature.value.codeForDeploing.d[this.getD(feature)]);
+        const draw = "m" + feature['value'].codeForDeploing.x + "," + feature['value'].codeForDeploing.y + (feature['value'].codeForDeploing.d[this.getD(feature)]);
         this.renderer.setAttribute(element, "d", draw);
-        this.renderer.setAttribute(element, "stroke-width", feature.value.codeForDeploing.strokeWidth)
-        this.renderer.setAttribute(element, "stroke", feature.value.codeForDeploing.stroke)
-        this.renderer.setAttribute(element, "fill", feature.value.codeForDeploing.fill)
+        this.renderer.setAttribute(element, "stroke-width", feature['value'].codeForDeploing.strokeWidth)
+        this.renderer.setAttribute(element, "stroke", feature['value'].codeForDeploing.stroke)
+        this.renderer.setAttribute(element, "fill", feature['value'].codeForDeploing.fill)
       }else if (type == "text"){
 
       }
@@ -434,13 +434,13 @@ export class UnitSelectorComponent extends Selector implements OnInit,AfterViewI
 
   getD(type:FeatureForDeploing):string{
     if(this.unitOptions.frame)
-      return type.value.codeForDeploing.d[this.unitOptions.frame.key] != undefined? this.unitOptions.frame.key :"friendly"
+      return type['value'].codeForDeploing.d[this.unitOptions.frame['key']] != undefined? this.unitOptions.frame['key'] :"friendly"
     return "friendly";
   }
 
 
 
-  unsorted():number{
+  override unsorted():number{
     return 0;
   }
 

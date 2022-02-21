@@ -18,7 +18,7 @@ export class EntityArrow<GeomType extends Geometry = Geometry> extends EntityLin
     this.tipStyle = this.getTipStyle()
     this.tailStyle = this.getTailStyle()
 
-    var stylesFunction = function(feature:Feature){
+    var stylesFunction = function(feature:Feature<Geometry>){
       const styles: Style[] = []
       styles.push(entity.tipStyle)
       styles.push(entity.tailStyle)
@@ -42,7 +42,7 @@ export class EntityArrow<GeomType extends Geometry = Geometry> extends EntityLin
     }
   }
 
-  getHTMLCodeForIconTimeline(): string {
+  override getHTMLCodeForIconTimeline(): string {
       const file = this.file.file
       return '<div style="height: 50px;"><img src="' + file + 
       '" style="vertical-align: top;width: 50px"></div>'

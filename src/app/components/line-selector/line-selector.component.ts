@@ -6,12 +6,11 @@ import Geometry from 'ol/geom/Geometry';
 import GeometryType from 'ol/geom/GeometryType';
 import LineString from 'ol/geom/LineString';
 import Draw, { DrawEvent } from 'ol/interaction/Draw';
-import { Pixel } from 'ol/pixel';
 import { Observable } from 'rxjs';
 import { entityType } from 'src/app/entities/entitiesType';
-import { Entity, EntityOptions } from 'src/app/entities/entity.class';
+import { Entity } from 'src/app/entities/entity.class';
 import { EntitySelector } from 'src/app/entities/factory-entity-selector';
-import { FeatureForDeploing, LineOptions, PointOptions } from 'src/app/models/feature-for-selector';
+import { LineOptions } from 'src/app/models/feature-for-selector';
 import { EntityLocated } from 'src/app/models/operation';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { HTTPEntitiesService } from 'src/app/services/entities.service';
@@ -76,8 +75,8 @@ export class LineSelectorComponent extends Selector implements OnInit,AfterViewI
   
   fillArrayOfOptions(): any[] {
     const options:any[] = []
-    for(const property in this.svgListOfIcons.features.lines) {
-      options[property] = this.svgListOfIcons.features.lines[property].text;
+    for(const property in this.svgListOfIcons.features['lines']) {
+      options[property] = this.svgListOfIcons.features['lines'][property].text;
     };
     return options;
   }

@@ -4,9 +4,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout';
-// import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
+// import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -23,7 +22,6 @@ import { OlMapComponent } from './components/nav/ol-map/ol-map.component';
 import { HeaderComponent } from './components/header/header.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-// import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TranslationComponent } from './components/translation/translation.component';
 import { OperationsComponent } from './components/nav/operations/operations.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -54,9 +52,8 @@ import { TaskSelectorComponent } from './components/task-selector/task-selector.
 import { TaskSelectorDialogLoaderComponent } from './components/task-selector-dialog-loader/task-selector-dialog-loader.component';
 import { Bubble_featureComponent } from './components/nav/bubble_feature/bubble_feature.component';
 import { OpordComponent } from './components/opord/opord.component';
-// import { SwiperModule } from 'swiper/angular';
-import { CarouselComponent } from './components/carousel/carousel.component';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+// import { CarouselComponent } from './components/carousel/carousel.component';
+// import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { TooltipComponent } from './components/tooltip/tooltip.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
@@ -66,6 +63,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { CarouselComponent } from './components/carousel/carousel.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -118,8 +118,8 @@ export function HttpLoaderFactory(http:HttpClient){
     LayoutModule,
     FormsModule,
     ReactiveFormsModule,
-    MatMenuModule,
     MatToolbarModule,
+    MatMenuModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCheckboxModule,
@@ -138,16 +138,13 @@ export function HttpLoaderFactory(http:HttpClient){
     HttpClientModule,
     DragDropModule,
     NgbModule,
-    // SwiperModule,
-    // routing,
-    // RouterModule.forRoot(routing),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps:[HttpClient]
-      }
-    })
+    // TranslateModule.forRoot({
+    //   loader: {
+    //     provide: TranslateLoader,
+    //     useFactory: HttpLoaderFactory,
+    //     deps:[HttpClient]
+    //   }
+    // })
   ],
   exports: [
     MatMenuModule,

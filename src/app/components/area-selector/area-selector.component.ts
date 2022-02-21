@@ -63,8 +63,8 @@ export class AreaSelectorComponent extends Selector implements OnInit,AfterViewI
 
   fillArrayOfOptions(): any[] {
     const options:any[] = []
-    for(const property in this.svgListOfIcons.features.areas) {
-      options[property] = this.svgListOfIcons.features.areas[property].text;
+    for(const property in this.svgListOfIcons.features['areas']) {
+      options[property] = this.svgListOfIcons.features['areas'][property].text;
     };
     return options;
   }

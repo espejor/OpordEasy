@@ -4,7 +4,8 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 
 let urlDB = "";
 if (process.env.NODE_ENV === 'dev') {
-    urlDB = "mongodb://localhost/opordeasy";
+    // urlDB = "mongodb://localhost/opordeasy";
+    urlDB = "mongodb+srv://espejor:d5mv3RRK-_f9UzT@opordeasy.zptty.mongodb.net/opordeasy?retryWrites=true&w=majority"
 } else {
     urlDB = "mongodb+srv://espejor:d5mv3RRK-_f9UzT@opordeasy.zptty.mongodb.net/opordeasy?retryWrites=true&w=majority"
 };

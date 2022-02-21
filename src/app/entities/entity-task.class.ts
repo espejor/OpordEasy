@@ -25,7 +25,7 @@ export class EntityTask<GeomType extends Geometry = Geometry>{
     name: string;
     taskStyle: Style;
     purposeStyle: Style;
-    styles: (feature: Feature) => Style[];
+    styles: (feature: Feature<Geometry>) => Style[];
     pattern: Pattern;
     anchor: number[];
     lineColor: any;
@@ -95,7 +95,7 @@ export class TaskOptions extends EntityOptions{
     WIDTH:number
   }
 
-  static getCoordinatesByType(type: string,feature:Feature): Coordinate | Coordinate[] {
+  static getCoordinatesByType(type: string,feature:Feature<Geometry>): Coordinate | Coordinate[] {
     switch (type){
       case "point": return (<Point>feature.getGeometry()).getCoordinates()
       case "arrow": return (<LineString>feature.getGeometry()).getCoordinates()
@@ -106,7 +106,7 @@ export class TaskOptions extends EntityOptions{
     return (<Point>feature.getGeometry()).getCoordinates()
   }
 
-  static getTypeTask(type:string):GeometryType{
+  static getTypeTask(type:string){
     switch (type){
       case "point": return GeometryType.POINT
       case "arrow": return GeometryType.LINE_STRING

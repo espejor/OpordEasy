@@ -27,7 +27,7 @@ export class EntityControlPoint<GeomType extends Geometry = Geometry>  extends E
 
     this.entityType = entityType.controlPoint
     const map:Map = Globals.MAP
-    const dragSource:VectorSource = Globals.DRAG_SOURCE;  
+    const dragSource:VectorSource<Geometry> = Globals.DRAG_SOURCE;  
     var modify:Modify = Globals.MODIFY;
     
     this.createStyles()
@@ -66,14 +66,14 @@ export class EntityControlPoint<GeomType extends Geometry = Geometry>  extends E
     }) 
   }
 
-  onModifyEnd(evt:ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService): void {
+  override onModifyEnd(evt:ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService): void {
     const entity:Entity = shapesFeatures.getArray().filter(e => e._id == this.hostId)[0]
     entitiesService.updateEntity(entity).subscribe(data => 
       console.log(data)
     )
   }
 
-  setCoordinates(coordinates: Coordinate): void {
+  override setCoordinates(coordinates: Coordinate): void {
     if (!this.dragging)
       super.setCoordinates(coordinates)
   }
@@ -120,15 +120,15 @@ export class EntityControlPoint<GeomType extends Geometry = Geometry>  extends E
 
 
     // ----------- Listeners
-    onMouseOver(ev:MapBrowserEvent):void{
+    override onMouseOver(ev):void{
       this.setStyle(this.styleOver);      
     };
 
-    onMouseExit(ev):void{
+    override onMouseExit(ev):void{
       this.setStyle(this.styleExited)
     }
     
-    onMouseDown(ev){
+    override onMouseDown(ev){
       console.log("down en botón de control");
     };
     
