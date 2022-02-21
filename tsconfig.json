@@ -3,7 +3,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
+    "outDir": "./dist/opord-easy",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "strict": false,
