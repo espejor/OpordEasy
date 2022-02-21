@@ -29,6 +29,7 @@
     "@ngx-translate/http-loader": "^7.0.0",
     "@types/pdfmake": "^0.1.20",
     "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
     "e2e": "^0.0.8",
     "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
