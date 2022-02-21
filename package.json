@@ -30,6 +30,7 @@
     "@types/pdfmake": "^0.1.20",
     "bcrypt": "^5.0.1",
     "e2e": "^0.0.8",
+    "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
     "lint": "^0.7.0",
     "mongoose": "^6.2.2",
@@ -57,5 +58,7 @@
     "karma-jasmine-html-reporter": "~1.7.0",
     "typescript": "~4.5.2"
   },
-  "engines": {"node":"^16.14.0"}
+  "engines": {
+    "node": "^16.14.0"
+  }
 }

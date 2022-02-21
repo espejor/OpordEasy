@@ -13,7 +13,7 @@ const usersRoutes = require('./routes/users.routes');
 
 // --------- Settings
 // Setting PORTs
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT);
 
 
 // --------- Middlewares
