@@ -47,8 +47,8 @@ import { Router } from '@angular/router';
 export const DEFAULT_HEIGHT = '500px';
 export const DEFAULT_WIDTH = '100%';
 
-export const DEFAULT_LAT = 39.025;
-export const DEFAULT_LON = -6.895;
+export const DEFAULT_LAT = 41.8089;
+export const DEFAULT_LON = -0.9717;
 
 @Component({
   selector: 'ol-map',
@@ -350,9 +350,9 @@ export class OlMapComponent implements OnInit,AfterViewInit {
       layers: [    
         new TileLayer({
         source: new XYZ({
-          // url:'http://www.ign.es/wmts/mapa-raster?Layer=MTN&Style=default&TileMatrixSet=EPSG:4326&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix=EPSG:4326:{z}&TileCol={x}&TileRow={y}',
-          url:'http://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=bb5346dadb604ab0b91120d54245887b	',
-          attributions: 'de tunder'
+          url:'http://www.ign.es/wmts/mapa-raster?Layer=MTN&Style=default&TileMatrixSet=GoogleMapsCompatible&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&TileMatrix={z}&TileCol={x}&TileRow={y}',
+          // url:'http://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=bb5346dadb604ab0b91120d54245887b	',
+          attributions: 'IGN'
         }),
         opacity: 1
       }),
