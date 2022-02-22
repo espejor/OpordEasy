@@ -32,7 +32,7 @@ app.use('/api/entities',entitiesRoutes)
 app.use('/api/users',usersRoutes)
 
 // Serve only the static files form the dist directory
-app.use(express.static(__dirname + '../dist'));
+app.use(express.static(__dirname + '../dist/opord-easy'));
 
 // app.get('*', function(req,res) {
 //     res.sendFile(path.join(__dirname ,'../dist', 'index.html'));
@@ -49,11 +49,13 @@ const allowed = [
   
   // Catch all other routes and return the angular index file
   app.get('*', (req, res) => {
-     if (allowed.filter(ext => req.url.indexOf(ext) > 0).length > 0) {
-        res.sendFile(path.join(__dirname, `../dist/${req.url}`));
+     if (allowed.filter(ext => req.url.indexOf(ext) > 0).length > 0) {  
+        console.log(" Fetching from.." + path.join(__dirname, `../dist/${req.url}`));
+        res.sendFile(path.join(__dirname, `../dist/opord-easy/${req.url}`));
      } 
      else {
-        res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+        console.log(" Fetching from.." + path.join(__dirname,'../dist', 'index.html'));
+        res.sendFile(path.join(__dirname, '../dist/opord-easy', 'index.html'));
      }
   });
 

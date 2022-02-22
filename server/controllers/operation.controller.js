@@ -4,7 +4,8 @@
 // const operation = require('../models/operation');
 const OperationModel = require('../models/operation')
 const mongoose = require('mongoose')
-const ObjectId = require('mongodb').ObjectID;
+const ObjectId = require('mongodb').ObjectId;
+const UserModel = require('../models/user')
 
 // Creamos un objeto de controlador de operaciones
 const operationCtrl = {};
@@ -17,6 +18,32 @@ operationCtrl.getOperations = async (req,res) => {
     .populate("phases.layout.entity")
     .populate("comboEntities");
     res.json(operations);
+}
+
+operationCtrl.getOperationsForUser = async (req,res) => {
+    const operations = await OperationModel.find({
+        "users._id": ObjectId(req.params.id)
+    })
+    .populate("phases.timelines.entities")
+    .populate("phases.layout.entity")
+    .populate("comboEntities");
+    res.json(operations);
+
+
+
+    
+    // const operationsList = [];
+    // const ops = await UserModel.findById (req.params.id,"operations",(error,user) =>{
+    //     user.operations.forEach(operationObjectId =>{
+    //         const operation = OperationModel.findById(operationObjectId.toString())
+    //         .populate("phases.timelines.entities")
+    //         .populate("phases.layout.entity")
+    //         .populate("comboEntities")
+    //         .populate("users");
+    //         operationsList.push(res.json(operation))
+    //     })
+    // }).clone()
+    // res.json(operationsList)
 }
 
 operationCtrl.getOperation = async (req,res) => {
@@ -126,7 +153,7 @@ operationCtrl.updateOperation = async (req,res) => {
                 console.log(response);
                 break;        
             
-                    
+            
             case "updateCombo":
                 query = {
                     [`comboEntities`]: entityId,

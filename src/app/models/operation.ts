@@ -19,9 +19,7 @@ export class Operation {
     apolog:string
     command:string
     communications:string
-
-
-    // user: string// _id del User
+    users: string[] = [] // _id de los Usuarios propietarios
 
     constructor(private svgService?:SvgIconsListService, jsonRecovered?){
         // this._id ="";
@@ -52,9 +50,10 @@ export class Operation {
 
     recoverPhases(jsonRecovered): Phase[]{
         const phases: Phase[] = [];
-        for (let i = 0; i < jsonRecovered.length; i++){
-            phases.push(new Phase(this.svgService,jsonRecovered[i])); 
-        }
+        if(jsonRecovered)
+            for (let i = 0; i < jsonRecovered.length; i++){
+                phases.push(new Phase(this.svgService,jsonRecovered[i])); 
+            }
         return phases;
     }
     

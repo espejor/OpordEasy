@@ -2,7 +2,9 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { Operation } from 'src/app/models/operation';
 import { AuthService } from 'src/app/services/auth.service';
+import { OperationsService } from 'src/app/services/operations.service';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +26,8 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     public fb: FormBuilder,
     public authService: AuthService,
     public router: Router,
-    private _snackBar: MatSnackBar) {
+    private _snackBar: MatSnackBar,
+    private operationService:OperationsService) {
     this.registerForm = this.fb.group({
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl('', Validators.required),
@@ -105,6 +108,8 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   }
 
   logout(){
+      this.operationService.selectedOperation = new Operation()
+      this.operationService.updateLayout()
       this.authService.doLogout();
   }
 

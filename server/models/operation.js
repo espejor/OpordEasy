@@ -1,10 +1,16 @@
 const mongoose = require('mongoose');
 const Phase = require('./phase');
 const User = require('./user');
+const validOpsRoles = require('./valid_ops_roles')
 const { Schema } = mongoose;
 
 
 // ---------- Schemas
+const UsrSchema = new Schema({
+    _id:{type: Schema.Types.ObjectId, ref: "User"},
+    role:{type:String,default:"OWNER",required:[true],enum:validOpsRoles},
+}) 
+
 const OperationSchema = new Schema ({
     mission: String,
     order: Number,
@@ -37,16 +43,10 @@ const OperationSchema = new Schema ({
     comboEntities: [{
         type: Schema.Types.ObjectId,
         ref: "Entity"
-    }]
+    }],
+    users:[UsrSchema]
 
-    // user: { 
-    //     firstName: {type: String, required: true},
-    //     lastName: {type: String, required: true},
-    //     userName: {type: String, required: true},
-    //     email: {type: String, required: true},
-    //     psw: {type: String, required: true},
-    //     avatar: {type: String}
-    // }, //reference to the associated user
 });
+
 
 module.exports = mongoose.model('Operation',OperationSchema);

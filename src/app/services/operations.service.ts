@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NewPhaseDialogComponent } from '../components/nav/ol-map/new-phase-dialog/new-phase-dialog.component';
 // import { Globals } from '../utilities/globals';
 import { findElement } from '../utilities/miscelanea';
+import { Globals, OpsRoles } from '../utilities/globals';
 
 @Injectable({
   providedIn: 'root'
@@ -95,6 +96,17 @@ export class OperationsService {
     })
   }
 
+  
+  addUser(userId: string) {
+    const obj:any = new Object()
+    obj._id = userId
+    obj.role = OpsRoles.OWNER
+    const isAdded = this.selectedOperation.users.some((user:any) => {
+      return user._id == userId
+    })
+    if(!isAdded)
+      this.selectedOperation.users.push(obj)
+  }
   
   reorderEntitiesInTimeline() {        
     this.updateOperation(this.selectedOperation).subscribe(result =>{
@@ -270,6 +282,7 @@ export class OperationsService {
     operationForDDBB.apolog = this.selectedOperation.apolog
     operationForDDBB.command = this.selectedOperation.command
     operationForDDBB.communications = this.selectedOperation.communications
+    operationForDDBB.users = this.selectedOperation.users
     return operationForDDBB;
   }
 
@@ -526,8 +539,11 @@ export class OperationsService {
   
 
   
-  getOperations(){
-    return this.http.get(this.URL_API);
+  getOperations(userId?:string){
+    if (userId)
+      return this.http.get(this.URL_API + "/all/" + userId);
+    else
+      return this.http.get(this.URL_API + "/all");
   }
 
   addOperation(operation: Operation){

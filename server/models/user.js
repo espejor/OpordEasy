@@ -1,17 +1,24 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const validOpsRoles = require('./valid_ops_roles')
 // import Globals from '../../src/app/utilities/globals'
 
 const ALREADY_REGITERED = "alreadyRegistered" 
 
 // var uniqueValidator = require('mongoose-unique-validator');
 
-let validRoles = {
+let validAppRoles = {
     values: ["ADMIN", "USER"],
     message: '{VALUE} no es un rol válido'
 }
 
 // ---------- Schemas
+
+const OpsSchema = new Schema({
+    _id:{type: Schema.Types.ObjectId, ref: "Operation"},
+    role:{type:String,default:"OWNER",required:[true],enum:validOpsRoles},
+}) 
+
 const UserSchema = new Schema ({
     firstName: {type: String, required: [true, 'El nombre es necesario']},
     lastName: {type: String, required: [true, 'Un apellido es necesario']},
@@ -34,8 +41,9 @@ const UserSchema = new Schema ({
     }, 
     // unique:[true, 'Ese correo ya existe en la BD']},
     password: {type: String, required: [true, 'Una contraseña es necesaria']},
-    role:{type:String,default:"USER",required:[true],enum:validRoles},
-    avatar: {type: String}
+    role:{type:String,default:"USER",required:[true],enum:validAppRoles},
+    avatar: {type: String},
+    operations:[OpsSchema]
 }) 
 
 // elimina la key password del objeto que retorna al momento de crear un usuario
@@ -45,6 +53,7 @@ UserSchema.methods.toJSON = function() {
     delete userObject.password;
     return userObject;
  }
+
 
 // UserSchema.plugin(uniqueValidator, {
 //     message: '{PATH} debe de ser único'

@@ -6,6 +6,7 @@ import { Operation } from 'src/app/models/operation';
 import { OperationsService } from 'src/app/services/operations.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { SvgIconsListService } from 'src/app/services/svg-icons-list.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-operations',
@@ -21,11 +22,13 @@ export class OperationsComponent implements OnInit,AfterViewInit {
     private iconRegistry: MatIconRegistry,
 		private sanitizer: DomSanitizer, 
     private _snackBar: MatSnackBar,
-    private svgService: SvgIconsListService) {
+    private svgService: SvgIconsListService,
+    private authService:AuthService) {
       iconRegistry.addSvgIcon('circle', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/circle24.svg'));
   }
 
   addOperation(form:NgForm){
+    this.operationsService.addUser(this.authService.getUserId())
     this.operationsService.updateOperation(this.operationsService.selectedOperation)
     .subscribe(res => {
       console.log(res)
@@ -46,14 +49,15 @@ export class OperationsComponent implements OnInit,AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.getOperations();
+    const userId = this.authService.getUserId()
+    this.getOperations(userId);
   }
 
   ngAfterViewInit():void{
   }
 
-  getOperations(): any {
-    this.operationsService.getOperations()
+  getOperations(userId?: string): any {
+    this.operationsService.getOperations(userId)
     .subscribe(res => {
       console.log(res);
       this.operationsService.operations = this.recoverOperations(res);

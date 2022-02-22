@@ -6,7 +6,8 @@ const operationCtrl = require ('../controllers/operation.controller');
 // Routes predefinidas
 
 router.get('/units/', () => {console.log('---------- UNITS')})
-router.get('/', operationCtrl.getOperations)
+router.get('/all', operationCtrl.getOperations)
+router.get('/all/:id', operationCtrl.getOperationsForUser)
 router.get('/:id', operationCtrl.getOperation)
 router.put('/:id', operationCtrl.updateOperation)
 router.delete('/:id', operationCtrl.deleteOperation)

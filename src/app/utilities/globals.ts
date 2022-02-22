@@ -10,6 +10,13 @@ export const Globals = Object({
     DRAG_SOURCE: VectorSource,
     MODIFY:Modify,
     ALREADY_REGITERED :"alreadyRegistered" 
+
     // OPERATION_SVC:OperationsService
 })
 
+
+export enum OpsRoles {
+    OWNER = "OWNER",
+    PARTNER = "PARTNER",
+    VIEWER = "VIEWER"
+}

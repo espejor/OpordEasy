@@ -20,56 +20,6 @@
             </mat-form-field>
           </mat-grid-tile>
         </div>
-        <!-- <mat-grid-tile> 
-          <mat-form-field> 
-          <input matInput
-              type= "text"
-              formControlName="lastName"
-              placeholder="Apellidos"
-              required="required"
-          />     
-        </mat-form-field>
-      </mat-grid-tile>
-      <mat-grid-tile> 
-        <mat-form-field> 
-          <input matInput
-              type="text"
-              formControlName="userName"
-              placeholder="Usuario"
-              required="required"
-          />
-        </mat-form-field>
-      </mat-grid-tile>
-      <mat-grid-tile> 
-        <mat-form-field> 
-          <input matInput
-              type="email"
-              formControlName="email"
-              placeholder="Email"
-              required="required"
-          /> 
-        </mat-form-field>
-      </mat-grid-tile>
-      <mat-grid-tile> 
-        <mat-form-field>  
-          <input matInput
-            type="password"
-            formControlName="password"
-            placeholder="Password"
-            required="required"
-          />
-        </mat-form-field>
-      </mat-grid-tile>
-      <mat-grid-tile> 
-        <mat-form-field> 
-          <input matInput
-            type="password"
-            formControlName="repassword"
-            placeholder="Repeat the password"
-            required="required"
-          />
-        </mat-form-field>
-      </mat-grid-tile> -->
       <mat-grid-tile class="buttons">
         <button *ngIf = "isLoggedIn(); else linkLogin" class= "button" mat-button color="primary" type="submit" (click)="logout()">Logout</button>
       <ng-template #linkLogin>
