@@ -59,7 +59,6 @@ const allowed = [
      }
   });
 
-
 // Iniciamos el servidos REST API
 app.listen(app.get('port'), () => {
     console.log('Server on Port ', app.get('port'));
