@@ -5,16 +5,20 @@
 
     <div class="container"> 
         <!-- ------ Selector ------ -->
-        <mat-form-field appearance="outline">
-            <mat-label>Operaciones</mat-label>
-            <mat-select [(ngModel)]="operationsService.selectedOperation" name="operationSelector"
-                (selectionChange) = "operationsService.changeOperation()">
-                <mat-option *ngFor="let operation of operationsService.operations" [value]="operation">
-                {{operation.name}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <form #operationForm = "ngForm" >
+        <div class="selector">
+            <mat-form-field appearance="outline">
+                <mat-label>Operaciones</mat-label>
+                <mat-select [(ngModel)]="operationsService.selectedOperation" name="operationSelector"
+                    (selectionChange) = "operationsService.changeOperation()">
+                    <mat-option *ngFor="let operation of operationsService.operations" [value]="operation">
+                    {{operation.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-icon  [ngStyle] = "{'color': getRoleColor(getUserRole())}">person</mat-icon>
+        </div>
+
+        <form #operationForm = "ngForm"  *ngIf="canAccess()">
             <div class="col-md-12">
             <!-- ---------- Input Operaciones --------- -->
                 <div class="input-field">
@@ -26,6 +30,9 @@
                     <div class="delete-button">
                         <button mat-icon-button color="warn" class="icon-button" (click) = "deleteOperation(operationForm)">
                             <mat-icon>delete</mat-icon>
+                        </button>
+                        <button mat-icon-button color="primary" class="icon-button" (click) = "openUsersManagement()">
+                            <mat-icon>people</mat-icon>
                         </button>
                     </div> 
                 </div>

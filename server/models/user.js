@@ -15,7 +15,7 @@ let validAppRoles = {
 // ---------- Schemas
 
 const OpsSchema = new Schema({
-    _id:{type: Schema.Types.ObjectId, ref: "Operation"},
+    operation:{type: Schema.Types.ObjectId, ref: "Operation"},
     role:{type:String,default:"OWNER",required:[true],enum:validOpsRoles},
 }) 
 

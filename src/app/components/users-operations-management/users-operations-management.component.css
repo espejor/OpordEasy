@@ -1,0 +1,54 @@
+.frame{
+    border-radius: 1rem;
+    background: white;
+    position: absolute;
+    top: 25%;
+    left: 30%;
+    width: 40%;
+    height: 50%;
+    box-shadow: 10px 10px 10px lightgrey;
+    padding: 1rem;
+  }
+
+  h2{
+    text-align: center;
+
+  }
+  form h1{
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+  }
+
+  .list{
+    height: 52%;
+    background-color: whitesmoke;
+    overflow: overlay;
+  }
+
+  #task-modal-footer{
+    right: 2rem;
+    position: absolute;
+    bottom: 1em;
+  }
+  
+  .button-modal{
+    background: lightgray;
+
+    /* bottom: 0.5rem;
+    left: 1rem; */
+  }
+  .error{
+    color: red;
+    text-align: center;
+  }
+  
+  ::ng-deep .warning{
+    background: 'yellow';
+  }
+
+  ::ng-deep .mat-list-text {
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: space-between;
+}
+  

@@ -22,87 +22,11 @@ export class OpordComponent implements OnInit {
   textComposed: string;
 
   @ViewChild('pdfDocument') pdfDocument: ElementRef;
-  // bubbleOpened = false;
-  constructor(public operationsService:OperationsService) { 
-    // this.bubbles = new Bubbles()
-    // this.bubbles = {situation = state: false}
-    // this.bubbles["enemy"].state = false
-  }
+  constructor(public operationsService:OperationsService) {}
 
   ngOnInit(): void {
 
   }
-
-  
-//   createPDF(){
-//     var data = document.getElementById('pdfDocument');
-//     const pdfDocument = this.pdfDocument.nativeElement;
-   
-//     var html = htmlToPdfmake(pdfDocument.innerHTML);
-
-//     var doc = new jsPDF();
-
-// doc.html(document.body, {
-//    callback: function (doc) {
-//      doc.save();
-//    },
-//    x: 10,
-//    y: 10
-// });
-
-
-
-//       var HTML_Width = pdfDocument.offsetWidth;
-//       var HTML_Height = pdfDocument.offsetHeight;
-//       var top_left_margin = 15;
-//       var bottonMargin = 100;
-//       var totalMargin = top_left_margin + bottonMargin
-      
-//       var PDF_Width = 595.276; // = 21cm
-//       var PDF_Height = 841.8898; // = 29.7cm
-//       var canvas_image_width_A4 = (PDF_Width-(2*top_left_margin));
-//       var canvas_image_height_A4 = (HTML_Height*((PDF_Width-(2*top_left_margin))/HTML_Width));
-//       var totalPDFPages = Math.ceil(canvas_image_height_A4/(PDF_Height-(totalMargin)))-1;
-      
-  
-//       html2canvas(pdfDocument,{allowTaint:true}).then(function(canvas) {
-//         canvas.getContext('2d');
-        
-//         canvas.scrollIntoView()
-//         console.log(canvas.height+"  "+canvas.width);
-        
-        
-//         var imgData = canvas.toDataURL("image/jpeg", 1.0);
-//         var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
-//         pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width_A4,canvas_image_height_A4);
-//           pdf.setFillColor(255,255,255);
-//           pdf.rect(0, 0, PDF_Width, top_left_margin, "F");
-//           pdf.rect(0, PDF_Height-bottonMargin, PDF_Width, bottonMargin, "F");
-        
-        
-//         for (var i = 1; i <= totalPDFPages; i++) { 
-//           pdf.addPage([PDF_Width, PDF_Height],"p");
-//           pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin + totalMargin*(i)),canvas_image_width_A4,canvas_image_height_A4);
-//           pdf.setFillColor(255,255,255);
-//           pdf.rect(0, 0, PDF_Width, top_left_margin, "F");
-//           pdf.rect(0, PDF_Height-bottonMargin, PDF_Width, bottonMargin, "F");
-//         }
-        
-//         pdf.save("HTML-Document.pdf");
-//       });
-
-//       // var pdf = new jsPDF('p', 'pt',  [PDF_Width, PDF_Height]);
-//       // // pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin,canvas_image_width_A4,canvas_image_height_A4);
-      
-//       // pdf.html(data,{callback:function(doc){
-//       //     doc.save()
-//       //   },margin:[top_left_margin, top_left_margin,bottonMargin,top_left_margin],
-//       //   width:canvas_image_width_A4,
-//       //   html2canvas:{scale:1}
-//       // })
-
-
-//   }
 
   createPDF2(){
     const contents:Content[] = []
@@ -114,11 +38,29 @@ export class OpordComponent implements OnInit {
       stack:title,
       style: {
         fontSize:14,
+        font : 'Roboto',
         bold:true,
         alignment:"center",
         lineHeight:2
       }
     }
+
+    const fonts = {
+      'Roboto' : {
+         normal: 'Roboto-Regular.ttf',
+         bold: 'Roboto-Medium.ttf',
+         italics: 'Roboto-Italic.ttf',
+         bolditalics: 'Roboto-Italic.ttf'
+      },
+   
+      'OpenSans' : {
+         normal: 'OpenSans-Regular.ttf',
+         bold: 'OpenSans-Medium.ttf',
+         italics: 'OpenSans-Italic.ttf',
+         bolditalics: 'OpenSans-Italic.ttf'
+      }
+   
+   }
 
     // Contenido del Título
     contents.push(contentTitle)
@@ -134,13 +76,14 @@ export class OpordComponent implements OnInit {
       }
     };
 
-    pdfMake.createPdf(documentDefinition,{},{},pdfFonts.pdfMake.vfs).open();
+    pdfMake.createPdf(documentDefinition,{},fonts,pdfFonts.pdfMake.vfs).open();
   }
 
   arrayContentsOfBody(arrayDocumentHTML):Content[] {
     var styles
     const styleH3:Style = {
         fontSize:12,
+        font : 'Roboto',
         bold:true,
         alignment:"left",
         // leadingIndent:10,
@@ -148,6 +91,7 @@ export class OpordComponent implements OnInit {
 
     const styleH4:Style = {
       fontSize:11,
+      font : 'Roboto',
       bold:true,
       alignment:"left",
         // leadingIndent:20,
@@ -217,7 +161,7 @@ export class OpordComponent implements OnInit {
         style:styles.styleH4
       })
       phase.timelines.forEach(timeline => {
-        if(this.asUnit(timeline.entities[0]).getCombatFunction() == combatFunction){
+        if((<EntityUnit>timeline.entities[0]).getCombatFunction() == combatFunction){
           var textLine = ""
           timeline.entities.forEach((entity,i) => {
             textLine += entity.getVerbose()
@@ -252,7 +196,12 @@ export class OpordComponent implements OnInit {
     this.textComposed = ""
   }
   
-  asUnit(unit:Entity) : EntityUnit { return <EntityUnit>unit; }
+  isCombatUnit(unit:Entity) : boolean { 
+    return (<EntityUnit>unit).getCombatFunction() == "combat"; 
+  }  
+  isSupportUnit(unit:Entity) : boolean { 
+    return (<EntityUnit>unit).getCombatFunction() == "support"; 
+  }
 
   situation:Bubbles = {
     state:false,

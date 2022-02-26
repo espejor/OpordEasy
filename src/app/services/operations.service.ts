@@ -12,6 +12,8 @@ import { NewPhaseDialogComponent } from '../components/nav/ol-map/new-phase-dial
 // import { Globals } from '../utilities/globals';
 import { findElement } from '../utilities/miscelanea';
 import { Globals, OpsRoles } from '../utilities/globals';
+import { User } from '../models/user';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +35,9 @@ export class OperationsService {
   constructor(private http:HttpClient, 
     private _snackBar: MatSnackBar, 
     private  entitiesDeployedService:EntitiesDeployedService,
-    public dialog: MatDialog) {    
+    public dialog: MatDialog,
+    public userService:UserService
+    ) {    
     const URL_BASE = environment.baseUrl;
     this.URL_API = URL_BASE + 'api/operations'; 
     // Globals.OPERATION_SVC = this
@@ -97,16 +101,68 @@ export class OperationsService {
   }
 
   
-  addUser(userId: string) {
-    const obj:any = new Object()
-    obj._id = userId
-    obj.role = OpsRoles.OWNER
+  addUserOfOperation(userId: string) {
+    const obj:any = {user:userId,role:OpsRoles.OWNER}
     const isAdded = this.selectedOperation.users.some((user:any) => {
       return user._id == userId
     })
     if(!isAdded)
       this.selectedOperation.users.push(obj)
   }
+
+  
+  updateUserOfOperation(userOfOperationObj: { user: User, role: string, },operation:Operation = this.selectedOperation,  propagate:boolean = true) {
+    
+    // Actualizamos un usuario de la operación
+      var userRole = this.getUserRoleObj(userOfOperationObj.user,operation)
+      if(userRole)
+        // quitamos el elemento
+        operation.users = operation.users.filter(user => {
+          return user._id !== userOfOperationObj.user._id
+        })
+        // Si el valor asignado es != NONE
+      if(userOfOperationObj.role != "NONE")
+        operation.users.push(userOfOperationObj)
+      if (propagate){
+        this.userService.updateOperationOfUser(this,userOfOperationObj.user,{operation:operation,role:userOfOperationObj.role},false)
+      }
+  }
+
+  updateUsersOfOpDB(usersOfOperations:{user:User,role:string} [],operation = this.selectedOperation, propagate = true){
+    // Actualizamos la BD
+    usersOfOperations = usersOfOperations?usersOfOperations:operation.users
+    const minUsers = this.minimizeUsers(usersOfOperations)
+    this.http.put(this.URL_API + `/${operation._id}`,
+    {
+      // "entities" : this.selectedOperation.phases[this.phaseOrder].timelines[this.timelineActive].entities,
+      "action": "updateUsersDB",
+      "users":minUsers,
+    }
+    ).subscribe((data) => {
+      console.log(data);
+      if (propagate)
+        usersOfOperations.forEach(user => {
+          this.userService.updateOperationsOfUsersDB(this,user.user,false)
+        })
+    })
+  }
+
+  minimizeUsers(users: {user:User,role:string}[]): {user:string,role:string}[] {
+    const minUsers: {user:string,role:string}[] = []
+    users.forEach(user => {
+      if(user.role != "NONE")
+        minUsers.push({user:user.user._id.toString(),role:user.role})
+    })
+    return minUsers
+  }
+
+  getUserRoleObj(usr: User,operation = this.selectedOperation) {
+    const i = operation.users.findIndex(user => {
+      return usr._id == user.user._id
+    })
+    return operation.users[i]
+  }
+
   
   reorderEntitiesInTimeline() {        
     this.updateOperation(this.selectedOperation).subscribe(result =>{
@@ -537,7 +593,18 @@ export class OperationsService {
       }
   }
   
-
+  
+  // getUserOfOperation(operation?: Operation) {
+  //   operation = operation ? operation : this.selectedOperation
+  //   var users: User[] = []  
+  //   if(operation._id){
+  //     this.getOperation(operation._id).subscribe((operation:any) => {
+  //       return users = operation.users
+  //     })
+  //   }else{
+  //     return users
+  //   }
+  // }
   
   getOperations(userId?:string){
     if (userId)
@@ -563,7 +630,17 @@ export class OperationsService {
   }
 
   deleteOperation(_id: string){
+    // Eliminamos las referencias a la operacion en los usuarios
+    this.getOperation(_id).subscribe((operation:Operation) => {
+      operation.users.forEach((user) => {
+        user.user.operations = user.user.operations.filter(op => {
+          return op.operation != _id
+        })
+        this.userService.updateOperationsOfUsersDB(this,user.user,false)
+      })
+    })
     return this.http.delete(this.URL_API + `/${_id}`);
+    // eliminar las referencias en otras colecciones
   }
 
   getOperation(_id: string){

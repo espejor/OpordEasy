@@ -1,0 +1,10 @@
+<mat-selection-list [multiple]="false" class="frame">
+    <mat-list-option *ngFor = "let user of users">
+        {{user.firstName}}
+        {{user.lastName}}
+        <button mat-icon-button color="warn" class="icon-button" (click) = "select()">
+            <mat-icon>person</mat-icon>
+        </button>
+    </mat-list-option>
+</mat-selection-list>
+

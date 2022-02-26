@@ -19,7 +19,7 @@ export class Operation {
     apolog:string
     command:string
     communications:string
-    users: string[] = [] // _id de los Usuarios propietarios
+    users: any[] = [] // _id de los Usuarios propietarios
 
     constructor(private svgService?:SvgIconsListService, jsonRecovered?){
         // this._id ="";
@@ -44,6 +44,7 @@ export class Operation {
             this.updated = jsonRecovered.updated;
             this.phases = this.recoverPhases(jsonRecovered.phases);
             this.comboEntities = this.recoverCombo(jsonRecovered.comboEntities);
+            this.users = jsonRecovered.users
         }
         // this.user = "";
     }

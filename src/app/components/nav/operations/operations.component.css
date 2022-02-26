@@ -13,11 +13,21 @@
   color: black;
 }
 
+.selector{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
 .title{
   padding: 5px;
   text-align: center;
 }
 
+.userRole{
+  text-align: center;
+
+}
 .container{
   width: 380px  ;
 }

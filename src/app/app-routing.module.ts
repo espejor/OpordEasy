@@ -11,7 +11,10 @@ import { PointSelectorDialogLoaderComponent } from './components/point-selector-
 import { RegisterComponent } from './components/register/register.component';
 import { TaskSelectorDialogLoaderComponent } from './components/task-selector-dialog-loader/task-selector-dialog-loader.component';
 import { UnitSelectorDialogLoaderComponent } from './components/unit-selector-dialog-loader/unit-selector-dialog-loader.component';
-import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { UsersOperationsManagementComponent } from './components/users-operations-management/users-operations-management.component';
+import { UsersComponent } from './components/users/users.component';
+import { AuthRoleWownerService } from './services/auth-role-owner.service';
+import { AuthRoleService } from './services/auth-role.service';
 import { AuthGuard } from './services/auth.guard';
 
 const routes: Routes = [
@@ -20,19 +23,19 @@ const routes: Routes = [
     component: NavComponent,
     children: [{
       path:'Units',
-      component: UnitSelectorDialogLoaderComponent, canActivate: [AuthGuard]
+      component: UnitSelectorDialogLoaderComponent, canActivate: [AuthGuard,AuthRoleService]
     },{
       path:'Points',
-      component: PointSelectorDialogLoaderComponent, canActivate: [AuthGuard]
+      component: PointSelectorDialogLoaderComponent, canActivate: [AuthGuard,AuthRoleService]
     },{
       path:'Lines',
-      component: LineSelectorDialogLoaderComponent, canActivate: [AuthGuard]
+      component: LineSelectorDialogLoaderComponent, canActivate: [AuthGuard,AuthRoleService]
     },{
       path:'Areas',
-      component: AreaSelectorDialogLoaderComponent, canActivate: [AuthGuard]
+      component: AreaSelectorDialogLoaderComponent, canActivate: [AuthGuard,AuthRoleService]
     },{
       path:'Tasks',
-      component: TaskSelectorDialogLoaderComponent, canActivate: [AuthGuard]
+      component: TaskSelectorDialogLoaderComponent, canActivate: [AuthGuard,AuthRoleService]
     },{
       path:'Operations',
       component: OperationsComponent, canActivate: [AuthGuard]
@@ -46,7 +49,9 @@ const routes: Routes = [
       // {path: '', redirectTo: '/login', pathMatch: 'full'} ,
       {path: 'login', component: LoginComponent} ,
       {path: 'register', component: RegisterComponent} ,
-      {path: 'userProfile', component: RegisterComponent, canActivate: [AuthGuard]} 
+      {path: 'userProfile', component: RegisterComponent, canActivate: [AuthGuard]} ,
+      {path: 'users', component: UsersComponent, canActivate: [AuthGuard]} ,
+      {path: 'usersOperations', component: UsersOperationsManagementComponent, canActivate: [AuthGuard,AuthRoleWownerService]} 
   ]
   },
   { 

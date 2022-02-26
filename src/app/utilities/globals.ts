@@ -14,6 +14,12 @@ export const Globals = Object({
     // OPERATION_SVC:OperationsService
 })
 
+export const Roles =[
+    {role:"OWNER",color:"green"},
+    {role:"PARTNER",color:"gold"},
+    {role:"VIEWER",color:"red"},
+    {role:"NONE",color:"lightgrey"}]
+
 
 export enum OpsRoles {
     OWNER = "OWNER",

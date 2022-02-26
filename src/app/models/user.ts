@@ -1,3 +1,5 @@
+import { Operation } from "./operation";
+
 export class User {
     _id: String;
     firstName: String;
@@ -6,4 +8,5 @@ export class User {
     email: String;
     password: String;
     avatar:string;
+    operations:{operation:Operation,role:string}[] = []
 }

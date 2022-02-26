@@ -54,7 +54,7 @@
             <h3 class="title1">1.- SITUACIÓN</h3>
             <div class="input-field " >
                 <mat-form-field class="situation-main">
-                    <textarea (change)="updateOperation()" class="content" cdkTextareaAutosize matInput placeholder="Explicar brevemente la situación actual..."
+                    <textarea (change)="updateOperation()" class="content" #autosize="cdkTextareaAutosize"  cdkTextareaAutosize matInput placeholder="Explicar brevemente la situación actual..."
                     [(ngModel)] = "operationsService.selectedOperation.situation"
                     name="situation"
                     (mouseover)="situation.state = true"
@@ -138,7 +138,7 @@
                 <div *ngFor="let phase of operationsService.selectedOperation.phases">
                     <h4 class="title2 phase" #phase.name>Fase: {{phase.name}}</h4> 
                     <div class="content" *ngFor="let timeline of phase.timelines">
-                        <div *ngIf="asUnit(timeline.entities[0]).getCombatFunction() == 'combat'">
+                        <div *ngIf= "isCombatUnit(timeline.entities[0])">
                             <span class="timeline" *ngFor="let entity of timeline.entities;  let i = index">
                                 {{entity.getVerbose()}}
                                 <span *ngIf="i == 0">
@@ -152,7 +152,7 @@
                 <div *ngFor="let phase of operationsService.selectedOperation.phases">
                     <h4 class="title2 phase">Fase: {{phase.name}}</h4> 
                     <div class="content" *ngFor="let timeline of phase.timelines">
-                        <div *ngIf="asUnit(timeline.entities[0]).getCombatFunction() == 'support'">
+                        <div *ngIf= "isSupportUnit(timeline.entities[0])">
                             <span class="timeline" *ngFor="let entity of timeline.entities;  let i = index">
                                 {{entity.getVerbose()}}
                                 <span *ngIf="i == 0">

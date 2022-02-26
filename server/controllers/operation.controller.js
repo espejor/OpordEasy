@@ -16,19 +16,20 @@ operationCtrl.getOperations = async (req,res) => {
     const operations = await OperationModel.find()
     .populate("phases.timelines.entities")
     .populate("phases.layout.entity")
-    .populate("comboEntities");
+    .populate("comboEntities")
+    .populate("users.user");
     res.json(operations);
 }
 
 operationCtrl.getOperationsForUser = async (req,res) => {
     const operations = await OperationModel.find({
-        "users._id": ObjectId(req.params.id)
+       ["users.user"]: {"$eq": [req.params.id]}
     })
     .populate("phases.timelines.entities")
     .populate("phases.layout.entity")
-    .populate("comboEntities");
+    .populate("comboEntities")
+    .populate("users.user");
     res.json(operations);
-
 
 
     
@@ -50,13 +51,14 @@ operationCtrl.getOperation = async (req,res) => {
     const operation = await OperationModel.findById(req.params.id)
     .populate("phases.timelines.entities")
     .populate("phases.layout.entity")
-    .populate("comboEntities");
+    .populate("comboEntities")
+    .populate("users.user");
     res.json (operation);
 }
 
 operationCtrl.updateOperation = async (req,res) => {
     console.log("id para actualizar " + req.params.id);
-    console.log("Operacion " + req.body.name);
+    console.log("Operacion " + req.body.name); 
     console.log("body  %O" , req.body);
     const operationToDDBB = (req.body);
     var response;
@@ -95,14 +97,19 @@ operationCtrl.updateOperation = async (req,res) => {
                 console.log(response);
                 break;
 
-            // case "newTimeline":
-            //     const timeline = req.body.timeline;
-            //     query = {[`phases.${phase}.timelines.${timeline}`]: entityId}
-            //     response = await OperationModel.updateOne({_id : req.params.id},{
-            //         $push : query
-            //     })
-            //     console.log(response);
-            //     break;
+            case "updateUsersDB":
+                const users = req.body.users
+                // users.forEach(user => {
+                //     user.user = ObjectId(user.user) 
+                // });
+                query = {
+                    [`users`]: users,
+                }
+                response = await OperationModel.updateOne({_id : req.params.id},{
+                    $set : query
+                })
+                console.log(response);
+                break;
 
             case "updateLayout":
                 query = {[`phases.${phase}.layout`]: object}
@@ -164,7 +171,6 @@ operationCtrl.updateOperation = async (req,res) => {
                 console.log(response);
                 break;
                     
-
             case "updateOperation":
             default:
                 query = {

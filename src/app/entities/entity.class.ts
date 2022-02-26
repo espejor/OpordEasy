@@ -62,6 +62,10 @@ export abstract class Entity<GeomType extends Geometry = Geometry>  extends Feat
     throw new Error('Method not implemented.');
   }
 
+  getCombatFunction(entity):string{
+    return ""
+  }
+
   onModifyEnd(evt:ModifyEvent, map: Map, shapesFeatures: Collection<Entity<Geometry>>, operationsService?: OperationsService, entitiesService?: HTTPEntitiesService) {
     const range = 40;
     const pointer:Coordinate = map.getCoordinateFromPixel (evt.mapBrowserEvent.pixel)

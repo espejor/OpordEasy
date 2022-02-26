@@ -1,0 +1,26 @@
+
+<div class="frame">
+    <h2>Ususarios adscritos a la Operación</h2>
+    <h2>{{operation.name}} </h2>
+    <div class="list">
+        <mat-selection-list [multiple]="false">
+            <mat-list-option *ngFor = "let user of usersOfOperation">
+                {{user.user.firstName}}
+                {{user.user.lastName}}
+                <button mat-icon-button  class="icon-button" (click) = "changeRole(user)"
+                [ngStyle] = "{'color': getRoleColor(user.role)}">
+                    <mat-icon>person</mat-icon>
+                </button>
+            </mat-list-option>
+        </mat-selection-list>
+    </div>
+
+      <!-- BOTONES -->
+  <div id="task-modal-footer">
+    <!-- <button mat-dialog-close mat-raised-button class= 'button-modal' id="task-modal-cancel-button" >Cancelar</button> -->
+    <button mat-raised-button class= 'button-modal' id="task-modal-action-button" (click) = "update()" >Actualizar</button>
+  </div>
+
+
+
+</div>

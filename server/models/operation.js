@@ -7,7 +7,7 @@ const { Schema } = mongoose;
 
 // ---------- Schemas
 const UsrSchema = new Schema({
-    _id:{type: Schema.Types.ObjectId, ref: "User"},
+    user:{type: Schema.Types.ObjectId, ref: "User"},
     role:{type:String,default:"OWNER",required:[true],enum:validOpsRoles},
 }) 
 

@@ -15,12 +15,28 @@ const userCtrl = {};
 
 userCtrl.getUsers = async (req,res) => {
     const users = await UserModel.find()
+    .populate("operations.operation");
     res.json(users);
 }
 
 userCtrl.getUser = async (req,res) => {
-  const user = await UserModel.findById(req.params.id);
+  const user = await UserModel.findById(req.params.id)
+  .populate("operations.operation");
   res.json (user);
+}
+
+userCtrl.updateOperationInUser = async (req,res) => {
+  const id = req.params.id
+  const operations = req.body.operations
+
+  query = {
+    [`operations`]: operations,
+  }
+  response = await UserModel.updateOne({_id : id},{
+      $set : query
+  })
+  console.log(response);
+  res.json (response);
 }
 
 

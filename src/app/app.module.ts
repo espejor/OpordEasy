@@ -52,12 +52,9 @@ import { TaskSelectorComponent } from './components/task-selector/task-selector.
 import { TaskSelectorDialogLoaderComponent } from './components/task-selector-dialog-loader/task-selector-dialog-loader.component';
 import { Bubble_featureComponent } from './components/nav/bubble_feature/bubble_feature.component';
 import { OpordComponent } from './components/opord/opord.component';
-// import { CarouselComponent } from './components/carousel/carousel.component';
-// import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { TooltipComponent } from './components/tooltip/tooltip.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -66,6 +63,9 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { CarouselComponent } from './components/carousel/carousel.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { UsersOperationsManagementComponent } from './components/users-operations-management/users-operations-management.component';
+import { UsersComponent } from './components/users/users.component';
+import { TextFieldModule } from '@angular/cdk/text-field';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -108,7 +108,8 @@ export function HttpLoaderFactory(http:HttpClient){
     TooltipComponent,
     LoginComponent,
     RegisterComponent,
-    UserProfileComponent
+    UsersOperationsManagementComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
@@ -138,6 +139,7 @@ export function HttpLoaderFactory(http:HttpClient){
     HttpClientModule,
     DragDropModule,
     NgbModule,
+    TextFieldModule
     // TranslateModule.forRoot({
     //   loader: {
     //     provide: TranslateLoader,

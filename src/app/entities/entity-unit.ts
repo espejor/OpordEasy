@@ -57,7 +57,7 @@ export class EntityUnit<GeomType extends Geometry = Geometry>  extends EntityPoi
     this.entityOptions.extraData = {}
   }
 
-  getCombatFunction():string{
+  override getCombatFunction():string{
     const features = (<UnitOptions>this.entityOptions).main
     for(let i = 0;i < features.length; i++){
       const feature =  features[i]
