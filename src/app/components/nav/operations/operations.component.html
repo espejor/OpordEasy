@@ -15,34 +15,34 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <mat-icon  [ngStyle] = "{'color': getRoleColor(getUserRole())}">person</mat-icon>
+            <mat-icon  [matTooltip] = "roleTraslator(getUserRole())"  [ngStyle] = "{'color': getRoleColor(getUserRole())}">person</mat-icon>
         </div>
 
-        <form #operationForm = "ngForm"  *ngIf="canAccess()">
+        <form #operationForm = "ngForm">
             <div class="col-md-12">
             <!-- ---------- Input Operaciones --------- -->
-                <div class="input-field">
+                <div class="input-field"  *ngIf="canAccess()">
                     <mat-form-field >
                         <input matInput  type="text" name="name" #name = 'ngModel' 
                         [(ngModel)] = "operationsService.selectedOperation.name"
                         placeholder="Nombre de la Operación">
                     </mat-form-field>
                     <div class="delete-button">
-                        <button mat-icon-button color="warn" class="icon-button" (click) = "deleteOperation(operationForm)">
+                        <button type="submit" mat-icon-button color="warn" class="icon-button" (click) = "deleteOperation(operationForm)">
                             <mat-icon>delete</mat-icon>
                         </button>
-                        <button mat-icon-button color="primary" class="icon-button" (click) = "openUsersManagement()">
+                        <button type="submit"  matTooltip="Gestión de autorización de usuarios" matTooltipPosition ="right"  mat-icon-button color="primary" class="icon-button" (click) = "openUsersManagement()">
                             <mat-icon>people</mat-icon>
                         </button>
                     </div> 
                 </div>
                 <!-- --------- Vista de Fase seleccionada ----------- -->
-                <app-phase></app-phase>
+                <app-phase [canAccessRes] ="canAccess()" ></app-phase>
                 <!-- --------------- Botones ------------- -->
                 <div class="card-action">
                     <div class="input-field col s12">
-                        <button mat-raised-button color='primary' (click) = "resetForm(operationForm)">Limpiar</button>
-                        <button mat-raised-button right color='accent' (click) = 'addOperation(operationForm)'>Guardar</button>
+                        <button type="submit" mat-raised-button color='primary' [disabled] = "!canAccess()" (click) = "resetForm(operationForm)">Limpiar</button>
+                        <button type="submit" mat-raised-button right color='accent' [disabled] = "!canAccess()"  (click) = 'addOperation(operationForm)'>Guardar</button>
                     </div>
                 </div>
             </div>

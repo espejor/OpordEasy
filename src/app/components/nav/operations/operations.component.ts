@@ -42,7 +42,7 @@ export class OperationsComponent implements OnInit,AfterViewInit {
     // private cdref: ChangeDetectorRef
     ) {
       iconRegistry.addSvgIcon('circle', sanitizer.bypassSecurityTrustResourceUrl('assets/icons/circle24.svg'));
-      this.user = authService.currentUser
+      this.getCurrentUser(authService.getUserId())
     }
 
   addOperation(form:NgForm){
@@ -163,7 +163,7 @@ export class OperationsComponent implements OnInit,AfterViewInit {
     return operations
   }
 
-  canAccess(){
+  canAccess():boolean{
     if (this.user)
       return this.user.operations.some(operation => {
         return operation.operation._id == this.operationsService.selectedOperation._id && operation.role != "VIEWER" 

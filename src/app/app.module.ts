@@ -19,8 +19,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { NavComponent } from './components/nav/nav.component';
 import { OlMapComponent } from './components/nav/ol-map/ol-map.component';
-import { HeaderComponent } from './components/header/header.component';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslationComponent } from './components/translation/translation.component';
 import { OperationsComponent } from './components/nav/operations/operations.component';
@@ -66,6 +64,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { UsersOperationsManagementComponent } from './components/users-operations-management/users-operations-management.component';
 import { UsersComponent } from './components/users/users.component';
 import { TextFieldModule } from '@angular/cdk/text-field';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 export function HttpLoaderFactory(http:HttpClient){
@@ -79,7 +78,6 @@ export function HttpLoaderFactory(http:HttpClient){
     AppComponent,
     NavComponent,
     OlMapComponent,
-    HeaderComponent,
     TranslationComponent,
     OperationsComponent,
     UnitSelectorComponent,
@@ -139,7 +137,8 @@ export function HttpLoaderFactory(http:HttpClient){
     HttpClientModule,
     DragDropModule,
     NgbModule,
-    TextFieldModule
+    TextFieldModule,
+    MatTooltipModule
     // TranslateModule.forRoot({
     //   loader: {
     //     provide: TranslateLoader,

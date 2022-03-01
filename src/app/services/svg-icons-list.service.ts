@@ -207,6 +207,8 @@ export class SvgIconsListService {
   // }
 
   getTypeFromShortType(value:string,list:string):string{
+    if(value == "")
+      return ""
     const actualList = this.lists[list] 
     return actualList.filter(e => {
       if (e.value == value)

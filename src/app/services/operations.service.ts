@@ -14,6 +14,7 @@ import { findElement } from '../utilities/miscelanea';
 import { Globals, OpsRoles } from '../utilities/globals';
 import { User } from '../models/user';
 import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,14 +30,17 @@ export class OperationsService {
   phaseOrder: number = 0;
   timelineActive = 0;
   URL_API: string;
+  currentUser: User;
 
   // layout: Entity[] = []
 
-  constructor(private http:HttpClient, 
+  constructor(
+    private http:HttpClient, 
     private _snackBar: MatSnackBar, 
     private  entitiesDeployedService:EntitiesDeployedService,
     public dialog: MatDialog,
-    public userService:UserService
+    public userService:UserService,
+    public authService:AuthService
     ) {    
     const URL_BASE = environment.baseUrl;
     this.URL_API = URL_BASE + 'api/operations'; 
@@ -67,6 +71,8 @@ export class OperationsService {
   }
 
   addEntityToTimeline(entity: Entity<Geometry>) {
+    if(this.currentUser && this.getUserRoleObj(this.currentUser).role == "VIEWER")
+      return
     const timelines = this.selectedOperation.phases[this.phaseOrder].timelines
     // Si no hay timelines se agrega uno
     if(timelines.length == 0)
@@ -157,6 +163,8 @@ export class OperationsService {
   }
 
   getUserRoleObj(usr: User,operation = this.selectedOperation) {
+    if(!usr)
+      return null
     const i = operation.users.findIndex(user => {
       return usr._id == user.user._id
     })
@@ -388,12 +396,13 @@ export class OperationsService {
     return entities;
   }
 
-  previousPhase(){
+  previousPhase(canAccess:boolean){
     if (this.isOperationLoaded()){
       if (this.selectedOperation.phases[this.phaseOrder].name != ''){
-        if (this.phaseOrder == 0)
-          this.addNewEmptyPhase(this.phaseOrder,this.PREVIOUS);
-        else{
+        if (this.phaseOrder == 0){
+          if(canAccess)
+            this.addNewEmptyPhase(this.phaseOrder,this.PREVIOUS);
+        }else{
           this.phaseOrder--;
         }
         this.timelineActive = 0;
@@ -407,12 +416,13 @@ export class OperationsService {
     this.updateLayout();
   }
 
-  nextPhase(){
+  nextPhase(canAccess:boolean){
     if (this.isOperationLoaded()){
       if (this.selectedOperation.phases[this.phaseOrder].name != ''){  // ya existe la fase
-        if (this.phaseOrder == this.selectedOperation.phases.length - 1)  // es la última
-          this.addNewEmptyPhase(this.phaseOrder,this.NEXT);   // agregar una nueva fase vacía
-        else{
+        if (this.phaseOrder == this.selectedOperation.phases.length - 1) { // es la última
+          if(canAccess)
+            this.addNewEmptyPhase(this.phaseOrder,this.NEXT);   // agregar una nueva fase vacía
+        }else{
           this.phaseOrder++;
         }
         this.timelineActive = 0;
@@ -650,6 +660,13 @@ export class OperationsService {
   changeOperation(){
     this.phaseOrder = 0
     this.updateLayout();
+    this.getCurrentUser()
+  }
+
+  getCurrentUser() {
+    this.userService.getUser(this.authService.getUserId()).subscribe((user:User) => {
+      this.currentUser = user
+    })
   }
 
   updateLayout() {

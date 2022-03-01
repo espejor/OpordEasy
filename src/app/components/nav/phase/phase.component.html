@@ -1,21 +1,21 @@
 <div class = "fase_view" *ngIf="operationsService.selectedOperation.name != ''" >
     <div class="phase_manager">
         <div class="phase-selector">
-            <button mat-icon-button aria-label="Fase anterior" (click) = "operationsService.previousPhase()">
+            <button mat-icon-button aria-label="Fase anterior" (click) = "operationsService.previousPhase(canAccessRes)">
                 <mat-icon>arrow_left</mat-icon>
             </button>
             <mat-form-field >
-                <input matInput  type="text" name="phasesname" #name = 'ngModel' 
+                <input matInput [disabled] = "!canAccessRes"  type="text" name="phasesname" #name = 'ngModel' 
                 (ngModelChange) = "loadLayout()"
                 [(ngModel)] = "operationsService.selectedOperation.phases[operationsService.phaseOrder].name"
                 placeholder="Fase">
             </mat-form-field>
-            <button mat-icon-button aria-label="Fase siguiente" (click) = "operationsService.nextPhase()">
+            <button mat-icon-button aria-label="Fase siguiente" (click) = "operationsService.nextPhase(canAccessRes)">
                 <mat-icon>arrow_right</mat-icon>
             </button>
         </div>
         <div class="delete-button">
-            <button mat-icon-button color="warn" class="icon-button" (click) = "deletePhase(operationsService.phaseOrder)">
+            <button mat-icon-button [disabled] = "!canAccessRes"   color="warn" class="icon-button" (click) = "deletePhase(operationsService.phaseOrder)">
                 <mat-icon>delete</mat-icon>
             </button>
         </div>    
@@ -29,12 +29,12 @@
                     [ngClass] = "{selected:operationsService.timelineActive == i}" 
                     >
                 
-                <mat-radio-button [value] = i></mat-radio-button>
+                <mat-radio-button [value] = i [disabled] = "!canAccessRes"  ></mat-radio-button>
 
-                <app-timeline [timeline] = "timeline" class= "app-timeline" ></app-timeline>
+                <app-timeline [timeline] = "timeline" [canAccessRes] ="canAccessRes"  class= "app-timeline" ></app-timeline>
 
                 <div class="delete-button">
-                    <button mat-icon-button color="warn" class="icon-button" (click) = "deleteTimeline(i)">
+                    <button mat-icon-button [disabled] = "!canAccessRes"   color="warn" class="icon-button" (click) = "deleteTimeline(i)">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </div>
@@ -42,6 +42,6 @@
         </mat-radio-group>
     </div>
     <div class="new-timeline-button">        
-        <button mat-raised-button color='warn' (click) = "newTimeline()">Nueva Línea de Tiempo</button>
+        <button mat-raised-button color='warn' [disabled] = "!canAccessRes" (click) = "newTimeline()">Nueva Línea de Tiempo</button>
     </div>
 </div>

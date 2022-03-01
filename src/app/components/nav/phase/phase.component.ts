@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { EntitiesDeployedService } from 'src/app/services/entities-deployed.service';
 import { OperationsService } from 'src/app/services/operations.service';
 
@@ -8,6 +8,8 @@ import { OperationsService } from 'src/app/services/operations.service';
   styleUrls: ['./phase.component.css']
 })
 export class PhaseComponent implements OnInit {
+  // @Output("canAccess") canAccessEmitter: EventEmitter<any> = new EventEmitter();
+  @Input() canAccessRes:boolean
 
   constructor(public operationsService:OperationsService,
     private entitiesDeployedService:EntitiesDeployedService) { }
@@ -31,5 +33,9 @@ export class PhaseComponent implements OnInit {
   deletePhase(i:number){
     this.operationsService.deletePhase(i);
   }
+
+  // canAccess(){
+  //   return this.canAccessEmitter.emit()
+  // }
 
 }

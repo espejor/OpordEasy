@@ -5,7 +5,7 @@ import { User } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { OperationsService } from 'src/app/services/operations.service';
 import { UserService } from 'src/app/services/user.service';
-import { Globals } from 'src/app/utilities/globals';
+import { Roles } from 'src/app/utilities/globals';
 
 @Component({
   selector: 'app-users-operations-management',
@@ -18,7 +18,7 @@ export class UsersOperationsManagementComponent implements OnInit {
   usersOfOperation: {user:User,role:string} [] = [];
   // roleSelected
   
-  roles = Globals.roles
+  roles = Roles
   operation: Operation;
 
 

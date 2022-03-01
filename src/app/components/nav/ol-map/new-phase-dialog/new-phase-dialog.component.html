@@ -2,14 +2,14 @@
     <h3>Nueva fase</h3  >
     <mat-form-field appearance="fill">
         <mat-label>Nombre</mat-label>
-        <input matInput [(ngModel)]="name" name="name">
+        <input placeholder="Fase" matInput [(ngModel)]="name" name="name">
       </mat-form-field>
     <mat-checkbox (change)="onChange($event.checked)">
         ¿Mantener el despliegue actual?
     </mat-checkbox>
     <div class="example-button-row">
-      <button mat-button color="warn" (click)= "cancel()" >Cancelar</button>
-      <button mat-button color="primary" (click)= "newPhase()">Nueva Fase</button>
+      <button type="submit" mat-button color="warn" (click)= "cancel()" >Cancelar</button>
+      <button type="submit" mat-button color="primary" (click)= "newPhase()">Nueva Fase</button>
     </div>
 </form>
 

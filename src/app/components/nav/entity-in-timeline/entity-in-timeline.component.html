@@ -1,4 +1,9 @@
-<div id="entityCard" #entityCard  
+<div class="entityCard" #entityCard  
+    *ngIf = "canAccessRes"
     [ngStyle] = "entityElementStyle" cdkDrag cdkDragBoundary=".app-timeline" cdkDragLockAxis="x" 
     (contextmenu)="openContextMenu($event)">
+</div>
+<div class="entityCard" #entityCard  
+    *ngIf = "!canAccessRes"
+    [ngStyle] = "entityElementStyle" >
 </div>

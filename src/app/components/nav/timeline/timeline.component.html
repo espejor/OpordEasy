@@ -1,7 +1,12 @@
 
   <!-- Vista de un Timeline -->
-  <div class="entities-list" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="drop($event)">
+  <div  *ngIf = "canAccessRes"  class="entities-list" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="drop($event)">
     <div *ngFor = "let entity of timeline.entities; let i = index">
-      <app-entity-in-timeline [entity] = entity [index] = i [timeline] = "timeline" ></app-entity-in-timeline>
+      <app-entity-in-timeline [canAccessRes] ="canAccessRes"  [entity] = entity [index] = i [timeline] = "timeline" ></app-entity-in-timeline>
+    </div>
+  </div>
+  <div  *ngIf = "!canAccessRes"  class="entities-list">
+    <div *ngFor = "let entity of timeline.entities; let i = index">
+      <app-entity-in-timeline [canAccessRes] ="canAccessRes"  [entity] = entity [index] = i [timeline] = "timeline" ></app-entity-in-timeline>
     </div>
   </div>

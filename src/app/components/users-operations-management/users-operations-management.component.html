@@ -7,7 +7,9 @@
             <mat-list-option *ngFor = "let user of usersOfOperation">
                 {{user.user.firstName}}
                 {{user.user.lastName}}
-                <button mat-icon-button  class="icon-button" (click) = "changeRole(user)"
+                <button mat-icon-button 
+                matTooltip="Cambiar autorización del usuario" matTooltipPosition ="right" 
+                class="icon-button" (click) = "changeRole(user)"
                 [ngStyle] = "{'color': getRoleColor(user.role)}">
                     <mat-icon>person</mat-icon>
                 </button>

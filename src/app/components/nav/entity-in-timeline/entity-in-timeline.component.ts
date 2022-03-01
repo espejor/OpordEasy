@@ -17,6 +17,7 @@ export class EntityInTimelineComponent implements OnInit, AfterViewInit {
   @Input() entity:Entity;
   @Input() index:number;
   @Input() size:number = 0.5;
+  @Input() canAccessRes:boolean
   svgTemplate:string;
 
 

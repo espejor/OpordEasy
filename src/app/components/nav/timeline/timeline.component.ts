@@ -11,6 +11,7 @@ import { OperationsService } from 'src/app/services/operations.service';
 })
 export class TimelineComponent implements OnInit {
   @Input() timeline:Timeline
+  @Input() canAccessRes:boolean
 
 
   // getSVGTimelineItem(entity:Entity):string{

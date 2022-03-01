@@ -113,4 +113,5 @@ export class UserService {
   getUser(_id: string){
     return this.http.get(this.URL_API + `/${_id}`);
   }
+
 }
