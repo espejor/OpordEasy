@@ -141,10 +141,6 @@ export class Bubble_featureComponent implements OnInit,AfterViewInit,OnChanges {
   }
 
   getTypeEntity(){
-    // if(!this.updated)
-    //   this.updateData()
-    // else
-    //   this.updated = false
     const options = this.entity.entityOptions
     if (options.extraData)
       if(options.extraData.lists)
@@ -153,9 +149,7 @@ export class Bubble_featureComponent implements OnInit,AfterViewInit,OnChanges {
           const shortValue = options.extraData.lists.type.value
           return this.entitiesDeployedServiceSvc.svgListOfIconsService.getTypeFromShortType(shortValue,list)
         }
-    // if(options.verbose)
         return this.entity.getVerbose()
-    // return this.entity.getType()
   }
 
   ngOnInit() {
